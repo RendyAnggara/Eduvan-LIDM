@@ -25,5 +25,7 @@ Route::prefix('admin')->group(function () {
     Route::delete('/courses/{id}', [CourseController::class, 'destroy'])->name('admin.courses.destroy');
     Route::get('/admin/students', [StudentController::class, 'index'])->name('admin.students.index');
     Route::get('/admin/students/{id}', [StudentController::class, 'show'])->name('admin.students.show');
-    Route::get('/api/students/{id}', [App\Http\Controllers\Admin\StudentController::class, 'apiShow'])->name('students.apiShow');
+    Route::get('/api/students/{id}', [StudentController::class, 'apiShow'])->name('students.apiShow');
+    Route::delete('/admin/students/{id}', [StudentController::class, 'destroy'])->name('admin.students.destroy');
+    Route::post('/students', [StudentController::class, 'store'])->name('admin.students.store');
 });
