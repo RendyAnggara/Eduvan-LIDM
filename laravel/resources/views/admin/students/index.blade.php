@@ -6,6 +6,55 @@
         <h2 class="text-2xl font-bold text-gray-800">Daftar Student</h2>
         <p class="text-gray-600">Pantau aktivitas dan progres belajar setiap student.</p>
     </div>
+    <button onclick="openCreateModal()" 
+    class="inline-flex items-center bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-indigo-200">
+        <i class="fas fa-plus-circle mr-2"></i> Tambah Student Baru
+    </button>
+    <div id="createStudentModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" onclick="closeCreateModal()"></div>
+
+            <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+                <div class="bg-indigo-600 p-6 text-white">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold">Tambah Student</h3>
+                        <button onclick="closeCreateModal()" class="text-white/80 hover:text-white text-2xl">&times;</button>
+                    </div>
+                </div>
+
+                <form action="{{ route('admin.students.store') }}" method="POST" class="p-6 space-y-4">
+                    @csrf
+                    <div>
+                        <label class="text-sm font-bold text-gray-700 block mb-1">Nama Lengkap</label>
+                        <input type="text" name="name" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Nama student..." required>
+                    </div>
+                    <div>
+                        <label class="text-sm font-bold text-gray-700 block mb-1">Email</label>
+                        <input type="email" name="email" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="email@example.com" required>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-gray-700 block mb-1">Password</label>
+                        <div class="relative">
+                            <input type="password" name="password" id="passwordField" 
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all" 
+                                placeholder="Min. 8 karakter" required>
+
+                            <button type="button" onclick="togglePasswordVisibility()" 
+                                class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-indigo-600 transition-colors">
+                                <i id="eyeIcon" class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <p class="text-[11px] text-gray-400">*Gunakan password yang aman.</p>
+                    </div>
+                    <div class="pt-4">
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl shadow-lg shadow-indigo-100 transition-all">
+                            Simpan Student
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
@@ -61,7 +110,7 @@
                     
                     <a href="{{ route('admin.students.show', $student->id) }}" class="text-indigo-600 hover:underline text-sm font-medium">Halaman Detail</a>
                     
-                    <form action="#" method="POST" class="inline">
+                    <form action="{{ route('admin.students.destroy', $student->id) }}" method="POST" class="inline">
                         @csrf
                         @method('DELETE')
                         <button class="text-red-500 hover:text-red-700 p-2" onclick="return confirm('Hapus student ini?')">
@@ -181,6 +230,30 @@
 
     function closeModal() {
         document.getElementById('studentModal').classList.add('hidden');
+    }
+
+    function openCreateModal() {
+        document.getElementById('createStudentModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Stop scroll background
+    }
+
+    function closeCreateModal() {
+        document.getElementById('createStudentModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    function togglePasswordVisibility() {
+        const passwordField = document.getElementById('passwordField');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        if (passwordField.type === 'password') {passwordField.type = 'text'; 
+        eyeIcon.classList.remove('fa-eye'); 
+        eyeIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            eyeIcon.classList.remove('fa-eye-slash');
+            eyeIcon.classList.add('fa-eye');
+        }
     }
 </script>
 @endsection

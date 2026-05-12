@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from './guards/auth-guard'; // Pastikan guard ini ada jika ingin digunakan
+import { AuthGuard } from './guards/auth-guard'; // Guard tetap ada
 
 const routes: Routes = [
   {
@@ -10,36 +10,43 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
+    loadChildren: () => import('./pages/login/login.module').then(m => m.LoginPageModule)
+  },
+  {
+    path: 'register',
+    loadChildren: () => import('./pages/register/register.module').then(m => m.RegisterPageModule)
   },
   {
     path: 'tabs',
-    loadChildren: () => import('./pages/tabs/tabs.module').then( m => m.TabsPageModule)
+    canActivate: [AuthGuard], // Menggunakan AuthGuard agar tidak merah
+    loadChildren: () => import('./pages/tabs/tabs.module').then(m => m.TabsPageModule)
   },
   {
     path: 'wishlist',
-    loadChildren: () => import('./pages/wishlist/wishlist.module').then( m => m.WishlistPageModule)
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./pages/wishlist/wishlist.module').then(m => m.WishlistPageModule)
   },
   {
     path: 'profil',
-    loadChildren: () => import('./pages/profil/profil.module').then( m => m.ProfilPageModule)
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./pages/profil/profil.module').then(m => m.ProfilPageModule)
   },
   {
     path: 'course-detail',
-    loadChildren: () => import('./pages/course-detail/course-detail.module').then( m => m.CourseDetailPageModule)
+    loadChildren: () => import('./pages/course-detail/course-detail.module').then(m => m.CourseDetailPageModule)
   },
-  // RUTE WILDCARD: Harus paling bawah agar tidak memblokir rute lain
-  
   {
     path: 'edit-profil',
-    loadChildren: () => import('./pages/edit-profil/edit-profil.module').then( m => m.EditProfilPageModule)
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./pages/edit-profil/edit-profil.module').then(m => m.EditProfilPageModule)
   },
   {
     path: 'notifications',
-    loadChildren: () => import('./pages/notifications/notifications.module').then( m => m.NotificationsPageModule)
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./pages/notifications/notifications.module').then(m => m.NotificationsPageModule)
   },
-
-{
+  // Wildcard '**' diletakkan paling bawah agar tidak memblokir path lain
+  {
     path: '**',
     redirectTo: 'login'
   }
