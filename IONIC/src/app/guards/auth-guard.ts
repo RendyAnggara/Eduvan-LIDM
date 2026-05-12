@@ -9,14 +9,17 @@ export class AuthGuard implements CanActivate {
 
   constructor(private auth: AuthService, private router: Router) {}
 
-  canActivate(): boolean {
-    // Memanggil fungsi isLoggedIn dari service
-    if (this.auth.isLoggedIn()) {
-      return true; // Token ada, izinkan masuk
-    } else {
-      // Token tidak ada, tendang kembali ke login
-      this.router.navigateByUrl('/login');
-      return false; 
-    }
+// src/app/guards/auth-guard.ts
+canActivate(): boolean {
+  // Cek langsung ke sumber kebenaran (localStorage)
+  const token = localStorage.getItem('token');
+  
+  if (token && token !== '') {
+    return true; 
+  } else {
+    // Jika tidak ada token, paksa kembali ke login
+    this.router.navigateByUrl('/login');
+    return false;
   }
+}
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs'; // Tambahkan tap
 
 @Injectable({
   providedIn: 'root',
@@ -11,37 +11,40 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  // 1. Fungsi Login Email/Password Dasar
+  // PERBAIKAN: Simpan token otomatis saat login berhasil
   login(data: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, data);
+    return this.http.post(`${this.apiUrl}/login`, data).pipe(
+      tap((res: any) => {
+        if (res && res.token) {
+          localStorage.setItem('token', res.token); // Simpan token di sini
+          localStorage.setItem('user_data', JSON.stringify(res.user));
+        }
+      })
+    );
   }
 
-  // 2. Fungsi Kirim OTP (Baru)
-  // Dipanggil setelah login email/pass berhasil atau untuk login via email saja
-  sendOTP(email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/send-otp`, { email });
-  }
-
-  // 3. Fungsi Verifikasi OTP (Baru)
+  // Jika verifikasi OTP juga menghasilkan token, lakukan hal yang sama
   verifyOTP(email: string, otp: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/verify-otp`, { email, otp });
+    return this.http.post(`${this.apiUrl}/verify-otp`, { email, otp }).pipe(
+      tap((res: any) => {
+        if (res && res.token) {
+          localStorage.setItem('token', res.token);
+        }
+      })
+    );
   }
 
-  // 4. Fungsi Register
   register(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, data);
   }
 
-  // 5. Fungsi Cek Status Login
   isLoggedIn(): boolean {
-    // Cek apakah ada token di localStorage
+    // Sekarang ini akan mengembalikan true jika token sudah tersimpan oleh fungsi login di atas
     return !!localStorage.getItem('token');
   }
 
-  // 6. Fungsi Logout (Disederhanakan tanpa GoogleAuth)
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user_data');
-    // Opsional: arahkan ke halaman login setelah logout
   }
 }

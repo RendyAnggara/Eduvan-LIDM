@@ -109,7 +109,7 @@ export class LoginPage implements OnInit {
           await loading.dismiss();
           this.presentToast('Selamat datang kembali!', 'success');
           this.zone.run(() => {
-            this.navCtrl.navigateRoot('/home');
+            this.navCtrl.navigateRoot('/tabs/beranda');
           });
         },
         error: async (err) => {
