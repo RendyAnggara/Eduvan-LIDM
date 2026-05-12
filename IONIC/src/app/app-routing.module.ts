@@ -18,7 +18,7 @@ const routes: Routes = [
   },
   {
     path: 'tabs',
-    canActivate: [AuthGuard], // Menggunakan AuthGuard agar tidak merah
+    // canActivate: [AuthGuard], // Menggunakan AuthGuard agar tidak merah
     loadChildren: () => import('./pages/tabs/tabs.module').then(m => m.TabsPageModule)
   },
   {
@@ -42,7 +42,7 @@ const routes: Routes = [
   },
   {
     path: 'notifications',
-    canActivate: [AuthGuard],
+    // canActivate: [AuthGuard],
     loadChildren: () => import('./pages/notifications/notifications.module').then(m => m.NotificationsPageModule)
   },
   // Wildcard '**' diletakkan paling bawah agar tidak memblokir path lain
