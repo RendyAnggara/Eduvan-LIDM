@@ -32,7 +32,6 @@
                     <tr>
                         <th class="px-6 py-4">Nama Kursus</th>
                         <th class="px-6 py-4">Total Student</th>
-                        <th class="px-6 py-4">Rata-rata Progres</th>
                         <th class="px-6 py-4 text-right">Aksi</th>
                     </tr>
                 </thead>
@@ -41,9 +40,6 @@
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4 font-bold text-gray-700">{{ $course->title }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">{{ $course->users_count }} Student</td>
-                            <td class="px-6 py-4">
-                                <div class="bg-indigo-500 h-2 rounded-full" style="width: {{ rand(10, 90) }}%"></div>
-                            </td>
                             <td class="px-6 py-4 text-right">
                                 <a href="{{ route('admin.quiz.show', $course->id) }}"
                                     class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-2 rounded-lg text-xs font-bold transition inline-block">

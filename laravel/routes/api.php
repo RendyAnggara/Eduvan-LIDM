@@ -8,16 +8,18 @@ use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\ContentController;
 use App\Http\Controllers\Api\ProgressController;
 use App\Http\Controllers\Api\QuizController;
+use App\Http\Controllers\Api\CertificateApiController;
 
 // --- API Publik (Bisa diakses tanpa login) ---
-Route::get('/courses/{id}', [CourseController::class, 'index']);
+Route::get('/courses', [CourseController::class, 'index']);
 Route::get('/courses/{id}', [CourseController::class, 'show']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
 
 // --- API Privat (Wajib bawa Token / auth:sanctum) ---
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function ()
+{
     Route::get('/user', [AuthController::class, 'me']);    // Ambil data profil
     Route::post('/logout', [AuthController::class, 'logout']); // Hapus token
     Route::post('/enrollments', [EnrollmentController::class, 'store']);
@@ -35,4 +37,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/instructor/dashboard', [CourseController::class, 'dashboard']);
     Route::middleware('auth:sanctum')->post('/contents', [ContentController::class, 'store']);
     Route::post('/contents', [ContentController::class, 'store']);
+    Route::get('/my-certificates', [CertificateApiController::class, 'index']);
+    Route::post('/progress/mark-completed', [ProgressController::class, 'markAsCompleted']);
+    Route::post('/progress/submit-quiz', [ProgressController::class, 'submitQuiz']);
+    Route::get('/progress/course/{course_id}', [ProgressController::class, 'getProgress']);
 });

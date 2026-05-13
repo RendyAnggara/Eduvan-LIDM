@@ -49,8 +49,8 @@
                 </a>
 
                 <!-- Certificate -->
-                <a href="#"
-                    class="block p-3 rounded transition {{ request()->is('admin/certificate*') ? 'bg-blue-600' : 'hover:bg-slate-700' }}">
+                <a href="{{ route('admin.certificates.index') }}"
+                    class="block p-3 rounded transition {{ request()->routeIs('admin.certificates.*') ? 'bg-blue-600' : 'hover:bg-slate-700' }}">
                     <i class="fas fa-award mr-2"></i> Certificate
                 </a>
             </nav>

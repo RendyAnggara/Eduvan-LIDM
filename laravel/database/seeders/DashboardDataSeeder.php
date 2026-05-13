@@ -6,6 +6,8 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Content; // Pastikan Model ini ada
+use App\Models\Progress; // Pastikan Model ini ada
 use Illuminate\Support\Facades\Hash;
 
 class DashboardDataSeeder extends Seeder
@@ -23,7 +25,7 @@ class DashboardDataSeeder extends Seeder
 
         $createdCourses = [];
         foreach ($courseData as $c) {
-            $createdCourses[] = Course::firstOrCreate(
+            $course = Course::firstOrCreate(
                 ['title' => $c['title']],
                 [
                     'description' => 'Kursus intensif ' . $c['title'],
@@ -31,6 +33,14 @@ class DashboardDataSeeder extends Seeder
                     'image' => null
                 ]
             );
+
+            // TAMBAHAN: Buat 1 materi dummy agar sistem bisa menghitung progres
+            Content::firstOrCreate(
+                ['course_id' => $course->id, 'title' => 'Pengenalan ' . $c['title']],
+                ['content_url' => 'https://youtube.com', 'type' => 'video']
+            );
+
+            $createdCourses[] = $course;
         }
 
         // 2. Data Student Dummy
@@ -41,7 +51,6 @@ class DashboardDataSeeder extends Seeder
         ];
 
         foreach ($students as $data) {
-            // Gunakan updateOrCreate agar tidak duplikat saat seeder dijalankan ulang
             $user = User::updateOrCreate(
                 ['email' => $data['email']],
                 [
@@ -51,18 +60,36 @@ class DashboardDataSeeder extends Seeder
                 ]
             );
 
-            // 3. Daftarkan SETIAP student ke SEMUA 5 kursus tadi
-            foreach ($createdCourses as $course) {
+            foreach ($createdCourses as $index => $course) {
                 Enrollment::firstOrCreate(
-                    [
-                        'user_id' => $user->id,
-                        'course_id' => $course->id,
-                    ],
-                    [
-                        'price_bought' => $course->price,
-                        'status' => 'success'
-                    ]
+                    ['user_id' => $user->id, 'course_id' => $course->id],
+                    ['price_bought' => $course->price, 'status' => 'success']
                 );
+
+                // LOGIC AGAR MUNCUL DI TABEL CERTIFICATE:
+                // Kita buat Budi Santoso (index student 0) lulus di Kursus Laravel (index course 0)
+                if ($data['email'] === 'budi@example.com' && $index === 0) {
+                    $materi = Content::where('course_id', $course->id)->first();
+
+                    Progress::updateOrCreate(
+                        [
+                            'user_id' => $user->id,
+                            'course_id' => $course->id,
+                            'content_id' => $materi->id
+                        ],
+                        ['is_completed' => true]
+                    );
+
+                    // Tambahkan baris Progress untuk kelulusan total (is_completed = true global)
+                    Progress::updateOrCreate(
+                        [
+                            'user_id' => $user->id,
+                            'course_id' => $course->id,
+                            'content_id' => null // Biasanya quiz/final progress
+                        ],
+                        ['is_completed' => true, 'score' => 100]
+                    );
+                }
             }
         }
     }

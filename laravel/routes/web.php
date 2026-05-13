@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\QuizProgressController;
+use App\Http\Controllers\Admin\CertificateController;
 
 
 Route::get('/', function ()
@@ -38,4 +39,7 @@ Route::prefix('admin')->group(function ()
     Route::get('/quiz/{quiz}/edit', [QuizProgressController::class, 'editQuiz'])->name('admin.quiz.edit');
     Route::put('/quiz/{quiz}', [QuizProgressController::class, 'updateQuiz'])->name('admin.quiz.update');
     Route::delete('/quiz/{quiz}', [QuizProgressController::class, 'destroyQuiz'])->name('admin.quiz.destroy');
+    Route::get('/admin/certificates', [CertificateController::class, 'index'])->name('admin.certificates.index');
+    Route::post('/admin/certificates/issue/{userId}/{courseId}', [CertificateController::class, 'issue'])->name('admin.certificates.issue');
+    Route::get('/admin/certificates/preview/{id}', [CertificateController::class, 'preview'])->name('admin.certificates.preview');
 });
