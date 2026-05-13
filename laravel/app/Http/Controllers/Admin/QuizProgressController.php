@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Course;
 use App\Models\Quiz;
 use App\Models\Progress;
+use App\Models\Content;
 
 class QuizProgressController extends Controller
 {
@@ -42,8 +43,33 @@ class QuizProgressController extends Controller
 
     public function show($id)
     {
-        // Mengambil course beserta student yang terdaftar di dalamnya
-        $course = Course::with(['users.progress'])->findOrFail($id);
+        // 1. Ambil data Course beserta student dan progres spesifik course ini
+        $course = Course::with(['users.progress' => function ($query) use ($id)
+        {
+            $query->where('course_id', $id);
+        }])->findOrFail($id);
+
+        // 2. Hitung total materi video di kursus ini sebagai pembagi (biar dinamis)
+        $totalVideo = Content::where('course_id', $id)->count();
+
+        // 3. Kita "petakan" (map) datanya supaya di Blade tinggal panggil saja
+        $course->users->each(function ($user) use ($id, $totalVideo)
+        {
+            // Ambil baris Quiz (penandanya: content_id NULL sesuai kesepakatan kita)
+            $quiz = $user->progress->where('course_id', $id)->whereNull('content_id')->first();
+            $user->nilai_quiz_asli = $quiz ? $quiz->score : '-';
+
+            // Hitung berapa video yang sudah 'is_completed'
+            $completedVideoCount = $user->progress->where('course_id', $id)
+                ->whereNotNull('content_id')
+                ->where('is_completed', true)
+                ->count();
+
+            // Hitung persentase progres belajar
+            $user->persentase_asli = $totalVideo > 0
+                ? round(($completedVideoCount / $totalVideo) * 100)
+                : 0;
+        });
 
         return view('admin.quiz.show', compact('course'));
     }
