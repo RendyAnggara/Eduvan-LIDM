@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\ContentController;
 use App\Http\Controllers\Api\ProgressController;
 use App\Http\Controllers\Api\QuizController;
-use App\Http\Controllers\Api\CertificateApiController;
+use App\Http\Controllers\Api\CertificateController;
 
 // --- API Publik (Bisa diakses tanpa login) ---
 Route::get('/courses', [CourseController::class, 'index']);
@@ -36,9 +36,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/instructor/dashboard', [CourseController::class, 'dashboard']);
     Route::middleware('auth:sanctum')->post('/contents', [ContentController::class, 'store']);
     Route::post('/contents', [ContentController::class, 'store']);
-    Route::get('/my-certificates', [CertificateApiController::class, 'index']);
+    Route::get('/my-certificates', [CertificateController::class, 'index']);
     Route::post('/progress/mark-completed', [ProgressController::class, 'markAsCompleted']);
     Route::post('/progress/submit-quiz', [ProgressController::class, 'submitQuiz']);
     Route::get('/progress/course/{course_id}', [ProgressController::class, 'getProgress']);
-    Route::post('/courses/{id}/rate', [App\Http\Controllers\Api\CourseController::class, 'rate']);
+    Route::post('/courses/{id}/rate', [CourseController::class, 'rate']);
+    Route::put('/user/update', [AuthController::class, 'updateProfile']);
 });
