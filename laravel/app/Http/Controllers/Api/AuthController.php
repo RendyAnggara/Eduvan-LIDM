@@ -85,9 +85,9 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $request->email)
-                    ->where('otp_code', $request->otp)
-                    ->where('otp_expiry', '>', now())
-                    ->first();
+            ->where('otp_code', $request->otp)
+            ->where('otp_expiry', '>', now())
+            ->first();
 
         if ($user) {
             $user->email_verified_at = now();
@@ -135,15 +135,39 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
+        // 1. Ambil data user yang sedang login saat ini
+        $user = $request->user();
+
+        // 2. Hitung jumlah kursus (enrollments) dan sertifikat secara dinamis dari database
+        // Pastikan nama relasi di model User kamu adalah 'enrollments' dan 'certificates' (atau sesuaikan)
+        $userData = User::withCount(['enrollments as total_courses', 'certificates as total_certificates'])
+            ->find($user->id);
+
+        // 3. Kembalikan data lengkap ke Ionic
         return response()->json([
             'success' => true,
-            'data' => $request->user()
+            'data' => $userData
         ]);
     }
-
-    public function logout(Request $request)
+    public function updateProfile(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-        return response()->json(['message' => 'Logged out successfully']);
+        $user = $request->user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+        ]);
+
+        // Update data di tabel users database
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Database berhasil diupdate!',
+            'user' => $user
+        ]);
     }
 }

@@ -39,26 +39,34 @@ class CourseController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required',
             'price' => 'required|integer',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'category' => 'required',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048' // Maksimal 2MB
         ]);
 
-        // 2. Olah upload gambar jika ada
-        $imagePath = null;
+        // 2. Olah upload gambar murni ke Base64 (Tanpa Folder Storage Link)
+        $base64Image = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('course_covers', 'public');
+            $image = $request->file('image');
+            $imageData = base64_encode(file_get_contents($image));
+            $imageMime = $image->getClientMimeType();
+
+            // Satukan jadi format data URL yang bisa langsung dibaca tag <img> HTML
+            $base64Image = 'data:' . $imageMime . ';base64,' . $imageData;
         }
 
         // 3. Simpan ke database
         Course::create([
             'title' => $request->title,
-            'category' => $request->category, // <--- Cek baris ini
+            'category' => $request->category,
             'description' => $request->description,
             'price' => $request->price,
-            'rating' => 0, // Default untuk student nanti
-            'image' => $imagePath,
+            'rating' => 0,
+            'image' => $base64Image, // <--- Menyimpan string teks panjang
         ]);
-        return redirect()->route('admin.courses.index')->with('success', 'Kursus berhasil ditambahkan!');
+
+        return redirect()->route('admin.courses.index')->with('success', 'Kursus berhasil ditambahkan dengan gambar Base64!');
     }
+
 
     // --- TAMBAHAN BARU ---
 
@@ -90,16 +98,17 @@ class CourseController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required',
             'price' => 'required|integer',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'category' => 'required'
+            'category' => 'required',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:10240' // <--- Ubah dari 2048 ke 10240 (10MB)
         ]);
+
 
         $data = [
             'title' => $request->title,
             'category' => $request->category,
             'description' => $request->description,
             'price' => $request->price,
-            
+
         ];
 
         if ($request->hasFile('image')) {
