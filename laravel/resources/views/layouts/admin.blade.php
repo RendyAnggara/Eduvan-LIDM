@@ -108,6 +108,13 @@
                 </a>
             </nav>
 
+            <a href="{{ route('admin.notifications.index') }}"
+                class="group flex items-center gap-3 p-3 rounded-xl transition {{ request()->is('admin/notifications*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
+                <i
+                    class="fas fa-bell text-sm {{ request()->is('admin/notifications*') ? '' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
+                <span class="font-semibold text-sm">Kelola Notifikasi</span>
+            </a>
+
             <div class="p-4 border-t border-slate-700 bg-slate-900/20">
                 <button type="button" onclick="openLogoutModal()"
                     class="w-full flex items-center justify-center gap-2.5 p-3 rounded-xl bg-rose-600/10 hover:bg-rose-600 text-rose-400 hover:text-white text-xs font-black shadow-lg shadow-rose-600/10 active:scale-98 transition cursor-pointer">

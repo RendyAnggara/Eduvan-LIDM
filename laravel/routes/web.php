@@ -8,10 +8,10 @@ use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\QuizProgressController;
 use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\NotificationController;
 
 
-Route::get('/', function ()
-{
+Route::get('/', function () {
     return redirect('/admin/login');
 });
 
@@ -31,8 +31,7 @@ Route::post('admin/logout', [AdminAuthController::class, 'logout'])->name('admin
 |--------------------------------------------------------------------------
 | Hanya user yang SUDAH LOGIN dan memiliki ROLE 'admin' yang bisa masuk ke sini.
 */
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function ()
-{
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     // Manajemen Courses
@@ -73,4 +72,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function ()
     Route::get('/admin/certificates/preview/{id}', [CertificateController::class, 'preview'])->name('admin.certificates.preview');
     Route::get('/admin/pembelian/pdf', [TransactionController::class, 'exportPdf'])->name('admin.pembelian.pdf');
     Route::get('/admin/certificates/download/{id}', [CertificateController::class, 'download'])->name('admin.certificates.download');
+
+    //Notifikasi
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
+    Route::post('/notifications/send', [NotificationController::class, 'store'])->name('admin.notifications.send');
 });

@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\QuizController;
 use App\Http\Controllers\Api\WishlistController;
 use App\Http\Controllers\Api\CertificateApiController;
 use App\Http\Controllers\Api\ForgotPasswordController;
+use App\Http\Controllers\Admin\NotificationController;
 
 // --- API Publik (Bisa diakses tanpa login) ---
 Route::get('/courses', [CourseController::class, 'index']);
@@ -26,8 +27,7 @@ Route::get('/courses/{course_id}/contents', [ContentController::class, 'index'])
 
 
 // --- API Privat (Wajib bawa Token / auth:sanctum) ---
-Route::middleware('auth:sanctum')->group(function ()
-{
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'me']);    // Ambil data profil
     Route::post('/logout', [AuthController::class, 'logout']); // Hapus token
     Route::post('/enrollments', [EnrollmentController::class, 'store']);
@@ -51,4 +51,5 @@ Route::middleware('auth:sanctum')->group(function ()
     Route::get('/wishlist', [WishlistController::class, 'index']);
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle']);
     Route::post('/quiz/submit', [QuizController::class, 'store']);
+    Route::get('/notifications', [NotificationController::class, 'getNotifUser']);
 });
