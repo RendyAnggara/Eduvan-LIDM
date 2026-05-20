@@ -1,33 +1,45 @@
-$navy-color: #053B50;
+$navy-color: #093C5D;
 
+// Header Navy seragam (70px)
 .header-navy {
   background: $navy-color;
-  height: 80px; 
+  height: 70px;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
   display: flex;
-  align-items: flex-start;
-  padding: 20px 0 0 20px;
-  ion-title { color: #ffffff; font-weight: 700; font-size: 1.3rem; padding: 0; }
-}
-
-.segment-container { padding: 16px; background: #f8f9fe; }
-
-ion-content { --background: #f8f9fe; }
-
-.course-card {
-  margin: 0 0 20px 0; padding: 16px; border-radius: 20px;
-  background: #ffffff; border: 1px solid #e0e0e0;
-  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15);
+  align-items: center;
+  justify-content: center; // Judul ke tengah
+  padding: 0 20px;
   
-  .card-content { display: flex; gap: 16px; align-items: center; }
-  .img-box { width: 80px; height: 80px; background: linear-gradient(135deg, #5c35cc, #8e44ad); border-radius: 18px; }
-  .info { flex: 1;
-    h3 { margin: 0 0 8px 0; font-weight: 800; color: #000; }
-    .progress-text { font-size: 0.85rem; color: #444; }
-    .custom-progress { height: 8px; border-radius: 4px; --progress-background: #5c35cc; }
-  }
-  .actions { display: flex; gap: 8px; margin-top: 12px; 
-    ion-button { flex: 1; height: 36px; font-size: 0.75rem; font-weight: 700; --border-radius: 8px; }
+  ion-title { 
+    color: #ffffff; 
+    font-weight: 700; 
+    font-size: 1.2rem; 
+    text-align: center; // Memastikan teks di tengah
+    padding: 0;
   }
 }
+
+// Segment
+.segment-container { padding: 15px; }
+
+// Course Card
+.course-card {
+  margin: 0 0 16px 0; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  .card-content { display: flex; padding: 12px; gap: 12px; }
+  .img-box { width: 80px; height: 80px; background: #eee; border-radius: 12px; flex-shrink: 0; }
+  .info { flex: 1; }
+  h3 { margin: 0 0 5px 0; font-size: 14px; font-weight: 700; }
+  .progress-text { font-size: 11px; color: #666; margin: 0 0 5px 0; }
+}
+
+.custom-progress { 
+  height: 6px; border-radius: 3px; 
+  --progress-background: $navy-color; 
+  margin-bottom: 10px;
+}
+
+.actions { display: flex; gap: 8px; }
+
+// Tombol seragam
+ion-button { --border-radius: 8px; font-weight: 700; }

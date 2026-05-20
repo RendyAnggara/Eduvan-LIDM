@@ -1,5 +1,10 @@
 <ion-header mode="ios" class="ion-no-border">
   <div class="header-navy">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" color="light">
+        <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
     <ion-title>Kuis Kursus</ion-title>
   </div>
 </ion-header>
@@ -10,16 +15,22 @@
     <ion-progress-bar [value]="(currentQuestionIndex + 1) / questions.length" mode="ios"></ion-progress-bar>
   </div>
 
-  <div class="question-card" *ngIf="!isFinished && currentQuestionIndex < questions.length">
+  <div class="question-card" *ngIf="!isFinished">
     <h3>{{ questions[currentQuestionIndex].question }}</h3>
   </div>
 
-  <ion-radio-group (ionChange)="selectAnswer($event.detail.value)" *ngIf="!isFinished && currentQuestionIndex < questions.length">
+  <ion-radio-group (ionChange)="selectAnswer($event.detail.value)" *ngIf="!isFinished" [value]="selectedAnswer">
     <ion-item *ngFor="let option of questions[currentQuestionIndex].options" class="option-item" lines="none">
       <ion-radio slot="start" [value]="option"></ion-radio>
       <ion-label>{{ option }}</ion-label>
     </ion-item>
   </ion-radio-group>
+
+  <div class="nav-buttons" *ngIf="!isFinished">
+    <ion-button fill="clear" (click)="prevQuestion()" [disabled]="currentQuestionIndex === 0">SEBELUMNYA</ion-button>
+    <ion-button *ngIf="currentQuestionIndex < questions.length - 1" (click)="nextQuestion()">SELANJUTNYA</ion-button>
+    <ion-button *ngIf="currentQuestionIndex === questions.length - 1" (click)="submitQuiz()" color="success">SELESAI</ion-button>
+  </div>
 
   <div *ngIf="isFinished" class="result-container ion-text-center">
     <div class="result-card">
