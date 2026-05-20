@@ -136,6 +136,41 @@ class EnrollmentController extends Controller
                 $item->quiz_status = $quizResult ? $quizResult->status : null;
                 $item->quiz_score = $quizResult ? $quizResult->score : null;
 
+                // 🟢 TAMBAHAN SAKTI: Hitung ulang total progress secara live & dinamis agar singkron saat admin nambah video baru
+                $totalMateri = \Illuminate\Support\Facades\DB::table('contents')
+                    ->where('course_id', $item->course_id)
+                    ->count();
+
+                $materiSelesai = \Illuminate\Support\Facades\DB::table('progress')
+                    ->where('user_id', $userId)
+                    ->where('course_id', $item->course_id)
+                    ->where('is_completed', 1)
+                    ->count();
+
+                // 🟢 GERBANG 1: Tentukan status gembok akses kuis (Hanya true jika semua video sudah ditonton)
+                $item->is_quiz_unlocked = ($totalMateri > 0 && $materiSelesai === $totalMateri);
+
+                // 🟢 GERBANG 2: Hitung persentase progress dan amankan angka 100% sebelum kuis lulus
+                if ($totalMateri > 0)
+                {
+                    $persentaseVideo = round(($materiSelesai / $totalMateri) * 100);
+
+                    // Jika semua materi video udah kelar ditonton, tapi status kuis belum 'passed', tahan di 99%
+                    if ($persentaseVideo === 100 && $item->quiz_status !== 'passed')
+                    {
+                        $item->progress = 99;
+                    }
+                    else
+                    {
+                        // Jika belum tonton semua, atau kuisnya emang udah sukses lulus, biarkan pake nilai aslinya
+                        $item->progress = $persentaseVideo;
+                    }
+                }
+                else
+                {
+                    $item->progress = 0;
+                }
+
                 return $item;
             });
 

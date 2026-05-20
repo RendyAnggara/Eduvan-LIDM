@@ -102,6 +102,9 @@ class ContentController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }
 
+        // 🟢 TAMBAHAN SAKTI: Tangkap status is_completed dari Angular (jika kosong, default ke 1 / Selesai)
+        $statusInput = $request->has('is_completed') ? (int)$request->is_completed : 1;
+
         // 1. Simpan atau update log selesai ke tabel progress mbut
         DB::table('progress')->updateOrInsert(
             [
@@ -110,7 +113,7 @@ class ContentController extends Controller
                 'content_id' => $request->content_id,
             ],
             [
-                'is_completed' => 1, // Set selesai
+                'is_completed' => $statusInput, // 🟢 JADI DINAMIS: Bisa bernilai 1 (Selesai) atau 0 (Batal)
                 'updated_at' => now(),
                 'created_at' => now(), // Dipakai jika insert data baru
             ]
@@ -137,9 +140,9 @@ class ContentController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Materi berhasil diselesaikan!',
+            'message' => $statusInput === 1 ? 'Materi berhasil diselesaikan!' : 'Selesai materi dibatalkan!',
             'data' => [
-                'current_materi_progress' => 1,
+                'current_materi_progress' => $statusInput, // 🟢 Sesuai dengan status yang dikirim frontend
                 'total_course_progress' => $persentase
             ]
         ]);
