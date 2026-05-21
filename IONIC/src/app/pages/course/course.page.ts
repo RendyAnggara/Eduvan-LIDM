@@ -20,9 +20,9 @@ export class CoursePage implements OnInit {
   constructor(
     private navCtrl: NavController,
     private courseService: CourseService,
-    private router: Router,
+    private router: Router
   ) {
-    // Tangkap keyword dari Home
+    // Tangkap keyword dari Home jika ada operan data extras
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras.state?.['keyword']) {
       this.keywordPencarian = navigation.extras.state['keyword'];
@@ -31,55 +31,59 @@ export class CoursePage implements OnInit {
 
   ngOnInit() {
     this.loadData();
-
-    // Dengerin sinyal perubahan dari page detail secara live
-    this.courseService.wishlistChanged$.subscribe((berubah) => {
-      if (berubah) {
-        console.log('📢 Ada sinyal masuk! Refresh data katalog utama...');
-        this.loadData();
-      }
-    });
   }
 
-  // 🟢 LIVE REFRESH FIX: Lifecycle Ionic ini akan memaksa data ditarik ulang dari Laravel
-  // setiap kali user memindahkan tab atau kembali ke halaman Semua Kursus.
   ionViewWillEnter() {
-    console.log(
-      'Menyegarkan katalog kursus dan status wishlist dari database live...',
-    );
-    this.loadData();
+    const currentNav = this.router.getCurrentNavigation();
+    if (currentNav?.extras.state && currentNav.extras.state['keyword']) {
+      this.keywordPencarian = currentNav.extras.state['keyword'];
+      this.fungsiCariKursus();
+    }
   }
 
   loadData() {
     this.isLoading = true;
 
-    // 1. Ambil daftar wishlist teranyar dari server Laravel kamu lek
+    // 1. Ambil data wishlist dari database server lek
     this.courseService.ambilDaftarWishlist().subscribe({
       next: (wishlistRes: any) => {
-        // Ambil array ID course yang dibungkus di dalam data pivot relasi Laravel
-        const userWishlistIds = (wishlistRes.data || []).map((item: any) =>
-          Number(item.course_id),
-        );
+        // Proteksi jika data wishlist kosong, buat jadi array murni
+        const wishlistIds = (wishlistRes && wishlistRes.data ? wishlistRes.data : [])
+                            .map((item: any) => item.course_id);
 
-        // 2. Baru load data katalog utama
+        // 2. Baru ambil data seluruh katalog kursus
         this.courseService.getCourses().subscribe({
           next: (res: any) => {
-            const dataKatalog = res.data || [];
+            // Jalankan proteksi: cek apakah API Laravel membungkus dalam 'data' atau langsung array polosan
+            const rawCourses = res.data ? res.data : (Array.isArray(res) ? res : []);
 
-            // 3. 🟢 NYALAKAN LOVE JIKA ID NYA COCOK DENGAN ARRAY WISHLIST
-            this.allCourses = dataKatalog.map((course: any) => {
+            // 🌟 SINKRONISASI DATABASE: Menyuntikkan properti is_wishlist ke array katalog
+            this.allCourses = rawCourses.map((course: any) => {
               return {
                 ...course,
-                is_wishlist: userWishlistIds.includes(Number(course.id)),
+                is_wishlist: wishlistIds.includes(course.id)
               };
             });
 
+            // 🛠️ PERBAIKAN UTAMA: Langsung set data master ke list utama yang dibaca HTML Ivan
+            this.listCourses = [...this.allCourses];
             this.isLoading = false;
+            console.log('Data API Katalog & Wishlist Berhasil Disinkronkan Lek:', this.listCourses);
 
-            // Picu filter pencarian & kategori biar jalan sinkron
-            setTimeout(() => {
+            // Kondisi filter pencarian operan dari Home / searchbar lokal
+            if (this.keywordPencarian && this.keywordPencarian.trim() !== '') {
               this.fungsiCariKursus();
-            }, 100);
+            } else if (this.kategoriAktif !== 'Semua') {
+              // Jika user sedang berada di kategori selain 'Semua', jalankan filter kategorinya
+              this.listCourses = this.allCourses.filter((course: any) => {
+                const kategoriDatabase = course.category || '';
+                return kategoriDatabase.toLowerCase() === this.kategoriAktif.toLowerCase();
+              });
+              this.eksekusiFilterSort();
+            } else {
+              // Jika kategorinya 'Semua' dan tidak ada pencarian, jalankan sorting default
+              this.eksekusiFilterSort();
+            }
           },
           error: (error) => {
             console.error('Gagal ambil data katalog', error);
@@ -87,22 +91,22 @@ export class CoursePage implements OnInit {
           },
         });
       },
-      error: (err) => {
-        console.error('Gagal sinkronisasi data wishlist awal', err);
-
-        // 🟢 AMAN: Fallback kalau wishlist bermasalah, tetep tampilin katalog tanpa crash
+      error: (error) => {
+        console.error('Gagal ambil data wishlist untuk sinkronisasi', error);
+        // Keamanan: Jika API wishlist bermasalah/401, katalog harus TETAP tampil (jangan dibikin blank)
         this.courseService.getCourses().subscribe({
           next: (res: any) => {
-            this.allCourses = res.data || [];
+            this.allCourses = res.data ? res.data : (Array.isArray(res) ? res : []);
+            this.listCourses = [...this.allCourses];
             this.isLoading = false;
-            setTimeout(() => this.fungsiCariKursus(), 100);
+            this.eksekusiFilterSort();
           },
-          error: (katalogErr) => {
-            console.error('Katalog ikut bermasalah:', katalogErr);
+          error: (err) => {
             this.isLoading = false;
-          },
+            console.error('Gagal total memuat katalog:', err);
+          }
         });
-      },
+      }
     });
   }
 
@@ -114,36 +118,30 @@ export class CoursePage implements OnInit {
       next: (res: any) => console.log('Wishlist updated:', res),
       error: (err) => {
         console.error('Gagal sinkronisasi wishlist:', err);
+        // Rollback status ikon di UI jika API gagal eksekusi
         course.is_wishlist = !course.is_wishlist;
-      },
+      }
     });
   }
 
   pilihKategori(namaKategori: string) {
     this.kategoriAktif = namaKategori;
-    // Jika ganti kategori, kita tetap pertahankan keyword yang ada
-    // agar user tidak perlu mengetik ulang
+    // Jika ganti kategori, kita tetap pertahankan keyword yang ada agar user tidak perlu mengetik ulang
     this.fungsiCariKursus();
   }
 
   fungsiCariKursus() {
     // 1. Filter dasar berdasarkan Kategori
-    let dataHasil =
-      this.kategoriAktif === 'Semua'
-        ? [...this.allCourses]
-        : this.allCourses.filter(
-            (c) =>
-              (c.category || '').toLowerCase() ===
-              this.kategoriAktif.toLowerCase(),
-          );
+    let dataHasil = this.kategoriAktif === 'Semua' 
+      ? [...this.allCourses] 
+      : this.allCourses.filter(c => (c.category || '').toLowerCase() === this.kategoriAktif.toLowerCase());
 
-    // 2. Filter lanjutan berdasarkan Keyword
+    // 2. Filter lanjutan berdasarkan Keyword pencarian
     const keyword = this.keywordPencarian.toLowerCase().trim();
     if (keyword) {
-      dataHasil = dataHasil.filter(
-        (c) =>
-          (c.title || '').toLowerCase().includes(keyword) ||
-          (c.description || '').toLowerCase().includes(keyword),
+      dataHasil = dataHasil.filter(c => 
+        (c.title || '').toLowerCase().includes(keyword) || 
+        (c.description || '').toLowerCase().includes(keyword)
       );
     }
 
