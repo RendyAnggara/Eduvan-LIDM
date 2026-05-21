@@ -22,7 +22,7 @@ export class CoursePage implements OnInit {
     private courseService: CourseService,
     private router: Router
   ) {
-    // Tangkap keyword dari Home
+    // Tangkap keyword dari Home jika ada operan data extras
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras.state?.['keyword']) {
       this.keywordPencarian = navigation.extras.state['keyword'];
@@ -33,20 +33,6 @@ export class CoursePage implements OnInit {
     this.loadData();
   }
 
-<<<<<<< Updated upstream
-  loadData() {
-    this.isLoading = true;
-    this.courseService.getCourses().subscribe({
-      next: (res: any) => {
-        this.allCourses = res.data || [];
-        this.isLoading = false;
-        
-        // 🟢 FIX: Gunakan setTimeout agar filter berjalan 
-        // setelah data 100% masuk ke variabel allCourses
-        setTimeout(() => {
-          this.fungsiCariKursus();
-        }, 100);
-=======
   ionViewWillEnter() {
     const currentNav = this.router.getCurrentNavigation();
     if (currentNav?.extras.state && currentNav.extras.state['keyword']) {
@@ -55,10 +41,10 @@ export class CoursePage implements OnInit {
     }
   }
 
-loadData() {
+  loadData() {
     this.isLoading = true;
 
-    // 1. Ambil data wishlist dari database localhost/server lek
+    // 1. Ambil data wishlist dari database server lek
     this.courseService.ambilDaftarWishlist().subscribe({
       next: (wishlistRes: any) => {
         // Proteksi jika data wishlist kosong, buat jadi array murni
@@ -95,7 +81,7 @@ loadData() {
               });
               this.eksekusiFilterSort();
             } else {
-              // Jika kategorinya 'Semua' dan tidak ada pencarian, jalankan sorting default bawaan Ivan
+              // Jika kategorinya 'Semua' dan tidak ada pencarian, jalankan sorting default
               this.eksekusiFilterSort();
             }
           },
@@ -104,7 +90,6 @@ loadData() {
             this.isLoading = false;
           },
         });
->>>>>>> Stashed changes
       },
       error: (error) => {
         console.error('Gagal ambil data wishlist untuk sinkronisasi', error);
@@ -133,6 +118,7 @@ loadData() {
       next: (res: any) => console.log('Wishlist updated:', res),
       error: (err) => {
         console.error('Gagal sinkronisasi wishlist:', err);
+        // Rollback status ikon di UI jika API gagal eksekusi
         course.is_wishlist = !course.is_wishlist;
       }
     });
@@ -140,8 +126,7 @@ loadData() {
 
   pilihKategori(namaKategori: string) {
     this.kategoriAktif = namaKategori;
-    // Jika ganti kategori, kita tetap pertahankan keyword yang ada 
-    // agar user tidak perlu mengetik ulang
+    // Jika ganti kategori, kita tetap pertahankan keyword yang ada agar user tidak perlu mengetik ulang
     this.fungsiCariKursus();
   }
 
@@ -151,7 +136,7 @@ loadData() {
       ? [...this.allCourses] 
       : this.allCourses.filter(c => (c.category || '').toLowerCase() === this.kategoriAktif.toLowerCase());
 
-    // 2. Filter lanjutan berdasarkan Keyword
+    // 2. Filter lanjutan berdasarkan Keyword pencarian
     const keyword = this.keywordPencarian.toLowerCase().trim();
     if (keyword) {
       dataHasil = dataHasil.filter(c => 
