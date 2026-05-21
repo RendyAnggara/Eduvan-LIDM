@@ -114,7 +114,6 @@ export class CourseService {
       headers: this.dapatkanHeaderAutentikasi(),
     });
   }
-
   ambilDaftarNotifikasi(): Observable<any> {
     // 1. Ambil token bearer login mahasiswa yang tersimpan di memori hp/browser
     const token = localStorage.getItem('token'); 
@@ -128,6 +127,27 @@ export class CourseService {
     // 3. Tembak endpoint API-nya! 
     // (Jika ngetes di localhost, pastikan this.baseApiUrl bernilai http://127.0.0.1:8000/api)
     return this.http.get(`${this.baseApiUrl}/notifications`, { headers });
+  // =========================================================================
+  // LOGIKA KUIS ASLI (KONEKSI LIVE SERVERS CPANEL)
+  // =========================================================================
+
+  // 1. Ambil semua soal kuis berdasarkan ID Kursus dari Laravel
+  getQuizQuestions(courseId: number): Observable<any> {
+    // 🟢 FIX SAKTI: Mengubah dari apiUrl menjadi baseApiUrl agar mengarah ke endpoint Laravel yang benar (/api/quiz/{id})
+    return this.http.get(`${this.baseApiUrl}/quiz/${courseId}`, {
+      headers: this.dapatkanHeaderAutentikasi(),
+    });
+  }
+
+  // 2. Kirim lembar jawaban kuis ke server Laravel untuk dikoreksi otomatis
+  submitQuizAnswers(courseId: number, answers: any[]): Observable<any> {
+    const payload = {
+      course_id: courseId,
+      answers: answers,
+    };
+    return this.http.post(`${this.baseApiUrl}/quiz/submit`, payload, {
+      headers: this.dapatkanHeaderAutentikasi(),
+    });
   }
 
   // =========================================================================
