@@ -19,10 +19,14 @@
 
   <div class="main-container">
     <h1 class="course-title">{{ course?.title }}</h1>
+
     <div class="rating-row">
       <ion-icon name="star" color="warning"></ion-icon>
-      <strong>4.9</strong>
-      <span class="text-muted">(1.284 ulasan) • 3.500 Siswa</span>
+      <strong
+        >{{ course?.rating ? (course?.rating | number:'1.1-1') : '0.0'
+        }}</strong
+      >
+      <span class="text-muted"> / 5.0 Rating Kelas</span>
     </div>
 
     <div class="instructor-row">
@@ -90,65 +94,86 @@
 </ion-content>
 
 <ion-footer class="ion-no-border">
-  <div class="footer-wrapper">
-    <div *ngIf="paymentStatus !== 'success'">
+  <div
+    class="footer-wrapper"
+    style="display: flex; flex-direction: column; gap: 10px"
+  >
+    <div *ngIf="paymentStatus === 'success'" style="width: 100%">
       <ion-button
+        expand="block"
         fill="outline"
+        color="warning"
         shape="round"
-        [color]="isWishlist ? 'danger' : 'primary'"
-        class="wishlist-btn"
-        (click)="toggleWishlist()"
+        (click)="bukaPopUpRating()"
       >
-        <ion-icon
-          slot="icon-only"
-          [name]="isWishlist ? 'heart' : 'heart-outline'"
-        ></ion-icon>
+        <ion-icon name="star-outline" slot="start"></ion-icon>
+        Beri Bintang Kelas Ini
       </ion-button>
     </div>
 
-    <ion-button
-      *ngIf="paymentStatus === 'none' || !paymentStatus"
-      expand="block"
-      shape="round"
-      color="primary"
-      class="enroll-btn buy-now-btn"
-      (click)="enroll()"
-      [disabled]="loadingBeli"
-    >
-      <ion-spinner
-        name="crescent"
-        *ngIf="loadingBeli"
-        color="light"
-        class="ion-margin-end"
-      ></ion-spinner>
-
-      <div class="btn-custom-content" *ngIf="!loadingBeli">
-        <span class="btn-text">Daftar Sekarang</span>
-        <span class="btn-price">Rp {{ course?.price | number:'1.0-0' }}</span>
+    <div style="display: flex; align-items: center; width: 100%; gap: 10px">
+      <div *ngIf="paymentStatus !== 'success'">
+        <ion-button
+          fill="outline"
+          shape="round"
+          [color]="isWishlist ? 'danger' : 'primary'"
+          class="wishlist-btn"
+          (click)="toggleWishlist()"
+        >
+          <ion-icon
+            slot="icon-only"
+            [name]="isWishlist ? 'heart' : 'heart-outline'"
+          ></ion-icon>
+        </ion-button>
       </div>
-      <span *ngIf="loadingBeli">Membuat Invoice...</span>
-    </ion-button>
 
-    <ion-button
-      *ngIf="paymentStatus === 'pending'"
-      expand="block"
-      shape="round"
-      color="warning"
-      class="enroll-btn"
-      (click)="bukaInvoiceXendit()"
-    >
-      Bayar Sekarang
-    </ion-button>
+      <ion-button
+        *ngIf="paymentStatus === 'none' || !paymentStatus"
+        expand="block"
+        shape="round"
+        color="primary"
+        class="enroll-btn buy-now-btn"
+        (click)="enroll()"
+        [disabled]="loadingBeli"
+        style="flex: 1"
+      >
+        <ion-spinner
+          name="crescent"
+          *ngIf="loadingBeli"
+          color="light"
+          class="ion-margin-end"
+        ></ion-spinner>
 
-    <ion-button
-      *ngIf="paymentStatus === 'success'"
-      expand="block"
-      shape="round"
-      color="success"
-      class="enroll-btn full-width-btn"
-      (click)="masukKelas()"
-    >
-      Mulai Belajar
-    </ion-button>
+        <div class="btn-custom-content" *ngIf="!loadingBeli">
+          <span class="btn-text">Daftar Sekarang</span>
+          <span class="btn-price">Rp {{ course?.price | number:'1.0-0' }}</span>
+        </div>
+        <span *ngIf="loadingBeli">Membuat Invoice...</span>
+      </ion-button>
+
+      <ion-button
+        *ngIf="paymentStatus === 'pending'"
+        expand="block"
+        shape="round"
+        color="warning"
+        class="enroll-btn"
+        (click)="bukaInvoiceXendit()"
+        style="flex: 1"
+      >
+        Bayar Sekarang
+      </ion-button>
+
+      <ion-button
+        *ngIf="paymentStatus === 'success'"
+        expand="block"
+        shape="round"
+        color="success"
+        class="enroll-btn full-width-btn"
+        (click)="masukKelas()"
+        style="flex: 1; margin: 0"
+      >
+        Mulai Belajar
+      </ion-button>
+    </div>
   </div>
 </ion-footer>

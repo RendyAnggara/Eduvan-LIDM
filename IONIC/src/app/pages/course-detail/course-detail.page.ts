@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router'; // 🟢 TAMBAHAN: Import Router buat pindah halaman belajar
+import { ActivatedRoute, Router } from '@angular/router'; // Import Router buat pindah halaman belajar
 import { CourseService } from '../../services/course.service';
-import { Browser } from '@capacitor/browser'; // 🟢 TAMBAHAN: Import Capacitor Browser buat buka invoice Xendit
+import { Browser } from '@capacitor/browser'; // Import Capacitor Browser buat buka invoice Xendit
+import { AlertController } from '@ionic/angular'; // 🟢 TAMBAHAN SAKTI: Import Alert buat pop-up bintang rating
 
 @Component({
   selector: 'app-course-detail',
@@ -11,18 +12,19 @@ import { Browser } from '@capacitor/browser'; // 🟢 TAMBAHAN: Import Capacitor
 })
 export class CourseDetailPage implements OnInit {
   course: any = {};
-  contents: any[] = []; // 🟢 TAMBAHAN: Wadah untuk menampung data kurikulum asli dari API
+  contents: any[] = []; // Wadah untuk menampung data kurikulum asli dari API
 
-  // 🟢 TAMBAHAN: Variabel baru untuk mengontrol UI dinamis di HTML
+  // Variabel untuk mengontrol UI dinamis di HTML
   paymentStatus: string = 'none'; // nilainya bisa: 'none', 'pending', 'success'
   paymentUrl: string = ''; // Menyimpan link invoice Xendit dari database
   isWishlist: boolean = false; // Status wishlist aktif/tidak
-  loadingBeli: boolean = false; // 🟢 TAMBAHAN: State loading biar tombol ga di-spam pas loading invoice
+  loadingBeli: boolean = false; // State loading biar tombol ga di-spam pas loading invoice
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router, // 🟢 TAMBAHAN: Inject Router
+    private router: Router, // Inject Router
     private courseService: CourseService,
+    private alertController: AlertController, // 🟢 TAMBAHAN SAKTI: Inject AlertController di constructor
   ) {}
 
   ngOnInit() {
@@ -32,7 +34,7 @@ export class CourseDetailPage implements OnInit {
     }
   }
 
-  // 🟢 LIFECYCLE IONIC: Memastikan status di-refresh murni setiap kali user bolak-balik page
+  // LIFECYCLE IONIC: Memastikan status di-refresh murni setiap kali user bolak-balik page
   ionViewWillEnter() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
@@ -41,7 +43,7 @@ export class CourseDetailPage implements OnInit {
   }
 
   getDetail(id: string) {
-    // 🟢 AKURAT: Kunci ID dari parameter URL sejak awal agar terhindar dari race condition 'undefined'
+    // AKURAT: Kunci ID dari parameter URL sejak awal agar terhindar dari race condition 'undefined'
     const targetCourseId = Number(id);
 
     this.courseService.getCourseById(id).subscribe(
@@ -50,7 +52,7 @@ export class CourseDetailPage implements OnInit {
           this.course = res.data;
           console.log('Detail Kursus:', this.course);
 
-          // 🔥 SINKRONISASI MANTEP: Jalankan pengecekan wishlist murni pakai ID URL yang udah pasti valid di sini
+          // SINKRONISASI MANTEP: Jalankan pengecekan wishlist murni pakai ID URL yang udah pasti valid di sini
           this.cekStatusWishlistUser(targetCourseId);
 
           // Ambal data kurikulum materi pembelajaran
@@ -82,7 +84,7 @@ export class CourseDetailPage implements OnInit {
               console.log(
                 'API Enrollments merespons error. Menerapkan fallback sukses...',
               );
-              // 🔥 BYPASS FALLBACK: Jika Laravel melempar eror status 400 karena relasi sudah ada
+              // BYPASS FALLBACK: Jika Laravel melempar eror status 400 karena relasi sudah ada
               if (enrollError.status === 400) {
                 this.paymentStatus = 'success';
               }
@@ -96,7 +98,69 @@ export class CourseDetailPage implements OnInit {
     );
   }
 
-  // 🟢 TAMBAHAN: Fungsi untuk mengambil data kurikulum asli lewat API backend
+  // 🟢 TAMBAHAN SAKTI: Fungsi Pop-up Radio Button untuk memilih Bintang 1-5
+  async bukaPopUpRating() {
+    const alertRating = await this.alertController.create({
+      header: 'Beri Rating Kelas',
+      subHeader: 'Pilih bintang ulasan',
+      buttons: [
+        {
+          text: 'Batal',
+          role: 'cancel',
+        },
+        {
+          text: 'Kirim Bintang',
+          handler: (dataBintang) => {
+            if (!dataBintang) {
+              alert('Berikan Ratting');
+              return false;
+            }
+            // Kirim nilai bintang terpilih ke backend cPanel
+            this.kirimRatingKeLaravel(dataBintang);
+            return true;
+          },
+        },
+      ],
+      inputs: [
+        {
+          type: 'radio',
+          label: '⭐⭐⭐⭐⭐ (5)',
+          value: '5',
+          checked: true,
+        },
+        { type: 'radio', label: '⭐⭐⭐⭐ (4)', value: '4' },
+        { type: 'radio', label: '⭐⭐⭐ (3)', value: '3' },
+        { type: 'radio', label: '⭐⭐ (2)', value: '2' },
+        { type: 'radio', label: '⭐ (1)', value: '1' },
+      ],
+    });
+
+    await alertRating.present();
+  }
+
+  kirimRatingKeLaravel(bintang: string) {
+    console.log(
+      `Mengirim rating bintang ${bintang} untuk course ID: ${this.course.id}`,
+    );
+
+    this.courseService
+      .kirimRatingCourse(this.course.id, Number(bintang))
+      .subscribe(
+        (res: any) => {
+          alert(res.message || 'Rating berhasil disimpan.');
+          this.getDetail(String(this.course.id));
+        },
+        (error: any) => {
+          // 🌟 Di sini ditambahin : any
+          console.error('Gagal kirim rating:', error);
+          alert(
+            error.error?.message || 'Gagal menyimpan ratting',
+          );
+        },
+      );
+  }
+
+  // Fungsi untuk mengambil data kurikulum asli lewat API backend
   ambilKontenKurikulum(courseId: number) {
     this.courseService.getCourseContents(courseId).subscribe(
       (res: any) => {
@@ -114,7 +178,7 @@ export class CourseDetailPage implements OnInit {
     );
   }
 
-  // 🟢 TAMBAHAN: Fungsi mencocokkan apakah user sudah beli kursus ini atau belum
+  // Fungsi mencocokkan apakah user sudah beli kursus ini atau belum
   cekStatusPembayaranUser() {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) return;
@@ -150,7 +214,7 @@ export class CourseDetailPage implements OnInit {
     );
   }
 
-  // 🔥 PERBAIKAN UTAMA: Terima targetCourseId langsung dari pemanggil agar data sinkron peluru
+  // PERBAIKAN UTAMA: Terima targetCourseId langsung dari pemanggil agar data sinkron peluru
   cekStatusWishlistUser(targetCourseId: number) {
     this.courseService.ambilDaftarWishlist().subscribe(
       (res: any) => {
@@ -176,14 +240,14 @@ export class CourseDetailPage implements OnInit {
     );
   }
 
-  // 🟢 LOGIKA UTAMA TOMBOL DAFTAR (MAKIN KICKASS)
+  // LOGIKA UTAMA TOMBOL DAFTAR (MAKIN KICKASS)
   enroll() {
     console.log('User menekan tombol enroll untuk kursus:', this.course.title);
-    this.loadingBeli = true; // 🟢 Aktifkan efek loading
+    this.loadingBeli = true; // Aktifkan efek loading
 
     this.courseService.buyCourse(this.course.id).subscribe(
       async (res: any) => {
-        this.loadingBeli = false; // 🟢 Matikan loading jika sukses
+        this.loadingBeli = false; // Matikan loading jika sukses
         if (res.success) {
           if (res.data.payment_url) {
             this.paymentStatus = 'pending';
@@ -215,7 +279,7 @@ export class CourseDetailPage implements OnInit {
         }
       },
       (error) => {
-        this.loadingBeli = false; // 🟢 Matikan loading jika eror
+        this.loadingBeli = false; // Matikan loading jika eror
         console.error('Gagal melakukan pendaftaran:', error);
 
         if (
@@ -224,8 +288,8 @@ export class CourseDetailPage implements OnInit {
             error.error?.message?.includes('bought') ||
             error.error?.message?.includes('success'))
         ) {
-          this.paymentStatus = 'success'; // 🟢 Paksa UI lokal berubah jadi sukses lunas
-          this.ambilKontenKurikulum(this.course.id); // 🟢 Tarik ulang modul biar gembok kebuka
+          this.paymentStatus = 'success'; // Paksa UI lokal berubah jadi sukses lunas
+          this.ambilKontenKurikulum(this.course.id); // Tarik ulang modul biar gembok kebuka
           alert('Anda sudah terdaftar di kursus ini. Selamat belajar!');
         } else if (
           error.status === 400 ||
@@ -242,7 +306,7 @@ export class CourseDetailPage implements OnInit {
     );
   }
 
-  // 🟢 TAMBAHAN: Fungsi tombol "Bayar Sekarang" jika status transaksi masih pending
+  // Fungsi tombol "Bayar Sekarang" jika status transaksi masih pending
   async bukaInvoiceXendit() {
     if (this.paymentUrl) {
       console.log('Membuka ulang link invoice Xendit:', this.paymentUrl);
@@ -257,7 +321,7 @@ export class CourseDetailPage implements OnInit {
     }
   }
 
-  // 🟢 TAMBAHAN: Fungsi ketika list materi diklik (Validasi gembok)
+  // Fungsi ketika list materi diklik (Validasi gembok)
   klikMateri(contentId: number) {
     if (this.paymentStatus !== 'success') {
       alert(
@@ -272,15 +336,13 @@ export class CourseDetailPage implements OnInit {
     }
   }
 
-  // 🟢 TAMBAHAN: Fungsi tombol "Mulai Belajar" jika status sudah sukses lunas
+  // Fungsi tombol "Mulai Belajar" jika status sudah sukses lunas
   masukKelas() {
-      console.log('User masuk ke ruang belajar kursus:', this.course.id);
-      
-      // Melempar student langsung ke halaman My Learning resmi di tabs
-      this.router.navigate(['/tabs/my-learning']);
-    }
+    console.log('User masuk ke ruang belajar kursus:', this.course.id);
+    this.router.navigate(['/tabs/my-learning']);
+  }
 
-  // 🟢 LOGIKA KLIK TOMBOL JANTUNG (SINKRONISASI INSTAN TANPA DELAY)
+  // LOGIKA KLIK TOMBOL JANTUNG (SINKRONISASI INSTAN TANPA DELAY)
   toggleWishlist() {
     console.log(
       '🔥 TOMBOL WISHLIST BERHASIL DI-KLIK! ID COURSE:',
@@ -292,16 +354,14 @@ export class CourseDetailPage implements OnInit {
       return;
     }
 
-    // 1. Ubah warna UI lokal secara instan dulu agar user melihat perubahan langsung
+    // Ubah warna UI lokal secara instan dulu agar user melihat perubahan langsung
     this.isWishlist = !this.isWishlist;
     console.log('Ubah warna jantung lokal menjadi:', this.isWishlist);
 
-    // 2. Baru kirim data ke live server Laravel
+    // Baru kirim data ke live server Laravel
     this.courseService.toggleWishlistServer(this.course.id).subscribe(
       (res: any) => {
         console.log('✅ Response sukses dari Laravel:', res);
-
-        // 📢 BROADCAST REAL-TIME: Tembakkan sinyal ke Katalog Utama biar datanya ter-refresh di background!
         this.courseService.wishlistChanged$.next(true);
 
         if (res.success && res.is_wishlist !== undefined) {
@@ -313,10 +373,7 @@ export class CourseDetailPage implements OnInit {
           '❌ Gagal kirim ke endpoint Laravel, mengembalikan warna:',
           error,
         );
-        // Fallback: Kembalikan warna ke status semula jika server cPanel ternyata error/gagal
         this.isWishlist = !this.isWishlist;
-
-        // 📢 TETAP BROADCAST: Pastikan katalog tetap sinkron dengan kondisi asli server
         this.courseService.wishlistChanged$.next(true);
       },
     );
