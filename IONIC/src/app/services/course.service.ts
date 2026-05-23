@@ -100,15 +100,15 @@ export class CourseService {
   //notifikasi
   ambilDaftarNotifikasi(): Observable<any> {
     // 1. Ambil token bearer login mahasiswa yang tersimpan di memori hp/browser
-    const token = localStorage.getItem('token'); 
-    
+    const token = localStorage.getItem('token');
+
     // 2. Pasang headers wajib agar lolos dari barikade middleware auth:sanctum
     const headers = {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json'
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
     };
 
-    // 3. Tembak endpoint API-nya! 
+    // 3. Tembak endpoint API-nya!
     return this.http.get(`${this.baseApiUrl}/notifications`, { headers });
   }
 
@@ -129,16 +129,6 @@ export class CourseService {
     });
   }
 
-  // =========================================================================
-  // LOGIKA KUIS ASLI (KONEKSI LIVE SERVERS CPANEL)
-  // =========================================================================
-
-  // 1. Ambil semua soal kuis berdasarkan ID Kursus dari Laravel
-  // =========================================================================
-  // LOGIKA KUIS ASLI (KONEKSI LIVE SERVERS CPANEL)
-  // =========================================================================
-
-  // 1. Ambil semua soal kuis berdasarkan ID Kursus dari Laravel
   getQuizQuestions(courseId: number): Observable<any> {
     // Mengubah /quiz/{id} menjadi /courses/{id}/quizzes sesuai api.php Laravel
     return this.http.get(`${this.baseApiUrl}/courses/${courseId}/quizzes`, {
@@ -178,5 +168,20 @@ export class CourseService {
     return this.http.get(`${this.baseApiUrl}/my-certificates`, {
       headers: this.dapatkanHeaderAutentikasi(),
     });
+  }
+
+  // 🟢 TAMBAHAN SAKTI: Menembak API Rating ke cPanel Laravel secara Live
+  kirimRatingCourse(courseId: number, bintang: number): Observable<any> {
+    const payload = {
+      rating: bintang,
+    };
+
+    return this.http.post(
+      `${this.baseApiUrl}/courses/${courseId}/rate`,
+      payload,
+      {
+        headers: this.dapatkanHeaderAutentikasi(),
+      },
+    );
   }
 }
