@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router'; // Import Router buat pindah halaman belajar
 import { CourseService } from '../../services/course.service';
 import { Browser } from '@capacitor/browser'; // Import Capacitor Browser buat buka invoice Xendit
@@ -24,7 +24,8 @@ export class CourseDetailPage implements OnInit {
     private route: ActivatedRoute,
     private router: Router, // Inject Router
     private courseService: CourseService,
-    private alertController: AlertController, // 🟢 TAMBAHAN SAKTI: Inject AlertController di constructor
+    private alertController: AlertController,
+    private cdr: ChangeDetectorRef // 
   ) {}
 
   ngOnInit() {
@@ -52,6 +53,7 @@ export class CourseDetailPage implements OnInit {
           this.course = res.data;
           console.log('Detail Kursus:', this.course);
 
+          this.cdr.detectChanges();
           // SINKRONISASI MANTEP: Jalankan pengecekan wishlist murni pakai ID URL yang udah pasti valid di sini
           this.cekStatusWishlistUser(targetCourseId);
 
