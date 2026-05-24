@@ -1,10 +1,10 @@
-<ion-header [translucent]="true" class="ion-no-border">
+<ion-header mode="ios" class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-back-button
         defaultHref="/course"
         text=""
-        color="dark"
+        color="light"
       ></ion-back-button>
     </ion-buttons>
     <ion-title>Detail Kursus</ion-title>
@@ -13,20 +13,36 @@
 
 <ion-content>
   <div class="image-header">
-    <img [src]="course?.image || 'https://via.placeholder.com/400x200'" />
-    <div class="category-badge">Bestseller</div>
+    <img
+      [src]="
+        course?.image
+          ? course.image
+          : (course?.category === 'Computer Science'
+              ? 'assets/icon/computer-science.jpeg'
+              : (course?.category === 'Microsoft Office'
+                  ? 'assets/icon/microsoft-office.jpeg'
+                  : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop'))
+      "
+      onerror="
+        this.src =
+          'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop'
+      "
+    />
   </div>
 
   <div class="main-container">
+    <span class="category-tag-meta">{{ course?.category ?? 'General' }}</span>
     <h1 class="course-title">{{ course?.title }}</h1>
 
     <div class="rating-row">
-      <ion-icon name="star" color="warning"></ion-icon>
-      <strong
-        >{{ course?.rating ? (course?.rating | number:'1.1-1') : '0.0'
-        }}</strong
-      >
-      <span class="text-muted"> / 5.0 Rating Kelas</span>
+      <div class="rating-badge-box">
+        <ion-icon name="star"></ion-icon>
+        <strong
+          >{{ course?.rating ? (course?.rating | number:'1.1-1') : '0.0'
+          }}</strong
+        >
+      </div>
+      <span class="text-muted">/ 5.0 Rating Kelas</span>
     </div>
 
     <div class="instructor-row">
@@ -37,87 +53,116 @@
       </ion-avatar>
       <div class="instructor-text">
         <p>Pengajar</p>
-        <strong>{{ course?.instructor_name || 'Admin Marketplace' }}</strong>
+        <strong>{{ course?.instructor_name || 'Admin Eduvan' }}</strong>
       </div>
     </div>
 
     <div class="stats-card">
-      <div class="stat-item">
-        <ion-icon name="podium-outline" color="primary"></ion-icon>
-        <span>Pemula</span>
+      <div class="stat-item border-blue">
+        <div class="icon-circle bg-blue">
+          <ion-icon name="podium-outline"></ion-icon>
+        </div>
+        <div class="stat-texts">
+          <span class="stat-lbl">Level</span>
+          <span class="stat-val">Pemula</span>
+        </div>
       </div>
-      <div class="stat-item">
-        <ion-icon name="time-outline" color="primary"></ion-icon>
-        <span>12 Jam</span>
+      <div class="stat-item border-orange">
+        <div class="icon-circle bg-orange">
+          <ion-icon name="time-outline"></ion-icon>
+        </div>
+        <div class="stat-texts">
+          <span class="stat-lbl">Durasi</span>
+          <span class="stat-val">12 Jam</span>
+        </div>
       </div>
-      <div class="stat-item">
-        <ion-icon name="people-outline" color="primary"></ion-icon>
-        <span>3.5k Siswa</span>
+      <div class="stat-item border-green">
+        <div class="icon-circle bg-green">
+          <ion-icon name="people-outline"></ion-icon>
+        </div>
+        <div class="stat-texts">
+          <span class="stat-lbl">Siswa</span>
+          <span class="stat-val">3.5k</span>
+        </div>
       </div>
     </div>
 
     <div class="section">
       <h3>Deskripsi Course</h3>
-      <p>
-        {{ course?.description || 'Pelajari materi ini secara mendalam...' }}
+      <p class="description-body">
+        {{ course?.description || 'Pelajari materi ini secara mendalam bersama
+        mentor berpengalaman untuk membangun portofolio riil yang
+        terstandarisasi industri.' }}
       </p>
     </div>
 
-    <div class="section">
-      <h3>Video Pembelajaran</h3>
-      <ion-list lines="full" class="curriculum-list">
-        <ion-item
+    <div class="section section-playlist">
+      <div class="playlist-title-row">
+        <h3>Video Pembelajaran</h3>
+        <span class="badge-count" *ngIf="contents.length > 0"
+          >{{ contents.length }} Modul</span
+        >
+      </div>
+
+      <div class="modern-video-wrapper">
+        <div
+          class="custom-video-item"
           *ngFor="let materi of contents"
           (click)="klikMateri(materi.id)"
-          button
+          [class.item-locked]="paymentStatus !== 'success'"
         >
-          <ion-icon
-            [name]="paymentStatus === 'success' ? 'play-circle-outline' : 'lock-closed-outline'"
-            slot="start"
-            [color]="paymentStatus === 'success' ? 'primary' : 'medium'"
-          ></ion-icon>
-
-          <ion-label>
-            <h2>{{ materi.title }}</h2>
-            <p>Durasi: {{ materi.duration || '15' }} Menit</p>
-          </ion-label>
-        </ion-item>
-
-        <ion-item *ngIf="contents.length === 0">
-          <ion-label class="text-muted"
-            >Belum ada modul pembelajaran tersedia.</ion-label
+          <div class="video-item-left">
+            <div class="play-indicator-circle">
+              <ion-icon
+                [name]="paymentStatus === 'success' ? 'play' : 'lock-closed'"
+              ></ion-icon>
+            </div>
+            <div class="video-meta-detail">
+              <h4>{{ materi.title }}</h4>
+              <p>Durasi: {{ materi.duration || '15' }} Menit</p>
+            </div>
+          </div>
+          <span
+            class="status-video-badge"
+            [class.badge-success-color]="paymentStatus === 'success'"
           >
-        </ion-item>
-      </ion-list>
+            {{ paymentStatus === 'success' ? 'Akses' : 'Terkunci' }}
+          </span>
+        </div>
+
+        <div class="empty-state-card" *ngIf="contents.length === 0">
+          <ion-icon name="document-text-outline"></ion-icon>
+          <p>Belum ada modul pembelajaran tersedia.</p>
+        </div>
+      </div>
     </div>
   </div>
 </ion-content>
 
-<ion-footer class="ion-no-border">
-  <div
-    class="footer-wrapper"
-    style="display: flex; flex-direction: column; gap: 10px"
-  >
-    <div *ngIf="paymentStatus === 'success'" style="width: 100%">
-      <ion-button
-        expand="block"
-        fill="outline"
-        color="warning"
-        shape="round"
-        (click)="bukaPopUpRating()"
-      >
-        <ion-icon name="star-outline" slot="start"></ion-icon>
-        Beri Bintang Kelas Ini
-      </ion-button>
+<ion-footer class="ion-no-border premium-action-footer">
+  <div class="footer-wrapper">
+    <div *ngIf="paymentStatus === 'success'" class="rating-trigger-full">
+      <div class="rating-zone-box" (click)="bukaPopUpRating()">
+        <div class="zone-left">
+          <ion-icon name="star-outline" class="star-pulse"></ion-icon>
+          <div class="zone-texts">
+            <h4>Bagikan Pengalamanmu</h4>
+            <p>Berikan ulasan dan rating bintang untuk kelas ini</p>
+          </div>
+        </div>
+        <ion-icon
+          name="chevron-forward-outline"
+          class="arrow-forward"
+        ></ion-icon>
+      </div>
     </div>
 
-    <div style="display: flex; align-items: center; width: 100%; gap: 10px">
-      <div *ngIf="paymentStatus !== 'success'">
+    <div class="action-buttons-row">
+      <div class="wishlist-col" *ngIf="paymentStatus !== 'success'">
         <ion-button
-          fill="outline"
-          shape="round"
-          [color]="isWishlist ? 'danger' : 'primary'"
-          class="wishlist-btn"
+          fill="clear"
+          class="modern-wishlist-circle-btn"
+          [class.is-fav]="isWishlist"
           (click)="toggleWishlist()"
         >
           <ion-icon
@@ -127,53 +172,43 @@
         </ion-button>
       </div>
 
-      <ion-button
+      <div
+        class="button-main-col"
         *ngIf="paymentStatus === 'none' || !paymentStatus"
-        expand="block"
-        shape="round"
-        color="primary"
-        class="enroll-btn buy-now-btn"
-        (click)="enroll()"
-        [disabled]="loadingBeli"
-        style="flex: 1"
       >
-        <ion-spinner
-          name="crescent"
-          *ngIf="loadingBeli"
-          color="light"
-          class="ion-margin-end"
-        ></ion-spinner>
+        <button
+          class="btn-premium-action bg-navy"
+          (click)="enroll()"
+          [disabled]="loadingBeli"
+        >
+          <span class="inner-loader" *ngIf="loadingBeli">
+            <ion-spinner name="crescent"></ion-spinner> Memproses...
+          </span>
+          <div class="inner-content-btn" *ngIf="!loadingBeli">
+            <span class="lbl-btn">Daftar Sekarang</span>
+            <span class="lbl-price"
+              >Rp {{ course?.price | number:'1.0-0' }}</span
+            >
+          </div>
+        </button>
+      </div>
 
-        <div class="btn-custom-content" *ngIf="!loadingBeli">
-          <span class="btn-text">Daftar Sekarang</span>
-          <span class="btn-price">Rp {{ course?.price | number:'1.0-0' }}</span>
-        </div>
-        <span *ngIf="loadingBeli">Membuat Invoice...</span>
-      </ion-button>
+      <div class="button-main-col" *ngIf="paymentStatus === 'pending'">
+        <button
+          class="btn-premium-action bg-orange-gradient"
+          (click)="bukaInvoiceXendit()"
+        >
+          Selesaikan Pembayaran (Xendit)
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </button>
+      </div>
 
-      <ion-button
-        *ngIf="paymentStatus === 'pending'"
-        expand="block"
-        shape="round"
-        color="warning"
-        class="enroll-btn"
-        (click)="bukaInvoiceXendit()"
-        style="flex: 1"
-      >
-        Bayar Sekarang
-      </ion-button>
-
-      <ion-button
-        *ngIf="paymentStatus === 'success'"
-        expand="block"
-        shape="round"
-        color="success"
-        class="enroll-btn full-width-btn"
-        (click)="masukKelas()"
-        style="flex: 1; margin: 0"
-      >
-        Mulai Belajar
-      </ion-button>
+      <div class="button-main-col" *ngIf="paymentStatus === 'success'">
+        <button class="btn-premium-action bg-emerald" (click)="masukKelas()">
+          Mulai Belajar Sekarang
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </button>
+      </div>
     </div>
   </div>
 </ion-footer>
