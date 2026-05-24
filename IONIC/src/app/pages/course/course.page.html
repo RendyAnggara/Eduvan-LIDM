@@ -16,13 +16,25 @@
 <ion-content>
   <div class="section-label"><h3>Kategori</h3></div>
   <div class="category-scroll">
-    <ion-chip class="custom-chip" [class.chip-active]="kategoriAktif === 'Semua'" (click)="pilihKategori('Semua')">
+    <ion-chip
+      class="custom-chip"
+      [class.chip-active]="kategoriAktif === 'Semua'"
+      (click)="pilihKategori('Semua')"
+    >
       <ion-label>Semua</ion-label>
     </ion-chip>
-    <ion-chip class="custom-chip" [class.chip-active]="kategoriAktif === 'Computer Science'" (click)="pilihKategori('Computer Science')">
+    <ion-chip
+      class="custom-chip"
+      [class.chip-active]="kategoriAktif === 'Computer Science'"
+      (click)="pilihKategori('Computer Science')"
+    >
       <ion-label>Computer Science</ion-label>
     </ion-chip>
-    <ion-chip class="custom-chip" [class.chip-active]="kategoriAktif === 'Microsoft Office'" (click)="pilihKategori('Microsoft Office')">
+    <ion-chip
+      class="custom-chip"
+      [class.chip-active]="kategoriAktif === 'Microsoft Office'"
+      (click)="pilihKategori('Microsoft Office')"
+    >
       <ion-label>Microsoft Office</ion-label>
     </ion-chip>
   </div>
@@ -30,36 +42,79 @@
   <div class="filter-header">
     <h3>{{ kategoriAktif === 'Semua' ? 'Semua Kursus' : kategoriAktif }}</h3>
     <div class="filter-dropdown-box">
-      <ion-select interface="popover" [(ngModel)]="filterAktif" (ionChange)="eksekusiFilterSort()" toggleIcon="chevron-down-outline" placeholder="Urutkan">
+      <ion-select
+        class="modern-select"
+        mode="ios"
+        interface="popover"
+        [(ngModel)]="filterAktif"
+        (ionChange)="eksekusiFilterSort()"
+        toggleIcon="chevron-down-outline"
+        placeholder="Urutkan"
+      >
         <ion-select-option value="default">Default</ion-select-option>
-        <ion-select-option value="rating-tertinggi">Rating Tertinggi</ion-select-option>
-        <ion-select-option value="harga-termurah">Harga Termurah</ion-select-option>
+        <ion-select-option value="rating-tertinggi"
+          >Rating Tertinggi</ion-select-option
+        >
+        <ion-select-option value="harga-termurah"
+          >Harga Termurah</ion-select-option
+        >
       </ion-select>
     </div>
   </div>
 
-  <div *ngIf="isLoading" class="ion-text-center ion-padding">
-    <ion-spinner name="crescent"></ion-spinner>
+  <div *ngIf="isLoading" class="ion-text-center ion-padding bg-spinner">
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
   </div>
 
-  <ion-grid *ngIf="!isLoading && listCourses.length > 0">
+  <ion-grid *ngIf="!isLoading && listCourses.length > 0" class="course-grid">
     <ion-row>
-      <ion-col size="6" *ngFor="let course of listCourses">
-        <ion-card (click)="goToDetail(course.id)">
+      <ion-col size="6" *ngFor="let course of listCourses" class="course-col">
+        <ion-card (click)="goToDetail(course.id)" class="modern-course-card">
           <div class="img-container">
-            <img [src]="course.image || 'assets/imgs/course-coding.jpg'" />
-            <div class="wishlist-heart-btn" (click)="toggleFavorit($event, course)">
-              <ion-icon [name]="course.is_wishlist ? 'heart' : 'heart-outline'" [class.hati-aktif]="course.is_wishlist"></ion-icon>
+            <img
+              [src]="
+                course.image
+                  ? course.image
+                  : (course.category === 'Computer Science'
+                      ? 'assets/icon/computer-science.jpeg'
+                      : (course.category === 'Microsoft Office'
+                          ? 'assets/icon/microsoft-office.jpeg'
+                          : 'assets/imgs/course-coding.jpg'))
+              "
+              onerror="
+                this.src =
+                  'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=400&auto=format&fit=crop'
+              "
+            />
+            <div
+              class="wishlist-heart-btn"
+              (click)="toggleFavorit($event, course)"
+            >
+              <ion-icon
+                [name]="course.is_wishlist ? 'heart' : 'heart-outline'"
+                [class.hati-aktif]="course.is_wishlist"
+              ></ion-icon>
             </div>
           </div>
           <div class="card-content">
             <span class="category-tag">{{ course.category ?? 'General' }}</span>
-            <ion-card-title>{{ course.title }}</ion-card-title>
-            <div class="rating">
-              <ion-icon name="star" color="warning"></ion-icon>
-              <span>{{ course.rating ? (course.rating | number:'1.1-1') : '0.0' }} | Live</span>
+            <ion-card-title class="clamped-title"
+              >{{ course.title }}</ion-card-title
+            >
+            <div class="rating-badge-row">
+              <div class="rating-box">
+                <ion-icon name="star" color="warning"></ion-icon>
+                <span
+                  >{{ course.rating ? (course.rating | number:'1.1-1') : '0.0'
+                  }}</span
+                >
+              </div>
+              <span class="live-tag">Live</span>
             </div>
-            <h2 class="price">{{ course.price == 0 ? 'Gratis' : 'Rp ' + (course.price | number) }}</h2>
+            <h2 class="price">
+              {{ course.price == 0 ? 'Gratis' : 'Rp ' + (course.price |
+              number:'1.0-0') }}
+            </h2>
           </div>
         </ion-card>
       </ion-col>
