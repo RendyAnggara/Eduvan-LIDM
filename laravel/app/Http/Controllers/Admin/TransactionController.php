@@ -29,8 +29,15 @@ class TransactionController extends Controller
             ->latest()
             ->get();
 
+        // =========================================================================
+        // ðŸŸ¢ FIX TOTAL SAKTI KEMBALI KE ELOQUENT: ANTI SERVER EROR 500 LEK!
+        // =========================================================================
+        // Kita pakai Eloquent Model agar objek 'created_at' TETAP berupa Carbon (Biar fungsi ->format() di Blade tidak crash lek)
+        // Dan kita tambahkan whereHas untuk memastikan relasi user dan course beneran ada di database
         $pendingVerifications = Enrollment::with(['user', 'course'])
-            ->where('status', 'Checking Admin')
+            ->whereHas('user')
+            ->whereHas('course')
+            ->whereIn('status', ['Checking Admin', 'pending'])
             ->latest()
             ->get();
 
@@ -48,16 +55,30 @@ class TransactionController extends Controller
         try
         {
             $enrollment = Enrollment::findOrFail($id);
+            if ($request->status === 'Fail')
+            {
+
+                // 1. Hapus fisik file bukti transfer di cPanel biar gak menuh-menuhin hosting lek
+                if ($enrollment->proof_of_payment)
+                {
+                    $filePath = public_path($enrollment->proof_of_payment);
+                    if (file_exists($filePath))
+                    {
+                        @unlink($filePath);
+                    }
+                }
+
+                // 2. Hapus data pendaftaran dari database agar di Ionic bersih kembali
+                $enrollment->delete();
+
+                return redirect()->back()->with('success', 'Pembayaran ditolak dan data pendaftaran berhasil dibersihkan! Mahasiswa bisa membeli ulang kursus.');
+            }
 
             $enrollment->update([
                 'status' => $request->status
             ]);
 
-            $msg = $request->status === 'success'
-                ? 'Pembayaran berhasil dikonfirmasi! Akses kursus mahasiswa telah aktif.'
-                : 'Pembayaran ditolak!';
-
-            return redirect()->back()->with('success', $msg);
+            return redirect()->back()->with('success', 'Pembayaran berhasil dikonfirmasi! Akses kursus mahasiswa telah aktif.');
         }
         catch (\Exception $e)
         {

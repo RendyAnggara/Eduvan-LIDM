@@ -43,6 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/instructor/dashboard', [CourseController::class, 'dashboard']);
     Route::post('/contents', [ContentController::class, 'store']);
     Route::get('/my-certificates', [CertificateApiController::class, 'index']);
+    Route::get('/certificates/{id}/download', [CertificateApiController::class, 'downloadMobile']);
     Route::post('/progress/mark-completed', [ProgressController::class, 'markAsCompleted']);
     Route::post('/progress/submit-quiz', [ProgressController::class, 'submitQuiz']);
     Route::get('/progress/course/{course_id}', [ProgressController::class, 'getProgress']);

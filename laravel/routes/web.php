@@ -9,7 +9,8 @@ use App\Http\Controllers\Admin\QuizProgressController;
 use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\NotificationController;
-
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\File;
 
 Route::get('/', function ()
 {
@@ -25,6 +26,33 @@ Route::get('admin/login', [AdminAuthController::class, 'showLoginForm'])->name('
 Route::post('admin/login', [AdminAuthController::class, 'login']);
 Route::post('admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
+
+
+Route::get('uploads/proofs/{filename}', function ($filename)
+{
+
+    $cleanFilename = str_replace('uploads/proofs/', '', $filename);
+
+    // Path menuju file asli di core Laravel lu
+    $path = public_path('uploads/proofs/' . $cleanFilename);
+
+    if (!File::exists($path))
+    {
+        abort(404);
+    }
+    if (ob_get_level())
+    {
+        ob_end_clean();
+    }
+
+    $file = File::get($path);
+    $type = File::mimeType($path);
+
+    $response = Response::make($file, 200);
+    $response->header("Content-Type", $type);
+
+    return $response;
+})->where('filename', '.*');
 
 /*
 |--------------------------------------------------------------------------

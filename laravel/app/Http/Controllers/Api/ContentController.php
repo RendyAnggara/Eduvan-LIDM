@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB; // 🟢 TAMBAHAN: Biar VS Code Intelephense adem gak merah lagi
+use Illuminate\Support\Facades\DB; // ðŸŸ¢ TAMBAHAN: Biar VS Code Intelephense adem gak merah lagi
 
 class ContentController extends Controller
 {
@@ -56,7 +56,6 @@ class ContentController extends Controller
             ]);
         }
 
-        // 4. JIKA SUDAH LUNAS: Inject status centang hijau 'is_completed' asli dari DB progress
         $userId = $user->id;
         $formattedContents = $contents->map(function ($materi) use ($userId, $course_id)
         {
@@ -75,7 +74,7 @@ class ContentController extends Controller
                 'duration' => $materi->duration ?? '15',
                 'content_url' => $materi->content_url, // Akses penuh video youtube
                 'type' => $materi->type,
-                'is_completed' => $hasProgress ? 1 : 0, // 🟢 SAKTI: Balikin nilai 1 atau 0 ke Angular
+                'is_completed' => $hasProgress ? 1 : 0, // ðŸŸ¢ SAKTI: Balikin nilai 1 atau 0 ke Angular
                 'created_at' => $materi->created_at,
                 'updated_at' => $materi->updated_at,
             ];
@@ -88,7 +87,7 @@ class ContentController extends Controller
         ]);
     }
 
-    // 🟢 FITUR BARU: Dipicu saat student klik tombol "TANDAI SELESAI" di Angular
+    // ðŸŸ¢ FITUR BARU: Dipicu saat student klik tombol "TANDAI SELESAI" di Angular
     public function markComplete(Request $request)
     {
         $request->validate([
@@ -102,7 +101,7 @@ class ContentController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }
 
-        // 🟢 TAMBAHAN SAKTI: Tangkap status is_completed dari Angular (jika kosong, default ke 1 / Selesai)
+        // ðŸŸ¢ TAMBAHAN SAKTI: Tangkap status is_completed dari Angular (jika kosong, default ke 1 / Selesai)
         $statusInput = $request->has('is_completed') ? (int)$request->is_completed : 1;
 
         // 1. Simpan atau update log selesai ke tabel progress mbut
@@ -113,7 +112,7 @@ class ContentController extends Controller
                 'content_id' => $request->content_id,
             ],
             [
-                'is_completed' => $statusInput, // 🟢 JADI DINAMIS: Bisa bernilai 1 (Selesai) atau 0 (Batal)
+                'is_completed' => $statusInput, // ðŸŸ¢ JADI DINAMIS: Bisa bernilai 1 (Selesai) atau 0 (Batal)
                 'updated_at' => now(),
                 'created_at' => now(), // Dipakai jika insert data baru
             ]
@@ -142,7 +141,7 @@ class ContentController extends Controller
             'success' => true,
             'message' => $statusInput === 1 ? 'Materi berhasil diselesaikan!' : 'Selesai materi dibatalkan!',
             'data' => [
-                'current_materi_progress' => $statusInput, // 🟢 Sesuai dengan status yang dikirim frontend
+                'current_materi_progress' => $statusInput, // ðŸŸ¢ Sesuai dengan status yang dikirim frontend
                 'total_course_progress' => $persentase
             ]
         ]);
