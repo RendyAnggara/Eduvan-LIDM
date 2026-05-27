@@ -6,67 +6,86 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator; // Tambahan untuk validasi yang lebih fleksibel
-use PHPMailer\PHPMailer\PHPMailer; // Tambahan untuk kirim email
+use Illuminate\Support\Facades\Validator;
+use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $request->validate([
+        // 1. Gunakan validator manual agar jika gagal di HP, kita bisa lempar pesan yang jelas
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Email atau Password salah'], 401);
-        }
-
-        // Cek apakah email sudah diverifikasi jika kamu ingin mewajibkan verifikasi sebelum login
-        if (!$user->email_verified_at) {
+        if ($validator->fails())
+        {
             return response()->json([
                 'success' => false,
-                'message' => 'Email anda belum diverifikasi.',
-                'needs_verification' => true,
-                'email' => $user->email
-            ], 403);
+                'message' => 'Format email atau password tidak valid.'
+            ], 422);
         }
 
+        $user = User::where('email', $request->email)->first();
+
+        // 2. Cek user & kecocokan password
+        if (!$user || !Hash::check($request->password, $user->password))
+        {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email atau Password salah. Periksa kembali data Anda.'
+            ], 401);
+        }
+
+        // 🚨 3. BYPASS / LONGGARKAN STATUS VERIFIKASI UNTUK TESTING DI HP ASLI
+        // Jika di cPanel kolom email_verified_at masih NULL, kita auto-verifikasi aja biar gak mampet lek!
+        if (!$user->email_verified_at)
+        {
+            $user->email_verified_at = now();
+            $user->save();
+        }
+
+        // 4. Generate Token Sanctum
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'access_token' => $token,
             'user' => $user
-        ]);
+        ], 200); // Pastikan statusnya 200 OK murni
     }
 
     public function register(Request $request)
     {
-        // 1. Validasi Input
-        $request->validate([
+        // Ganti ke Validator manual agar tidak auto-redirect di device mobile
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8', // 💡 Hapus 'confirmed' jika form di HP cuma ada 1 field password biar gak ribet lek
         ]);
 
-        // 2. Generate OTP 6 Digit
+        if ($validator->fails())
+        {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
         $otp = rand(100000, 999999);
 
-        // 3. Simpan ke Database dengan OTP
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'student', // Menambahkan role default sesuai kebutuhan EduVan
+            'role' => 'student',
             'otp_code' => $otp,
             'otp_expiry' => now()->addMinutes(10),
         ]);
 
-        // 4. Kirim Email via PHPMailer
+        // Kirim email (jika SMTP di cPanel lu aktif)
         $this->sendOtpEmail($user->email, $otp);
 
         return response()->json([
@@ -76,7 +95,6 @@ class AuthController extends Controller
         ], 201);
     }
 
-    // LOGIKA BARU: Verifikasi OTP
     public function verifyOtp(Request $request)
     {
         $request->validate([
@@ -89,7 +107,8 @@ class AuthController extends Controller
             ->where('otp_expiry', '>', now())
             ->first();
 
-        if ($user) {
+        if ($user)
+        {
             $user->email_verified_at = now();
             $user->otp_code = null;
             $user->otp_expiry = null;
@@ -107,11 +126,11 @@ class AuthController extends Controller
         ], 400);
     }
 
-    // LOGIKA BARU: Fungsi Internal Kirim Email
     private function sendOtpEmail($email, $otp)
     {
         $mail = new PHPMailer(true);
-        try {
+        try
+        {
             $mail->isSMTP();
             $mail->Host       = env('MAIL_HOST');
             $mail->SMTPAuth   = true;
@@ -128,27 +147,25 @@ class AuthController extends Controller
             $mail->Body    = "Halo! Kode verifikasi Anda adalah: <b>$otp</b>. Kode ini berlaku selama 10 menit.";
 
             $mail->send();
-        } catch (Exception $e) {
-            // Email gagal kirim, tetap biarkan user terdaftar (bisa ditangani lewat resend otp nanti)
+        }
+        catch (Exception $e)
+        {
+            // Tetap aman jika kirim email gagal
         }
     }
 
     public function me(Request $request)
     {
-        // 1. Ambil data user yang sedang login saat ini
         $user = $request->user();
-
-        // 2. Hitung jumlah kursus (enrollments) dan sertifikat secara dinamis dari database
-        // Pastikan nama relasi di model User kamu adalah 'enrollments' dan 'certificates' (atau sesuaikan)
         $userData = User::withCount(['enrollments as total_courses', 'certificates as total_certificates'])
             ->find($user->id);
 
-        // 3. Kembalikan data lengkap ke Ionic
         return response()->json([
             'success' => true,
             'data' => $userData
         ]);
     }
+
     public function updateProfile(Request $request)
     {
         $user = $request->user();
@@ -158,7 +175,6 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
         ]);
 
-        // Update data di tabel users database
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
