@@ -1,45 +1,93 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/home" text="" color="dark"></ion-back-button>
+      <ion-back-button
+        defaultHref="/tabs/home"
+        text=""
+        color="dark"
+      ></ion-back-button>
     </ion-buttons>
     <ion-title>Notifikasi</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  
-  <div *ngIf="isLoading" style="text-align: center; padding: 30px;">
+  <div *ngIf="isLoading" style="text-align: center; padding: 30px">
     <ion-spinner name="crescent" color="primary"></ion-spinner>
-    <p style="color: #64748b; font-size: 14px; margin-top: 8px;">Memuat pemberitahuan...</p>
+    <p style="color: #64748b; font-size: 14px; margin-top: 8px">
+      Memuat pemberitahuan...
+    </p>
   </div>
 
-  <div class="notification-container" *ngIf="!isLoading && listNotifikasi.length > 0">
-    
-    <div class="notif-card" 
-         *ngFor="let notif of listNotifikasi; let i = index" 
-         [ngClass]="notif.data?.type === 'promo' || notif.type === 'promo' ? 'promo' : 'success'">
-      
+  <div
+    class="notification-container"
+    *ngIf="!isLoading && listNotifikasi.length > 0"
+  >
+    <div
+      class="notif-card"
+      *ngFor="let notif of listNotifikasi; let i = index"
+      (click)="bukaPesanNotifikasi(notif.id)"
+      [ngClass]="{
+           'promo': notif.data?.type === 'promo' || notif.type === 'promo',
+           'success': notif.data?.type !== 'promo' && notif.type !== 'promo',
+           'is-unread': !notif.read_at
+         }"
+      style="cursor: pointer; position: relative"
+    >
+      <div
+        *ngIf="!notif.read_at"
+        style="
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          width: 8px;
+          height: 8px;
+          background-color: #ef4444;
+          border-radius: 50%;
+        "
+      ></div>
+
       <div class="icon-wrapper">
-        <ion-icon [name]="(notif.data?.type === 'promo' || notif.type === 'promo') ? 'megaphone-outline' : 'checkmark-circle-outline'">
+        <ion-icon
+          [name]="(notif.data?.type === 'promo' || notif.type === 'promo') ? 'megaphone-outline' : 'checkmark-circle-outline'"
+        >
         </ion-icon>
       </div>
 
       <div class="notif-content">
         <div class="notif-header">
-          <h3>{{ notif.data?.title || notif.title || 'Pemberitahuan EduVan' }}</h3>
-          <span class="time-badge">{{ notif.data?.tanggal || notif.tanggal || '22 May 2026' }}</span>
+          <h3 [style.font-weight]="!notif.read_at ? '700' : '500'">
+            {{ notif.data?.title || notif.title || 'Pemberitahuan EduVan' }}
+          </h3>
+          <span class="time-badge"
+            >{{ notif.created_at | date:'dd MMM yyyy' }}</span
+          >
         </div>
-        <p>{{ notif.data?.message || notif.message || 'Silakan periksa detail akun pembelajaran Anda.' }}</p>
+        <p [style.color]="!notif.read_at ? '#1e293b' : '#64748b'">
+          {{ notif.data?.message || notif.message || 'Silakan periksa detail
+          akun pembelajaran Anda.' }}
+        </p>
       </div>
-
     </div>
-
   </div>
 
-  <div *ngIf="!isLoading && listNotifikasi.length === 0" style="text-align: center; padding: 60px 20px; color: #94a3b8;">
-    <ion-icon name="notifications-off-outline" style="font-size: 50px; color: #cbd5e1;"></ion-icon>
-    <p style="margin-top: 10px; font-size: 14px; font-weight: 600; color: #64748b;">Belum ada pemberitahuan baru.</p>
+  <div
+    *ngIf="!isLoading && listNotifikasi.length === 0"
+    style="text-align: center; padding: 60px 20px; color: #94a3b8"
+  >
+    <ion-icon
+      name="notifications-off-outline"
+      style="font-size: 50px; color: #cbd5e1 CONTAINER"
+    ></ion-icon>
+    <p
+      style="
+        margin-top: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #64748b;
+      "
+    >
+      Belum ada pemberitahuan baru.
+    </p>
   </div>
-
 </ion-content>

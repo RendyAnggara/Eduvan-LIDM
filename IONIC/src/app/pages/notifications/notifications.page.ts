@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 🟢 TAMBAHAN: Import ChangeDetectorRef
-import { CourseService } from '../../services/course.service'; 
+import { CourseService } from '../../services/course.service';
 
 @Component({
   selector: 'app-notifications',
@@ -8,7 +8,6 @@ import { CourseService } from '../../services/course.service';
   standalone: false,
 })
 export class NotificationsPage implements OnInit {
-
   // Array untuk menampung data dari Laravel backend
   listNotifikasi: any[] = [];
   isLoading: boolean = false;
@@ -16,8 +15,8 @@ export class NotificationsPage implements OnInit {
   // 🟢 SUNTIKKAN ChangeDetectorRef ke dalam constructor lek
   constructor(
     private courseService: CourseService,
-    private cdr: ChangeDetectorRef
-  ) { }
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit() {
     this.getNotificationData();
@@ -38,7 +37,7 @@ export class NotificationsPage implements OnInit {
 
         // Mengantisipasi fleksibilitas respons API (res.data atau langsung res)
         const dataMentah = res.data ? res.data : res;
-        
+
         if (Array.isArray(dataMentah)) {
           // 🟢 KUNCI BARU: Pakai .reverse() agar notifikasi transaksi yang paling baru otomatis nangkring di posisi paling atas lek!
           this.listNotifikasi = dataMentah.reverse();
@@ -47,14 +46,35 @@ export class NotificationsPage implements OnInit {
         }
 
         this.cdr.detectChanges(); // Paksa HTML ngerender ulang kartu ijo sukses transaksi terbarumu!
-        console.log('Hasil manipulasi array setelah dibalik lek:', this.listNotifikasi);
+        console.log(
+          'Hasil manipulasi array setelah dibalik:',
+          this.listNotifikasi,
+        );
       },
       error: (err: any) => {
         console.error('Gagal mengambil data notifikasi:', err);
         this.isLoading = false;
         this.cdr.detectChanges();
-      }
+      },
     });
   }
 
+  // 🔥 FUNGSI BARU: Menandai notifikasi sebagai terbaca ketika item diklik di HTML
+  bukaPesanNotifikasi(notifId: string) {
+    if (!notifId) return;
+
+    this.courseService.tandaiNotifikasiTerbaca(notifId).subscribe({
+      next: (res: any) => {
+        if (res && res.status === 'success') {
+          console.log('Notifikasi sukses ditandai terbaca:', notifId);
+
+          // Refresh data list notifikasi agar tanda status terbaca di UI langsung sinkron
+          this.getNotificationData();
+        }
+      },
+      error: (err: any) => {
+        console.error('Gagal memperbarui status terbaca notifikasi:', err);
+      },
+    });
+  }
 }

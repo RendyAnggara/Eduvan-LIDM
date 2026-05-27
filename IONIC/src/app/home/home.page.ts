@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { SearchService } from '../services/search'; // Pastikan path ini benar
+import { CourseService } from '../services/course.service'; // Memastikan import CourseService tersedia
 
 @Component({
   selector: 'app-beranda',
@@ -14,16 +15,44 @@ export class HomePage implements OnInit {
   keywordPencarian: string = '';
   isLoading: boolean = true;
   kursusTersaring: any[] = [];
+  unreadCount: number = 0; // Variabel penampung jumlah notifikasi yang belum dibaca
 
   constructor(
     private router: Router,
     private authService: AuthService,
     private searchService: SearchService,
+    private courseService: CourseService, // Menggunakan CourseService di sini
   ) {}
 
   ngOnInit() {
     this.ambilNamaUserLive();
     this.muatKursusDariHosting();
+
+    // 🟢 TAMBAHAN BARU: Otomatis memuat ulang jumlah angka lonceng jika ada sinyal perubahan dari service
+    this.courseService.notifChanged$.subscribe((berubah: boolean) => {
+      if (berubah) {
+        this.muatJumlahNotifikasi();
+      }
+    });
+  }
+
+  // Menggunakan ionViewWillEnter agar angka notifikasi otomatis ter-refresh setiap kali kembali ke beranda
+  ionViewWillEnter() {
+    this.muatJumlahNotifikasi();
+  }
+
+  // Fungsi mengambil jumlah notifikasi unread dari backend Laravel melalui CourseService
+  muatJumlahNotifikasi() {
+    this.courseService.getNotificationsCount().subscribe({
+      next: (res: any) => {
+        if (res && res.status === 'success') {
+          this.unreadCount = res.unread_count; // Memasukkan angka unread_count dari API
+        }
+      },
+      error: (err: any) => {
+        console.error('Gagal memuat jumlah notifikasi:', err);
+      },
+    });
   }
 
   ambilNamaUserLive() {
@@ -65,7 +94,7 @@ export class HomePage implements OnInit {
     }
   }
 
-  // 🔥 FUNGSI UNTUK IKLAN (Menghilangkan error Anda)
+  // FUNGSI UNTUK IKLAN (Menghilangkan error Anda)
   goToBannerDetail() {
     this.router.navigate(['/tabs/course']);
   }
@@ -86,7 +115,7 @@ export class HomePage implements OnInit {
     this.router.navigateByUrl('/tabs/course');
   }
 
-  // 🔥 FIX UTAMA: Fungsi pembaca gambar default berdasarkan kategori kursus
+  // FIX UTAMA: Fungsi pembaca gambar default berdasarkan kategori kursus
   getDefaultImage(category: string): string {
     if (!category) return 'assets/icon/computer-science.jpeg';
 
@@ -109,7 +138,7 @@ export class HomePage implements OnInit {
     return 'assets/icon/computer-science.jpeg';
   }
 
-  // 🔥 FIX TAMBAHAN: Fungsi penangkap error tag img di HTML
+  // FIX TAMBAHAN: Fungsi penangkap error tag img di HTML
   handleImageError(event: any, category: string) {
     event.target.src = this.getDefaultImage(category);
   }

@@ -3,7 +3,7 @@
 ion-toolbar {
   --background: #F4F7FA;
   --color: #1A202C;
-  
+
   ion-title {
     font-size: 18px;
     font-weight: 700;
@@ -107,7 +107,7 @@ ion-toolbar {
   /* Variasi Tipe 1: Promo (Tema Biru Tua EduVan) */
   &.promo {
     border-left-color: #093C5D !important; /* Biru Tua EduVan */
-    
+
     .icon-wrapper {
       background: rgba(9, 60, 93, 0.12) !important;
       color: #093C5D !important;
@@ -117,10 +117,15 @@ ion-toolbar {
   /* Variasi Tipe 2: Success / Umum (Tema Hijau Emerald Segar) */
   &.success {
     border-left-color: #10B981 !important; /* Hijau Emerald Segar */
-    
+
     .icon-wrapper {
       background: rgba(16, 185, 129, 0.12) !important;
       color: #10B981 !important;
     }
   }
+}
+
+.notif-card.is-unread {
+  background-color: rgba(var(--ion-color-primary-rgb, 56, 128, 255), 0.06);
+  border-left: 4px solid var(--ion-color-primary, #3880ff);
 }

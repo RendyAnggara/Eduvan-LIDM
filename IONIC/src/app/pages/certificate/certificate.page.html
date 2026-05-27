@@ -7,6 +7,7 @@
         color="dark"
       ></ion-back-button>
     </ion-buttons>
+
     <ion-title>Sertifikat Saya</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -14,6 +15,7 @@
 <ion-content>
   <div *ngIf="isLoading" style="text-align: center; padding-top: 50px">
     <ion-spinner name="crescent" color="primary"></ion-spinner>
+
     <p style="color: #64748b; font-size: 14px">Memeriksa sertifikat resmi...</p>
   </div>
 
@@ -35,7 +37,9 @@
 
       <div class="cert-info">
         <span class="cert-id">No: {{ cert.certificate_number }}</span>
+
         <h3>{{ cert.course?.title }}</h3>
+
         <p class="cert-date">
           Diterbitkan pada: {{ (cert.issued_at || cert.created_at) | date:'dd
           MMM yyyy' }}
@@ -53,15 +57,12 @@
             justify-content: center;
             min-width: 40px;
             min-height: 40px;
-          "
-        >
+          ">
           <ion-spinner
             *ngIf="isDownloading && activeCertId === cert.id"
             name="crescent"
-            style="width: 20px; height: 20px; --color: #1d4ed8"
-          >
+            style="width: 20px; height: 20px; --color: #1d4ed8">
           </ion-spinner>
-
           <ion-icon
             *ngIf="!(isDownloading && activeCertId === cert.id)"
             name="download-outline"
@@ -80,14 +81,14 @@
       name="shield-checkmark-outline"
       style="font-size: 64px; color: #e2e8f0"
     ></ion-icon>
+
     <h3
       style="
         font-size: 16px;
         font-weight: 700;
         color: #475569;
         margin-top: 16px;
-      "
-    >
+      ">
       Belum Ada Sertifikat Tersedia
     </h3>
     <p

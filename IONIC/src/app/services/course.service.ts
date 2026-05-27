@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,7 @@ export class CourseService {
 
   public wishlistChanged$ = new BehaviorSubject<boolean>(false);
   public progressChanged$ = new BehaviorSubject<boolean>(false);
+  public notifChanged$ = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) {}
 
@@ -190,7 +192,12 @@ export class CourseService {
     if (!tokenUser) {
       const userDataRaw = localStorage.getItem('userData');
       if (userDataRaw) {
-        try { const parsedData = JSON.parse(userDataRaw); tokenUser = parsedData.token || parsedData.access_token || null; } catch (e) { tokenUser = userDataRaw; }
+        try {
+          const parsedData = JSON.parse(userDataRaw);
+          tokenUser = parsedData.token || parsedData.access_token || null;
+        } catch (e) {
+          tokenUser = userDataRaw;
+        }
       }
     }
     if (tokenUser) {
@@ -199,11 +206,39 @@ export class CourseService {
 
     // 2. KUNCI SAKTI: Cukup bawa Authorization, JANGAN isi Content-Type manual lek!
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${tokenUser}`,
-      'Accept': 'application/json'
+      Authorization: `Bearer ${tokenUser}`,
+      Accept: 'application/json',
     });
 
     // 3. Tembak FormData murni ke endpoint API enrollments backend Ivan
-    return this.http.post(`${this.baseApiUrl}/enrollments`, formData, { headers });
+    return this.http.post(`${this.baseApiUrl}/enrollments`, formData, {
+      headers,
+    });
+  }
+
+  getNotificationsCount(): Observable<any> {
+    return this.http.get(`${this.baseApiUrl}/notifications`, {
+      headers: this.dapatkanHeaderAutentikasi(),
+    });
+  }
+
+  // Mengirimkan permintaan ke server Laravel untuk mengubah status read_at berdasarkan ID Notifikasi
+  tandaiNotifikasiTerbaca(idNotif: string): Observable<any> {
+    return this.http
+      .post(
+        `${this.baseApiUrl}/notifications/read/${idNotif}`,
+        {},
+        {
+          headers: this.dapatkanHeaderAutentikasi(),
+        },
+      )
+      .pipe(
+        tap((res: any) => {
+          if (res && res.status === 'success') {
+            // 🟢 KUNCI UTAMA: Sinyal perubahan baru dikirim ke beranda SETELAH server Laravel sukses merespon
+            this.notifChanged$.next(true);
+          }
+        }),
+      );
   }
 }
