@@ -46,8 +46,27 @@
         <button
           class="btn-download"
           (click)="downloadPdf(cert.id, cert.course?.title)"
+          [disabled]="isDownloading"
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            min-height: 40px;
+          "
         >
-          <ion-icon name="download-outline"></ion-icon>
+          <ion-spinner
+            *ngIf="isDownloading && activeCertId === cert.id"
+            name="crescent"
+            style="width: 20px; height: 20px; --color: #1d4ed8"
+          >
+          </ion-spinner>
+
+          <ion-icon
+            *ngIf="!(isDownloading && activeCertId === cert.id)"
+            name="download-outline"
+          >
+          </ion-icon>
         </button>
       </div>
     </div>
