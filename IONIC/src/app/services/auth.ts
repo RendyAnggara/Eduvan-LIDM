@@ -7,7 +7,7 @@ import { Observable, tap, BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = 'https://eduvan.rehalivan.com/api';
 
   private currentUserSubject = new BehaviorSubject<any>(null);
   currentUser$ = this.currentUserSubject.asObservable();
@@ -74,9 +74,9 @@ export class AuthService {
   }
 
   getProfileFromServer(): Observable<any> {
-    const headers = new HttpHeaders({ 
-      Authorization: `Bearer ${localStorage.getItem('token')}`, 
-      Accept: 'application/json' 
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+      Accept: 'application/json'
     });
     return this.http.get(`${this.apiUrl}/user`, { headers }).pipe(
       tap((res: any) => { if (res) this.updateCurrentUserState(res.user || res.data || res); })
@@ -84,9 +84,9 @@ export class AuthService {
   }
 
   updateProfile(data: any): Observable<any> {
-    const headers = new HttpHeaders({ 
-      Authorization: `Bearer ${localStorage.getItem('token')}`, 
-      Accept: 'application/json' 
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+      Accept: 'application/json'
     });
     return this.http.put(`${this.apiUrl}/user/update`, data, { headers }).pipe(
       tap((res: any) => { if (res) this.updateCurrentUserState(res.user || res.data || res); })
@@ -94,9 +94,9 @@ export class AuthService {
   }
 
   getCoursesFromServer(): Observable<any> {
-    const headers = new HttpHeaders({ 
-      Authorization: `Bearer ${localStorage.getItem('token')}`, 
-      Accept: 'application/json' 
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+      Accept: 'application/json'
     });
     return this.http.get(`${this.apiUrl}/courses`, { headers });
   }
