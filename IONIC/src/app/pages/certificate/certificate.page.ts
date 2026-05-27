@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CourseService } from 'src/app/services/course.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { LoadingController, ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-certificate',
@@ -9,11 +10,17 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   standalone: false,
 })
 export class CertificatePage implements OnInit {
-
   listSertifikat: any[] = [];
   isLoading: boolean = false;
+  isDownloading: boolean = false;
+  activeCertId: number | null = null;
 
-  constructor(private courseService: CourseService, private http: HttpClient) { }
+  constructor(
+    private courseService: CourseService,
+    private http: HttpClient,
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController,
+  ) {}
 
   ngOnInit() {
     this.muatDaftarSertifikat();
@@ -36,39 +43,80 @@ export class CertificatePage implements OnInit {
       error: (err: any) => {
         console.error('Gagal mengambil data sertifikat dari server:', err);
         this.isLoading = false;
-      }
+      },
     });
   }
 
   // Fungsi untuk mengunduh berkas PDF sertifikat langsung dari server cPanel
-  downloadPdf(idSertifikat: number, namaKursus: string) {
-    // 1. Ambil token bearer milik student dari local storage lewat fungsi pembantu Ivan
+  // 🟢 Ubah menjadi 'async' agar bisa mengontrol animasi loading Ionic
+  async downloadPdf(idSertifikat: number, namaKursus: string) {
+    // Kunci tombol agar tidak di-spam klik lek
+    this.isDownloading = true;
+    this.activeCertId = idSertifikat;
+
+    // 1. TAMPILKAN LOADING MEMUTAR DI TENGAH LAYAR
+    const loadingSertifikat = await this.loadingCtrl.create({
+      message: 'Sedang memproses sertifikat...',
+      spinner: 'crescent',
+      backdropDismiss: false,
+    });
+    await loadingSertifikat.present();
+
+    // 2. Ambil token bearer milik student dari local storage lewat fungsi pembantu Ivan
     let tokenUser = localStorage.getItem('token');
     if (tokenUser) {
       tokenUser = String(tokenUser).replace(/"/g, '').trim();
     }
 
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${tokenUser}`
+      Authorization: `Bearer ${tokenUser}`,
     });
 
-    // 2. Tembak rute API download baru yang sudah kita buat di api.php
+    // 3. Tembak rute API download asli kalian (Pakai S)
     const urlApiDownload = `https://eduvan.rehalivan.com/api/certificates/${idSertifikat}/download`;
 
-    // 3. Tarik data file PDF-nya sebagai Blob (Binary Large Object) langsung di dalam HP
+    // 4. Tarik data file PDF sebagai Blob dengan Header tetap terjaga aman (Gak bakal nyasar ke Web Admin)
     this.http.get(urlApiDownload, { headers, responseType: 'blob' }).subscribe({
-      next: (blobData: Blob) => {
-        // 4. Ubah berkas biner blob menjadi link unduhan lokal instan di sistem HP student
-        const linkLokal = document.createElement('a');
-        linkLokal.href = window.URL.createObjectURL(blobData);
-        linkLokal.download = `Sertifikat-${namaKursus.replace(/\s+/g, '_')}.pdf`;
-        linkLokal.click();
-        console.log('Sertifikat resmi berhasil terunduh');
+      next: async (blobData: Blob) => {
+        // 5. 🔑 TRICK KHUSUS APK: Menggunakan FileReader untuk membaca Blob menjadi Data URL lokal
+        const pembacaFile = new FileReader();
+        pembacaFile.readAsDataURL(blobData);
+        pembacaFile.onloadend = () => {
+          const base64Data = pembacaFile.result as string;
+
+          // Buat trigger download lokal yang diizinkan oleh WebView Android APK
+          const linkLokal = document.createElement('a');
+          linkLokal.href = base64Data;
+          linkLokal.download = `Sertifikat-${namaKursus.replace(/\s+/g, '_')}.pdf`;
+
+          document.body.appendChild(linkLokal);
+          linkLokal.click();
+          document.body.removeChild(linkLokal);
+        };
+
+        console.log('Sertifikat resmi berhasil terunduh langsung lek');
+
+        // Matikan animasi loading
+        await loadingSertifikat.dismiss();
+        this.isDownloading = false;
+        this.activeCertId = null;
       },
-      error: (err) => {
+      error: async (err) => {
         console.error('Gagal memproses unduhan sertifikat via API:', err);
-        alert('Gagal mendownload sertifikat, pastikan jaringan aman.');
-      }
+
+        // Matikan animasi loading jika gagal
+        await loadingSertifikat.dismiss();
+        this.isDownloading = false;
+        this.activeCertId = null;
+
+        // Tampilkan pesan error toast premium
+        const toast = await this.toastCtrl.create({
+          message: 'Gagal mendownload sertifikat, pastikan jaringan aman.',
+          duration: 3000,
+          color: 'danger',
+        });
+        await toast.present();
+      },
     });
   }
 }

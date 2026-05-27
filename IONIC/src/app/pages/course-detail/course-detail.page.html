@@ -239,6 +239,7 @@
   </ng-template>
 </ion-modal>
 
+<!-- MODAL TRANSFER MANUAL DENGAN CAPACITOR NATIVE CAMERA -->
 <ion-modal
   [isOpen]="isModalTransferOpen"
   (didDismiss)="isModalTransferOpen = false"
@@ -292,44 +293,58 @@
       </div>
 
       <p style="font-size: 12px; color: #64748b; margin: 0">
-        Silakan transfer sesuai nominal harga kelas, kemudian unggah foto bukti
-        transfernya di bawah ini lek:
+        Silakan transfer sesuai nominal harga kelas, Gunakan kamera atau
+        pilih foto bukti transfernya di bawah ini:
       </p>
 
+      <!-- 🔥 UBAH TOTAL: Area Clickable untuk Trigger Kamera Native -->
       <div
+        (click)="pilihFileBuktiTransfer()"
         style="
-          border: 2px dashed #cbd5e1;
+          border: 2px dashed #093c5d;
           border-radius: 14px;
           padding: 20px;
           text-align: center;
           background: #f8fafc;
+          cursor: pointer;
         "
       >
-        <input
-          type="file"
-          (change)="pilihFileBuktiTransfer($event)"
-          accept="image/*"
-          id="fileInputTransfer"
-          style="display: none"
-        />
-        <label
-          for="fileInputTransfer"
+        <div
           style="
-            cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 8px;
           "
         >
+          <!-- 📸 Tampilkan Preview Gambar kalau user sudah milih foto lek -->
+          <div
+            *ngIf="imagePreviewUrl"
+            style="
+              margin-bottom: 8px;
+              width: 100%;
+              max-height: 180px;
+              overflow: hidden;
+              border-radius: 8px;
+            "
+          >
+            <img
+              [src]="imagePreviewUrl"
+              style="max-height: 180px; object-fit: contain; width: 100%"
+            />
+          </div>
+
+          <!-- Icon default kalau belum ada foto yang dipilih -->
           <ion-icon
-            name="cloud-upload-outline"
-            style="font-size: 36px; color: #093c5d"
+            *ngIf="!imagePreviewUrl"
+            name="camera-outline"
+            style="font-size: 40px; color: #093c5d"
           ></ion-icon>
+
           <span style="font-size: 13px; font-weight: 600; color: #475569">
-            {{ namaFileTerpilih || 'Pilih Gambar Bukti Transfer' }}
+            {{ namaFileTerpilih || 'Ambil Foto / Galeri Bukti Transfer' }}
           </span>
-        </label>
+        </div>
       </div>
 
       <ion-button

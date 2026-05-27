@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CourseService } from '../../services/course.service';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'; // 🔥 IMPOR PLUGIN KAMERA NATIVE
 
 @Component({
   selector: 'app-course-detail',
@@ -26,6 +27,9 @@ export class CourseDetailPage implements OnInit {
   fileGambarBukti: File | null = null;
   namaFileTerpilih: string = '';
   loadingUpload: boolean = false;
+
+  // 🔥 TAMBAHAN BARU: Tampung URL preview foto struk biar bisa nongol di HTML lek
+  imagePreviewUrl: string | undefined = undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -104,15 +108,36 @@ export class CourseDetailPage implements OnInit {
     this.isModalTransferOpen = true;
     this.fileGambarBukti = null;
     this.namaFileTerpilih = '';
+    this.imagePreviewUrl = undefined; // Reset preview pas modal dibuka lek
     this.cdr.detectChanges();
   }
 
-  pilihFileBuktiTransfer(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.fileGambarBukti = file;
-      this.namaFileTerpilih = file.name;
+  // 🔥 ROMBAK TOTAL: Ganti input file lama jadi pemicu dialog Kamera/Galeri native Android lek!
+  async pilihFileBuktiTransfer() {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 50,
+        allowEditing: false,
+        source: CameraSource.Prompt,
+        resultType: CameraResultType.Uri,
+        promptLabelHeader: 'Pilih Bukti Pembayaran',
+        promptLabelPhoto: 'Ambil dari Galeri',
+        promptLabelPicture: 'Gunakan Kamera',
+      });
+
+      this.imagePreviewUrl = image.webPath;
+      this.namaFileTerpilih = `bukti_transfer_${Date.now()}.jpg`;
+
+      // Proses konversi aman terkendali:
+      const response = await fetch(image.webPath!);
+      const blob = await response.blob(); // Sudah diperbaiki mbut!
+      this.fileGambarBukti = new File([blob], this.namaFileTerpilih, {
+        type: 'image/jpeg',
+      });
+
       this.cdr.detectChanges();
+    } catch (error) {
+      console.log('User membatalkan pemilihan media mbut.', error);
     }
   }
 
