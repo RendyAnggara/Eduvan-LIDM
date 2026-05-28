@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CourseService } from '../../services/course.service';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'; // 🔥 IMPOR PLUGIN KAMERA NATIVE
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'; 
 
 @Component({
   selector: 'app-course-detail',
