@@ -115,68 +115,77 @@ ion-content {
   background: #003366;
   border-radius: 20px;
   padding: 20px;
-  
-  // 🟢 Tambahkan ini agar tidak menempel ke pinggir layar
   margin: 15px 20px; 
-  
-  // 🟢 Jika ingin bannernya tidak terlalu tinggi, bisa atur min-height
-  min-height: 120px; 
-  
+  min-height: 140px; 
   display: flex;
   align-items: center;
   justify-content: space-between;
   color: white;
   cursor: pointer;
-  overflow: hidden;
   position: relative;
-  
-  // Efek shadow supaya lebih timbul dan tidak terlihat "flat"
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+  box-shadow: 0 8px 20px rgba(0, 51, 102, 0.15); 
+  overflow: visible; /* 🟢 Tetap visible agar efek 3D pop-out gambar jalan */
 
-.banner-text {
-  flex: 1;
-  z-index: 1;
-  margin-right: 15px;
+  .banner-text {
+    flex: 1;
+    z-index: 2; 
+    
+    /* 🟢 KUNCI ANTI-NIMPA: Batasi lebar teks maksimal 55% sampai 60% saja lek!
+       Sisa ruang 40% di kanan murni dikosongkan agar menjadi zona aman gambar orangnya */
+    max-width: 58%; 
+    padding-right: 5px; 
 
-  h2 { 
-    font-size: 1.2rem; 
-    font-weight: 700; 
-    margin: 0 0 8px 0; 
-    color: #ffffff; // Pastikan putih bersih
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.3); // 🟢 Efek bayangan agar teks menonjol
+    h2 { 
+      font-size: 1.2rem; 
+      font-weight: 700; 
+      margin: 0 0 8px 0; 
+      color: #ffffff; 
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3); 
+    }
+    
+    p { 
+      font-size: 0.85rem; 
+      color: #e0e0e0; 
+      margin: 0 0 15px 0;
+      line-height: 1.4;
+    }
+    
+    .banner-button {
+      background: #ffffff;
+      color: #003366; 
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 0.8rem;
+      display: inline-block;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+    }
   }
-  
-  p { 
-    font-size: 0.85rem; 
-    color: #e0e0e0; // Abu-abu terang agar teks paragraf tidak terlalu tajam tapi tetap terbaca
-    margin: 0 0 15px 0;
-    line-height: 1.4;
-  }
-  
-  .banner-button {
-    background: #ffffff;
-    color: #003366; // Biru gelap kontras dengan background putih tombol
-    padding: 8px 16px;
-    border-radius: 10px;
-    font-weight: bold;
-    font-size: 0.8rem;
-    display: inline-block;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2); // 🟢 Tombol tampak lebih hidup
-  }
-}
 
 .banner-image {
-    // 🟢 Ubah width dari 70px atau 80px ke ukuran yang lebih besar
-    // Misalnya 120px atau 140px agar foto terlihat dominan
-    width: 140px; 
-    flex-shrink: 0;
-    margin-left: 10px;
+    position: absolute;
+    right: 10px;       /* Jarak aman dari mentok kanan banner */
     
+    /* 🟢 KUNCI UTAMA 1: Rumus auto-tengah vertikal presisi lek! */
+    top: 50%;
+    transform: translateY(-50%); 
+    
+    /* 🟢 KUNCI UTAMA 2: Set tinggi dan lebar proporsional biar badannya FULL */
+    width: 175px;      /* Ukuran lebar pas agar tidak terlalu raksasa menimpa teks */
+    height: 155%;       /* Mengambil 90% dari tinggi banner biar gak kepotong atas bawah */
+    
+    flex-shrink: 0;
+    z-index: 3;       
+    display: flex;
+    align-items: center; /* Memastikan isi gambar di dalamnya tegak di tengah */
+    justify-content: center;
+      
     img {
       width: 100%;
-      height: auto;
-      // 🟢 Menjaga gambar tetap proporsional
+      height: 100%;
+      /* 🟢 KUNCI UTAMA 3: Pakai contain agar gambarnya utuh kelihatan full tanpa dicrop */
       object-fit: contain; 
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); 
     }
   }
 }
