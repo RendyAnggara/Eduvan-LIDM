@@ -2,6 +2,22 @@ ion-content {
   --background: #f8fafc;
 }
 
+/* 🟢 TAMBAHAN: ANIMASI MASUK FADE IN MELUNCUR HALUS */
+.auth-header-section, .form-card {
+  animation: meluncurHalus 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes meluncurHalus {
+  from {
+    opacity: 0;
+    transform: translateY(30px); /* Efek terangkat lembut dari bawah */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* KUMPULAN ANIMASI ROTASI KONSISTEN */
 @keyframes rotasiKanan {
   from { transform: rotate(0deg); }

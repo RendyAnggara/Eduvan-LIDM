@@ -12,12 +12,15 @@ import { Router } from '@angular/router';
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
-  encapsulation: ViewEncapsulation.None,
+  encapsulation: ViewEncapsulation.None, // 🟢 Sudah diganti pakai 'encapsulation' lek!
   standalone: false,
 })
 export class LoginPage implements OnInit {
   loginForm: FormGroup;
   showPassword = false;
+
+  // 1. 🟢 TAMBAHKAN VARIABEL UTAMA UNTUK LOADING SPINNER DI TOMBOL LEK!
+  isLoading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -55,6 +58,9 @@ export class LoginPage implements OnInit {
   // LOGIKA LOGIN UTAMA
   async onLogin() {
     if (this.loginForm.valid) {
+      // 2. 🟢 NYALAKAN SPINNER DI TOMBOL SAAT KLIK MASUK LEK!
+      this.isLoading = true;
+
       const loading = await this.loadingCtrl.create({
         message: 'Mohon tunggu...',
         spinner: 'crescent',
@@ -64,6 +70,9 @@ export class LoginPage implements OnInit {
       this.auth.login(this.loginForm.value).subscribe({
         next: async (res: any) => {
           await loading.dismiss();
+
+          // 3. 🟢 MATIKAN LOADING TOMBOL KARENA PROSES BERHASIL
+          this.isLoading = false;
 
           // Simpan token dan data user agar tidak ditendang AuthGuard
           if (res.token) {
@@ -81,6 +90,10 @@ export class LoginPage implements OnInit {
         },
         error: async (err) => {
           await loading.dismiss();
+
+          // 4. 🟢 MATIKAN LOADING TOMBOL KARENA PROSES ERROR/GAGAL
+          this.isLoading = false;
+
           let msg = 'Gagal masuk. Periksa kembali email dan password Anda.';
 
           if (err.status === 401) {
@@ -92,7 +105,7 @@ export class LoginPage implements OnInit {
             // kamu bisa otomatis melempar user ke halaman verify-otp dengan membawa email mereka.
             this.zone.run(() => {
               this.router.navigate(['/verify-otp'], {
-                state: { email: this.loginForm.value.email }
+                state: { email: this.loginForm.value.email },
               });
             });
           }
@@ -115,9 +128,9 @@ export class LoginPage implements OnInit {
         {
           side: 'start',
           icon: color === 'danger' ? 'alert-circle' : 'checkmark-circle', // Ikon otomatis menyesuaikan status
-          role: 'cancel'
-        }
-      ]
+          role: 'cancel',
+        },
+      ],
     });
     await toast.present();
   }

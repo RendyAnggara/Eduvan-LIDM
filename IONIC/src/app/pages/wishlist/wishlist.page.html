@@ -1,13 +1,13 @@
 <ion-header mode="ios" class="ion-no-border">
   <div class="header-navy">
-    <ion-title>Wishlist Saya</ion-title>
+    <ion-title>Favorit Saya</ion-title>
   </div>
 </ion-header>
 
 <ion-content>
   <div *ngIf="isLoading" class="loading-wishlist-box">
     <ion-spinner name="crescent"></ion-spinner>
-    <p>Sinkronisasi wishlist kamu...</p>
+    <p>Sinkronisasi favorit kamu...</p>
   </div>
 
   <ng-container *ngIf="!isLoading">
@@ -15,10 +15,8 @@
       <div class="empty-icon-circle">
         <ion-icon name="heart-dislike-outline"></ion-icon>
       </div>
-      <h3>Belum Ada Wishlist</h3>
-      <p>
-        Kursus yang kamu sukai di katalog nanti akan muncul berkumpul di sini.
-      </p>
+      <h3>Belum Ada Favorit</h3>
+      <p>Kursus yang kamu sukai di katalog nanti akan muncul di sini.</p>
     </div>
 
     <ion-grid
