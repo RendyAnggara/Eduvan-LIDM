@@ -42,7 +42,6 @@ export class LoginPage implements OnInit {
       });
     }
   }
-
   togglePassword() {
     this.showPassword = !this.showPassword;
   }
