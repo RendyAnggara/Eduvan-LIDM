@@ -41,8 +41,18 @@
     </div>
 
     <div class="action-container">
-      <ion-button expand="block" class="btn-simpan" (click)="simpanPerubahan()">
-        SIMPAN PERUBAHAN
+      <ion-button
+        expand="block"
+        class="btn-simpan"
+        (click)="simpanPerubahan()"
+        [disabled]="isLoading"
+      >
+        <ion-spinner
+          name="crescent"
+          slot="start"
+          *ngIf="isLoading"
+        ></ion-spinner>
+        {{ isLoading ? 'MENYIMPAN...' : 'SIMPAN PERUBAHAN' }}
       </ion-button>
     </div>
   </div>

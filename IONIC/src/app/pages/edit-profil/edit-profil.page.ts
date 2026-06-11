@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController, ToastController } from '@ionic/angular';
+import {
+  NavController,
+  ToastController,
+  LoadingController,
+} from '@ionic/angular';
 import { AuthService } from '../../services/auth';
 
 @Component({
@@ -20,7 +24,8 @@ export class EditProfilPage implements OnInit {
   constructor(
     private navCtrl: NavController,
     private authService: AuthService,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private loadingCtrl: LoadingController
   ) {}
 
   ngOnInit() {
@@ -35,7 +40,8 @@ export class EditProfilPage implements OnInit {
     });
   }
 
-  simpanPerubahan() {
+  // 🟢 3. UBAH JADI async BIAR BISA MANGGIL LOADING OVERLAY NATIVE
+  async simpanPerubahan() {
     if (!this.formData.name || !this.formData.email) {
       this.tampilkanToast('Nama dan Email tidak boleh kosong!', 'danger');
       return;
@@ -43,18 +49,29 @@ export class EditProfilPage implements OnInit {
 
     this.isLoading = true;
 
+    // 🟢 4. BIKIN DAN TAMPILKAN LOADING DI TENGAH LAYAR
+    const loadingOverlay = await this.loadingCtrl.create({
+      message: 'Menyimpan perubahan...',
+      spinner: 'crescent',
+    });
+    await loadingOverlay.present();
+
     this.authService.updateProfile(this.formData).subscribe({
-      next: (res: any) => {
+      next: async (res: any) => {
         this.isLoading = false;
-        // 🟢 KALO SUKSES: Update state pake data dari server
+        await loadingOverlay.dismiss(); // 🟢 5. MATIKAN LOADING PAS SUKSES
+
+        // KALO SUKSES: Update state pake data dari server
         const updatedUser = res.user || res.data || res;
         this.authService.updateCurrentUserState(updatedUser);
 
         this.tampilkanToast('Profil berhasil diperbarui!', 'success');
         this.navCtrl.back();
       },
-      error: (err) => {
+      error: async (err) => {
         this.isLoading = false;
+        await loadingOverlay.dismiss(); // 🟢 6. MATIKAN LOADING JUGA PAS EROR/OFFLINE
+
         const currentUser = this.authService['currentUserSubject'].getValue();
         const updatedLocalUser = { ...currentUser, ...this.formData };
 
