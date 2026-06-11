@@ -1,12 +1,15 @@
 import { Component, OnInit, NgZone, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { App } from '@capacitor/app';
 import { AuthService } from '../../services/auth';
 import {
+  Platform,
   NavController,
   ToastController,
   LoadingController,
 } from '@ionic/angular';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -27,7 +30,8 @@ export class LoginPage implements OnInit {
     private zone: NgZone,
     private toastCtrl: ToastController,
     private loadingCtrl: LoadingController,
-    private router: Router
+    private router: Router,
+    private platform: Platform
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -41,7 +45,24 @@ export class LoginPage implements OnInit {
         this.router.navigateByUrl('/tabs/beranda');
       });
     }
+  } // 👈 Batas akhir ngOnInit() Ivan
+
+  // 🟢 TARUH DI SINI LEK, DI BAWAH NGONINIT!
+  private backButtonSubscription!: Subscription;
+
+  ionViewDidEnter() {
+    this.backButtonSubscription =
+      this.platform.backButton.subscribeWithPriority(10, () => {
+        App.exitApp(); // 🚀 Fungsi sakral keluar aplikasi
+      });
   }
+
+  ionViewWillLeave() {
+    if (this.backButtonSubscription) {
+      this.backButtonSubscription.unsubscribe();
+    }
+  }
+
   togglePassword() {
     this.showPassword = !this.showPassword;
   }
