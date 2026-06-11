@@ -12,15 +12,37 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<any>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
+  // 1. Tambahkan fungsi ini di dalam class AuthService
+  initGoogleListener() {
+    window.addEventListener(
+      'message',
+      (event) => {
+        const origin = event.origin || '';
+        if (!origin.includes('rehalivan.com')) {
+          // Kalau bukan dari domain kita, cuekin aja
+          return;
+        }
+
+        const authData = event.data;
+        if (authData && authData.success && authData.access_token) {
+          console.log('✅ Pesan login diterima, memproses data...');
+          this.handleGoogleLoginSuccess(authData);
+        }
+      },
+      false
+    );
+  }
+
+  // 2. Update constructor lu buat manggil listener tadi
   constructor(private http: HttpClient) {
-    // 🟢 PERBAIKAN SINKRONISASI AUTO-LOGIN: Cek token & data user sekaligus saat aplikasi pertama dibuka
+    // Listener buat nangkep pesan dari pop-up Google
+    this.initGoogleListener();
+
     const token = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user_data');
-
     if (token && savedUser) {
       this.currentUserSubject.next(JSON.parse(savedUser));
     } else {
-      // Jika salah satu tidak ada, bersihkan sekalian agar aman
       this.clearStorageState();
     }
   }

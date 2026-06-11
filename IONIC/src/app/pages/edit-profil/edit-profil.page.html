@@ -1,7 +1,11 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/profil" text="" color="dark"></ion-back-button>
+      <ion-back-button
+        defaultHref="/tabs/profil"
+        text=""
+        color="dark"
+      ></ion-back-button>
     </ion-buttons>
     <ion-title>Ubah Profil</ion-title>
   </ion-toolbar>
@@ -10,14 +14,30 @@
 <ion-content>
   <div class="edit-profile-container">
     <div class="form-container">
-      
       <div class="input-group">
         <label>Nama Pengguna</label>
         <ion-item lines="none" class="custom-input-item">
-          <ion-input type="text" [(ngModel)]="formData.name" placeholder="Masukkan nama lengkap"></ion-input>
+          <ion-input
+            type="text"
+            [(ngModel)]="formData.name"
+            placeholder="Masukkan nama lengkap"
+            maxlength="30"
+          >
+          </ion-input>
         </ion-item>
+        <small
+          class="char-counter"
+          style="
+            display: block;
+            text-align: right;
+            margin-top: 4px;
+            color: #888;
+            font-size: 12px;
+          "
+        >
+          {{ formData?.name?.length || 0 }}/30 Karakter
+        </small>
       </div>
-
     </div>
 
     <div class="action-container">
