@@ -70,6 +70,9 @@ export class ProfilePage implements OnInit {
           this.selectedAvatar = user.avatar;
         }
 
+        // 🟢 TAMBAHAN PENGAMAN: Kunci ulang pakai pilihan lokal jika user sudah pernah mengganti avatar sendiri
+        this.loadSavedAvatar();
+
         this.cdr.detectChanges();
       }
     });
@@ -87,6 +90,9 @@ export class ProfilePage implements OnInit {
       this.cdr.detectChanges();
     }
 
+    // 🟢 TAMBAHAN PENGAMAN: Pastikan avatar lokal dimuat duluan sebelum API server berjalan
+    this.loadSavedAvatar();
+
     this.loadProfileFromAPI();
     this.hitungStatistikMandiri();
   }
@@ -96,9 +102,8 @@ export class ProfilePage implements OnInit {
     // Jika ada di storage pake yang lama, jika tidak ada tetep stay di avatar-neutral.png
     if (savedAvatar) {
       this.selectedAvatar = savedAvatar;
-    } else {
-      this.selectedAvatar = 'assets/icon/avatar-neutral.png';
     }
+    // 🔴 KOREKSI KECIL: Kita hilangkan blok 'else' reset di sini agar state dari Google/API tidak terhapus paksa jika storage kosong
   }
 
   /**
@@ -186,6 +191,9 @@ export class ProfilePage implements OnInit {
             this.selectedAvatar = this.userProfile.avatar;
           }
 
+          // 🟢 TAMBAHAN PENGAMAN: Timpa balik data avatar dari server menggunakan data pilihan manual lokal HP lu lek!
+          this.loadSavedAvatar();
+
           // Hitung Ulang Kursus
           this.courseService.getMyEnrollments().subscribe({
             next: (enrollRes: any) => {
@@ -213,6 +221,8 @@ export class ProfilePage implements OnInit {
       },
       error: (err) => {
         console.error('Error saat load profile:', err);
+        // 🟢 TAMBAHAN PENGAMAN: Jika API offline, pastikan gambar lokal tetap utuh
+        this.loadSavedAvatar();
       },
     });
   }
