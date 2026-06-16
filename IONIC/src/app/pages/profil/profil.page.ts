@@ -16,7 +16,7 @@ import { CourseService } from '../../services/course.service';
 export class ProfilePage implements OnInit {
   userProfile: any = null;
 
-  // 🟢 PERBAIKAN 1: Setel bawaan (default) awal ke gambar netral/anonim universal lek
+  // Default awal ke gambar netral universal lek
   selectedAvatar: string = 'assets/icon/avatar-neutral.png';
 
   isSkModalOpen: boolean = false;
@@ -42,7 +42,6 @@ export class ProfilePage implements OnInit {
       cssClass: 'alert-btn-keluar',
       handler: () => {
         this.isLogoutAlertOpen = false;
-        localStorage.removeItem('user_avatar');
         this.authService.logout();
         this.navCtrl.navigateRoot('/login');
         this.cdr.detectChanges();
@@ -61,37 +60,50 @@ export class ProfilePage implements OnInit {
 
   ngOnInit() {
     this.loadSavedAvatar();
+
+    // 🟢 SINKRONISASI CACHE AWAL
+    const localUserData =
+      localStorage.getItem('user_data') || localStorage.getItem('user');
+    if (localUserData) {
+      this.userProfile = JSON.parse(localUserData);
+      if (this.userProfile && this.userProfile.avatar) {
+        this.selectedAvatar = this.userProfile.avatar;
+      }
+    }
+
     this.authService.currentUser$.subscribe((user: any) => {
       if (user) {
-        this.userProfile = user;
-
-        // 🟢 SINKRONISASI AVATAR GOOGLE: Jika login lewat Google dan punya avatar, langsung pasang otomatis lek!
-        if (user.avatar) {
-          this.selectedAvatar = user.avatar;
+        if (
+          this.userProfile &&
+          (this.userProfile.avatar !== user.avatar ||
+            this.userProfile.name !== user.name)
+        ) {
+          if (!this.userProfile.avatar && user.avatar) {
+            this.userProfile.avatar = user.avatar;
+            this.selectedAvatar = user.avatar;
+          }
+        } else {
+          this.userProfile = user;
+          if (user.avatar) {
+            this.selectedAvatar = user.avatar;
+          }
         }
-
-        // 🟢 TAMBAHAN PENGAMAN: Kunci ulang pakai pilihan lokal jika user sudah pernah mengganti avatar sendiri
-        this.loadSavedAvatar();
-
         this.cdr.detectChanges();
       }
     });
   }
 
   ionViewWillEnter() {
-    // 🟢 ANTISIPASI DELAY: Ambil data darurat dari localStorage jika state BehaviorSubject sedang kosong pas transisi page
+    // Ambil data darurat dari localStorage pas transisi page
     const localUserData =
       localStorage.getItem('user_data') || localStorage.getItem('user');
-    if (!this.userProfile && localUserData) {
+    if (localUserData) {
       this.userProfile = JSON.parse(localUserData);
-      if (this.userProfile.avatar) {
+      if (this.userProfile && this.userProfile.avatar) {
         this.selectedAvatar = this.userProfile.avatar;
       }
       this.cdr.detectChanges();
     }
-
-    // 🟢 TAMBAHAN PENGAMAN: Pastikan avatar lokal dimuat duluan sebelum API server berjalan
-    this.loadSavedAvatar();
 
     this.loadProfileFromAPI();
     this.hitungStatistikMandiri();
@@ -99,21 +111,20 @@ export class ProfilePage implements OnInit {
 
   loadSavedAvatar() {
     const savedAvatar = localStorage.getItem('user_avatar');
-    // Jika ada di storage pake yang lama, jika tidak ada tetep stay di avatar-neutral.png
     if (savedAvatar) {
       this.selectedAvatar = savedAvatar;
+    } else if (this.userProfile && this.userProfile.avatar) {
+      this.selectedAvatar = this.userProfile.avatar;
+    } else {
+      this.selectedAvatar = 'assets/icon/avatar-neutral.png';
     }
-    // 🔴 KOREKSI KECIL: Kita hilangkan blok 'else' reset di sini agar state dari Google/API tidak terhapus paksa jika storage kosong
   }
 
-  /**
-   * 🟢 PERBAIKAN 2: Action Sheet dengan opsi Laki-laki, Perempuan, dan Pilihan Netral baku
-   */
   async changeAvatar() {
     const actionSheet = await this.actionSheetCtrl.create({
       header: 'Pilih Karakter Avatar',
       cssClass: 'premium-avatar-sheet',
-      mode: 'ios', // Paksa mode iOS biar tampilannya clean melengkung rapi
+      mode: 'ios',
       buttons: [
         {
           text: 'Karakter Laki-laki 👦',
@@ -147,16 +158,75 @@ export class ProfilePage implements OnInit {
   }
 
   updateAvatar(path: string) {
+    // 🟢 LANGKAH OPTIMIS: Ubah UI secara instan biar user ngerasa responsif lek
     this.selectedAvatar = path;
     localStorage.setItem('user_avatar', path);
-    this.cdr.detectChanges(); // Paksa view update gambar baru saat diklik lek
+
+    if (this.userProfile) {
+      this.userProfile.avatar = path;
+    } else {
+      // Antisipasi jika userProfile null di memori, kita buat object instan sementara dari LocalStorage
+      const localUserData =
+        localStorage.getItem('user_data') || localStorage.getItem('user');
+      this.userProfile = localUserData
+        ? JSON.parse(localUserData)
+        : { name: '', email: '' };
+      this.userProfile.avatar = path;
+    }
+    this.cdr.detectChanges();
+
+    // 🟢 AMANKAN PAYLOAD: Jika data name/email kosong di memori, fallback ambil langsung dari cache local storage
+    let currentName = this.userProfile?.name;
+    let currentEmail = this.userProfile?.email;
+
+    if (!currentName || !currentEmail) {
+      const backupData =
+        localStorage.getItem('user_data') || localStorage.getItem('user');
+      if (backupData) {
+        const parsedBackup = JSON.parse(backupData);
+        currentName = currentName || parsedBackup.name;
+        currentEmail = currentEmail || parsedBackup.email;
+      }
+    }
+
+    if (currentName && currentEmail) {
+      const payload = {
+        avatar: path,
+        name: currentName,
+        email: currentEmail,
+      };
+
+      if (typeof this.authService.updateProfile === 'function') {
+        this.authService.updateProfile(payload).subscribe({
+          next: (res: any) => {
+            console.log('✅ Avatar tersimpan di cPanel Server!', res);
+
+            // Ambil data user murni dari response Laravel (bisa res.user atau res langsung)
+            const dataUserTerbaru = res.user ? res.user : res;
+
+            // Satukan data terbaru ke local storage biar sinkron luar dalam
+            localStorage.setItem('user_data', JSON.stringify(dataUserTerbaru));
+            localStorage.setItem('user', JSON.stringify(dataUserTerbaru));
+
+            // Update stream pusat agar ngOnInit tidak mendeteksi data lama lek
+            if (typeof this.authService.updateCurrentUserState === 'function') {
+              this.authService.updateCurrentUserState(dataUserTerbaru);
+            }
+            this.cdr.detectChanges();
+          },
+          error: (err) => console.error('❌ Gagal sinkronisasi ke DB:', err),
+        });
+      }
+    } else {
+      console.warn(
+        '⚠️ Gagal kirim API: Data name atau email tidak dapat ditemukan di memori ataupun cache.'
+      );
+    }
   }
 
   hitungStatistikMandiri() {
-    // A. Hitung Jumlah Kursus Aktif
     this.courseService.getMyEnrollments().subscribe({
       next: (enrollRes: any) => {
-        console.log('Jalur Bypass Enrollments Sukses:', enrollRes);
         const dataKursus = enrollRes.data ? enrollRes.data : enrollRes;
         if (Array.isArray(dataKursus)) {
           this.angkaKursus = dataKursus.length;
@@ -166,10 +236,8 @@ export class ProfilePage implements OnInit {
       error: (err) => console.error('Bypass Kursus Gagal:', err),
     });
 
-    // B. Hitung Jumlah Sertifikat
     this.courseService.getMyCertificates().subscribe({
       next: (certRes: any) => {
-        console.log('Jalur Bypass Certificates Sukses:', certRes);
         const dataSertifikat = certRes.data ? certRes.data : certRes;
         if (Array.isArray(dataSertifikat)) {
           this.angkaSertifikat = dataSertifikat.length;
@@ -184,44 +252,39 @@ export class ProfilePage implements OnInit {
     this.authService.getProfileFromServer().subscribe({
       next: (res: any) => {
         if (res) {
-          this.userProfile = res.data ? res.data : res;
+          const dataTerbaru = res.data ? res.data : res;
+          this.userProfile = dataTerbaru;
 
-          // Jika API server mengembalikan avatar Google, ikuti pasang otomatis
-          if (this.userProfile.avatar) {
-            this.selectedAvatar = this.userProfile.avatar;
+          // Paksa update localStorage dengan data tergress dari cPanel
+          localStorage.setItem('user_data', JSON.stringify(dataTerbaru));
+          localStorage.setItem('user', JSON.stringify(dataTerbaru));
+
+          // Sinkronisasi data stream pusat
+          if (typeof this.authService.updateCurrentUserState === 'function') {
+            this.authService.updateCurrentUserState(dataTerbaru);
           }
 
-          // 🟢 TAMBAHAN PENGAMAN: Timpa balik data avatar dari server menggunakan data pilihan manual lokal HP lu lek!
-          this.loadSavedAvatar();
+          // 🟢 KUNCI FIX MENTAL: Jika server mengembalikan data avatar yang valid, gunakan itu lek!
+          if (dataTerbaru && dataTerbaru.avatar) {
+            this.selectedAvatar = dataTerbaru.avatar;
+            localStorage.setItem('user_avatar', dataTerbaru.avatar);
+          } else {
+            // Jika di server null tapi di local storage ada data valid, amankan data local storage
+            this.loadSavedAvatar();
+          }
 
-          // Hitung Ulang Kursus
-          this.courseService.getMyEnrollments().subscribe({
-            next: (enrollRes: any) => {
-              const dataKursus = enrollRes.data ? enrollRes.data : enrollRes;
-              if (Array.isArray(dataKursus)) {
-                this.angkaKursus = dataKursus.length;
-                this.cdr.detectChanges();
-              }
-            },
-          });
-
-          // Hitung Ulang Sertifikat
-          this.courseService.getMyCertificates().subscribe({
-            next: (certRes: any) => {
-              const dataSertifikat = certRes.data ? certRes.data : certRes;
-              if (Array.isArray(dataSertifikat)) {
-                this.angkaSertifikat = dataSertifikat.length;
-                this.cdr.detectChanges();
-              }
-            },
-          });
+          if (dataTerbaru.enrollments_count !== undefined) {
+            this.angkaKursus = dataTerbaru.enrollments_count;
+          }
+          if (dataTerbaru.certificates_count !== undefined) {
+            this.angkaSertifikat = dataTerbaru.certificates_count;
+          }
 
           this.cdr.detectChanges();
         }
       },
       error: (err) => {
         console.error('Error saat load profile:', err);
-        // 🟢 TAMBAHAN PENGAMAN: Jika API offline, pastikan gambar lokal tetap utuh
         this.loadSavedAvatar();
       },
     });
@@ -255,7 +318,6 @@ export class ProfilePage implements OnInit {
         {
           text: 'Ya, Keluar',
           handler: () => {
-            localStorage.removeItem('user_avatar');
             this.authService.logout();
             this.navCtrl.navigateRoot('/login');
           },
@@ -265,7 +327,6 @@ export class ProfilePage implements OnInit {
     await alert.present();
   }
 
-  // 🟢 PERBAIKAN 3: Ditambahkan deteksi deteksi paksa perubahan komponen modal kustom
   setSkModal(isOpen: boolean) {
     this.isSkModalOpen = isOpen;
     this.cdr.detectChanges();

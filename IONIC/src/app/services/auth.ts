@@ -7,19 +7,17 @@ import { Observable, tap, BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://eduvan.rehalivan.com/api';
+  private apiUrl = environment.apiUrl;
 
   private currentUserSubject = new BehaviorSubject<any>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
-  // 1. Tambahkan fungsi ini di dalam class AuthService
   initGoogleListener() {
     window.addEventListener(
       'message',
       (event) => {
         const origin = event.origin || '';
         if (!origin.includes('rehalivan.com')) {
-          // Kalau bukan dari domain kita, cuekin aja
           return;
         }
 
@@ -33,13 +31,12 @@ export class AuthService {
     );
   }
 
-  // 2. Update constructor lu buat manggil listener tadi
   constructor(private http: HttpClient) {
-    // Listener buat nangkep pesan dari pop-up Google
     this.initGoogleListener();
 
     const token = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('user_data');
+    const savedUser =
+      localStorage.getItem('user_data') || localStorage.getItem('user');
     if (token && savedUser) {
       this.currentUserSubject.next(JSON.parse(savedUser));
     } else {
@@ -47,20 +44,20 @@ export class AuthService {
     }
   }
 
-  // 🟢 TAMBAHAN SAKTI: Fungsi pemicu refresh state user secara global murni tanpa merubah kode lama
   triggerRefreshData(userData: any) {
     this.currentUserSubject.next(userData);
   }
 
   updateCurrentUserState(userData: any) {
     localStorage.setItem('user_data', JSON.stringify(userData));
+    localStorage.setItem('user', JSON.stringify(userData));
     this.currentUserSubject.next(userData);
   }
 
-  // Fungsi pembantu internal untuk membersihkan state memori
   private clearStorageState() {
     localStorage.removeItem('token');
     localStorage.removeItem('user_data');
+    localStorage.removeItem('user');
     this.currentUserSubject.next(null);
   }
 
@@ -81,14 +78,12 @@ export class AuthService {
     if (res?.user) {
       this.updateCurrentUserState(res.user);
     }
-    // Kembalikan status true jika token berhasil disuntikkan ke HP
     return !!localStorage.getItem('token');
   }
 
   verifyOTP(email: string, otp: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/verify-otp`, { email, otp }).pipe(
       tap((res: any) => {
-        // 🟢 DIKONDISIKAN: Menangkap token akses jika backend memberikan token otomatis setelah verifikasi sukses
         if (res?.access_token || res?.token) {
           localStorage.setItem('token', res.access_token || res.token);
         }
@@ -121,7 +116,6 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/register`, data);
   }
 
-  // 🟢 CEK STATUS LOGIN: Mengembalikan nilai true hanya jika token fisik benar-benar tersimpan di HP
   isLoggedIn(): boolean {
     return !!localStorage.getItem('token');
   }
@@ -137,7 +131,22 @@ export class AuthService {
     });
     return this.http.get(`${this.apiUrl}/user`, { headers }).pipe(
       tap((res: any) => {
-        if (res) this.updateCurrentUserState(res.user || res.data || res);
+        if (res) {
+          const profileData = res.user || res.data || res;
+          // 🟢 PERBAIKAN UTAMA: Permudah validasi objek agar data murni Laravel tidak terblokir lek!
+          if (profileData) {
+            const currentUser = this.currentUserSubject.value || {};
+
+            // 🔒 AMANKAN AVATAR LOKAL: Jika dari API server avatarnya kosong/null, pakai avatar lokal yang sedang aktif lek!
+            if (!profileData.avatar && currentUser.avatar) {
+              profileData.avatar = currentUser.avatar;
+            }
+
+            // Kawinkan data server dengan data statistik lokal yang sudah ada biar tidak hilang
+            const mergedData = { ...currentUser, ...profileData };
+            this.updateCurrentUserState(mergedData);
+          }
+        }
       })
     );
   }
@@ -149,7 +158,24 @@ export class AuthService {
     });
     return this.http.put(`${this.apiUrl}/user/update`, data, { headers }).pipe(
       tap((res: any) => {
-        if (res) this.updateCurrentUserState(res.user || res.data || res);
+        if (res) {
+          const currentUser = this.currentUserSubject.value || {};
+          const backendUser = res.user || res.data || {};
+
+          // 🟢 PERBAIKAN UTAMA: Gabungkan secara presisi agar field enrollments_count tidak tergilas
+          const updatedUser = {
+            ...currentUser,
+            ...backendUser,
+            ...data,
+          };
+
+          // 🔒 AMANKAN AVATAR SAAT UPDATE: Pastikan path avatar baru tidak hilang tergilas objek kosong backend
+          if (data.avatar) {
+            updatedUser.avatar = data.avatar;
+          }
+
+          this.updateCurrentUserState(updatedUser);
+        }
       })
     );
   }

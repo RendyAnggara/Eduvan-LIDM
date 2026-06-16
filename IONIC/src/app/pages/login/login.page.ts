@@ -92,10 +92,22 @@ export class LoginPage implements OnInit {
           await loading.dismiss();
           this.isLoading = false;
 
-          if (res.token) localStorage.setItem('token', res.token);
-          if (res.user) {
-            localStorage.setItem('user_data', JSON.stringify(res.user));
-            localStorage.setItem('user', JSON.stringify(res.user));
+          const userData = res.user || res.data;
+
+          if (res.token || res.access_token) {
+            localStorage.setItem('token', res.token || res.access_token);
+          }
+
+          if (userData) {
+            // 🟢 INTELLIGENT RECOVERY: Ambil cadangan avatar lokal jika database MySQL kebetulan masih kosong (NULL)
+            const localBackupAvatar = localStorage.getItem('user_avatar');
+            if (!userData.avatar && localBackupAvatar) {
+              userData.avatar = localBackupAvatar;
+            } else if (userData.avatar) {
+              localStorage.setItem('user_avatar', userData.avatar);
+            }
+
+            this.auth.updateCurrentUserState(userData);
           }
 
           this.presentToast('Selamat datang kembali!', 'primary');
@@ -173,12 +185,20 @@ export class LoginPage implements OnInit {
         if (event.data.access_token) {
           localStorage.setItem('token', event.data.access_token);
         }
-        if (event.data.user) {
-          localStorage.setItem('user_data', JSON.stringify(event.data.user));
-          localStorage.setItem('user', JSON.stringify(event.data.user));
-        }
 
-        this.auth.handleGoogleLoginSuccess(event.data);
+        if (event.data.user) {
+          const googleUser = event.data.user;
+
+          // 🟢 INTELLIGENT RECOVERY (GOOGLE LOGIN): Ambil sisa backup gambar jika field DB mengembalikan data kosong
+          const localBackupAvatar = localStorage.getItem('user_avatar');
+          if (!googleUser.avatar && localBackupAvatar) {
+            googleUser.avatar = localBackupAvatar;
+          } else if (googleUser.avatar) {
+            localStorage.setItem('user_avatar', googleUser.avatar);
+          }
+
+          this.auth.updateCurrentUserState(googleUser);
+        }
 
         // Tutup jendela pop-up dengan aman
         try {
@@ -202,10 +222,7 @@ export class LoginPage implements OnInit {
     window.addEventListener('message', authListener);
 
     // 🟢 STRATEGI BARU: Deteksi pasif yang aman dari blokir COOP Browser 🟢
-    // Kita tidak membaca properti internal targetWindow.closed secara langsung
     checkClosed = setInterval(() => {
-      // Kita hanya mengecek keberadaan objek window secara berkala,
-      // jika window hilang atau dihancurkan browser, kita reset loading secara aman.
       if (!targetWindow) {
         cleanupAuth();
       }

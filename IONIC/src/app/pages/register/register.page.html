@@ -15,6 +15,7 @@
         type="text"
         placeholder="Nama lengkap Anda"
         formControlName="name"
+        maxlength="30"
       ></ion-input>
     </ion-item>
     <p
@@ -22,6 +23,12 @@
       *ngIf="registerForm.get('name')?.touched && registerForm.get('name')?.invalid"
     >
       Nama lengkap wajib diisi
+    </p>
+    <p
+      class="error-msg"
+      *ngIf="registerForm.get('name')?.touched && registerForm.get('name')?.hasError('maxlength')"
+    >
+      Nama lengkap maksimal berisi 30 karakter
     </p>
 
     <span class="input-label">EMAIL</span>
