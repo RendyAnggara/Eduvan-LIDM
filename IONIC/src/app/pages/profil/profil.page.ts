@@ -288,7 +288,12 @@ export class ProfilePage implements OnInit {
               }
             }
           } else {
-            dataTerbaru.avatar = 'assets/icon/avatar-neutral.png';
+            // Jika dari server NULL/kosong, cek dulu memori HP
+            if (currentSavedAvatar && !currentSavedAvatar.startsWith('http')) {
+              dataTerbaru.avatar = currentSavedAvatar; // Pakai yang ada di HP biar gak balik netral
+            } else {
+              dataTerbaru.avatar = 'assets/icon/avatar-neutral.png'; // Fallback total baru netral
+            }
           }
 
           this.selectedAvatar = dataTerbaru.avatar;
