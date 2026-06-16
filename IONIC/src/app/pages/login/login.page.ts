@@ -45,15 +45,14 @@ export class LoginPage implements OnInit {
         this.router.navigateByUrl('/tabs/beranda');
       });
     }
-  } // 👈 Batas akhir ngOnInit() Ivan
+  }
 
-  // 🟢 TARUH DI SINI LEK, DI BAWAH NGONINIT!
   private backButtonSubscription!: Subscription;
 
   ionViewDidEnter() {
     this.backButtonSubscription =
       this.platform.backButton.subscribeWithPriority(10, () => {
-        App.exitApp(); // 🚀 Fungsi sakral keluar aplikasi
+        App.exitApp();
       });
   }
 
@@ -99,12 +98,11 @@ export class LoginPage implements OnInit {
           }
 
           if (userData) {
-            // 🟢 INTELLIGENT RECOVERY: Ambil cadangan avatar lokal jika database MySQL kebetulan masih kosong (NULL)
-            const localBackupAvatar = localStorage.getItem('user_avatar');
-            if (!userData.avatar && localBackupAvatar) {
-              userData.avatar = localBackupAvatar;
-            } else if (userData.avatar) {
+            // 🟢 INTEGRASI FIX: Jika user sukses login baru, simpan avatar bawaan dari DB ke local storage aslinya lek!
+            if (userData.avatar) {
               localStorage.setItem('user_avatar', userData.avatar);
+            } else {
+              localStorage.removeItem('user_avatar'); // Bersihkan sisa-sisa avatar akun sebelumnya jika di DB null
             }
 
             this.auth.updateCurrentUserState(userData);
@@ -144,6 +142,12 @@ export class LoginPage implements OnInit {
     this.isLoading = true;
     const authUrl = 'https://eduvan.rehalivan.com/api/auth/google';
 
+    
+    const lastLocalAvatar = localStorage.getItem('user_avatar');
+    if (lastLocalAvatar && !lastLocalAvatar.startsWith('http')) {
+      sessionStorage.setItem('emergency_avatar_lock', lastLocalAvatar);
+    }
+
     const targetWindow = window.open(
       authUrl,
       '_blank',
@@ -165,7 +169,6 @@ export class LoginPage implements OnInit {
     });
     await loading.present();
 
-    // Buat referensi interval di luar scope agar bisa dihancurkan di mana saja
     let checkClosed: any;
 
     const cleanupAuth = async () => {
@@ -179,7 +182,6 @@ export class LoginPage implements OnInit {
       if (event.origin !== 'https://eduvan.rehalivan.com') return;
 
       if (event.data && event.data.success === true) {
-        // Hancurkan semua pemantau seketika demi mengamankan memori
         await cleanupAuth();
 
         if (event.data.access_token) {
@@ -189,23 +191,19 @@ export class LoginPage implements OnInit {
         if (event.data.user) {
           const googleUser = event.data.user;
 
-          // 🟢 INTELLIGENT RECOVERY (GOOGLE LOGIN): Ambil sisa backup gambar jika field DB mengembalikan data kosong
-          const localBackupAvatar = localStorage.getItem('user_avatar');
-          if (!googleUser.avatar && localBackupAvatar) {
-            googleUser.avatar = localBackupAvatar;
-          } else if (googleUser.avatar) {
+          // 🟢 INTEGRASI FIX GOOGLE (POPUP): Sinkronisasikan avatar fresh bawaan login Google lek!
+          if (googleUser.avatar) {
             localStorage.setItem('user_avatar', googleUser.avatar);
+          } else {
+            localStorage.removeItem('user_avatar');
           }
 
           this.auth.updateCurrentUserState(googleUser);
         }
 
-        // Tutup jendela pop-up dengan aman
         try {
           if (targetWindow) targetWindow.close();
-        } catch (e) {
-          // Abaikan cross-origin DOM close exception
-        }
+        } catch (e) {}
 
         this.presentToast('Login Google Berhasil!', 'primary');
 
@@ -221,14 +219,12 @@ export class LoginPage implements OnInit {
 
     window.addEventListener('message', authListener);
 
-    // 🟢 STRATEGI BARU: Deteksi pasif yang aman dari blokir COOP Browser 🟢
     checkClosed = setInterval(() => {
       if (!targetWindow) {
         cleanupAuth();
       }
     }, 1500);
 
-    // Backup pelindung tambahan: jika window dialihkan atau diclose paksa, hentikan spinner setelah 35 detik
     setTimeout(() => {
       if (this.isLoading) {
         cleanupAuth();

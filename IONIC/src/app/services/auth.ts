@@ -133,12 +133,18 @@ export class AuthService {
       tap((res: any) => {
         if (res) {
           const profileData = res.user || res.data || res;
-          // 🟢 PERBAIKAN UTAMA: Permudah validasi objek agar data murni Laravel tidak terblokir lek!
           if (profileData) {
             const currentUser = this.currentUserSubject.value || {};
 
-            // 🔒 AMANKAN AVATAR LOKAL: Jika dari API server avatarnya kosong/null, pakai avatar lokal yang sedang aktif lek!
-            if (!profileData.avatar && currentUser.avatar) {
+            // 🔒 AMANKAN AVATAR LOKAL: Jika dari API berupa link Google (http) sedangkan di lokal ada avatar karakter, abaikan link Google!
+            if (
+              profileData.avatar &&
+              profileData.avatar.startsWith('http') &&
+              currentUser.avatar &&
+              !currentUser.avatar.startsWith('http')
+            ) {
+              profileData.avatar = currentUser.avatar;
+            } else if (!profileData.avatar && currentUser.avatar) {
               profileData.avatar = currentUser.avatar;
             }
 

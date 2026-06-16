@@ -58,35 +58,50 @@ export class ProfilePage implements OnInit {
     private courseService: CourseService
   ) {}
 
-  ngOnInit() {
-    this.loadSavedAvatar();
+  // 🛠️ FUNGSI PEMBANTU: Biar key avatar unik per email user lek
+  private getAvatarKey(): string {
+    if (this.userProfile && this.userProfile.email) {
+      return `user_avatar_${this.userProfile.email}`;
+    }
+    const localUserData =
+      localStorage.getItem('user_data') || localStorage.getItem('user');
+    if (localUserData) {
+      const parsed = JSON.parse(localUserData);
+      if (parsed && parsed.email) {
+        return `user_avatar_${parsed.email}`;
+      }
+    }
+    return 'user_avatar_default';
+  }
 
+  ngOnInit() {
     // 🟢 SINKRONISASI CACHE AWAL
     const localUserData =
       localStorage.getItem('user_data') || localStorage.getItem('user');
     if (localUserData) {
       this.userProfile = JSON.parse(localUserData);
-      if (this.userProfile && this.userProfile.avatar) {
-        this.selectedAvatar = this.userProfile.avatar;
-      }
+      this.loadSavedAvatar();
     }
 
     this.authService.currentUser$.subscribe((user: any) => {
       if (user) {
+        this.userProfile = user;
+        const currentSavedAvatar = localStorage.getItem(this.getAvatarKey());
+        let targetAvatar = user.avatar;
+
+        // 🔒 FILTER BENTURAN PUSAT: Jika server mengembalikan tipe link google (http) tapi local storage punya path internal valid per user, paksa pakai path internal
         if (
-          this.userProfile &&
-          (this.userProfile.avatar !== user.avatar ||
-            this.userProfile.name !== user.name)
+          targetAvatar &&
+          targetAvatar.startsWith('http') &&
+          currentSavedAvatar &&
+          !currentSavedAvatar.startsWith('http')
         ) {
-          if (!this.userProfile.avatar && user.avatar) {
-            this.userProfile.avatar = user.avatar;
-            this.selectedAvatar = user.avatar;
-          }
-        } else {
-          this.userProfile = user;
-          if (user.avatar) {
-            this.selectedAvatar = user.avatar;
-          }
+          targetAvatar = currentSavedAvatar;
+        }
+
+        this.userProfile = { ...user, avatar: targetAvatar };
+        if (targetAvatar) {
+          this.selectedAvatar = targetAvatar;
         }
         this.cdr.detectChanges();
       }
@@ -99,9 +114,7 @@ export class ProfilePage implements OnInit {
       localStorage.getItem('user_data') || localStorage.getItem('user');
     if (localUserData) {
       this.userProfile = JSON.parse(localUserData);
-      if (this.userProfile && this.userProfile.avatar) {
-        this.selectedAvatar = this.userProfile.avatar;
-      }
+      this.loadSavedAvatar();
       this.cdr.detectChanges();
     }
 
@@ -110,10 +123,14 @@ export class ProfilePage implements OnInit {
   }
 
   loadSavedAvatar() {
-    const savedAvatar = localStorage.getItem('user_avatar');
-    if (savedAvatar) {
+    const savedAvatar = localStorage.getItem(this.getAvatarKey());
+    if (savedAvatar && !savedAvatar.startsWith('http')) {
       this.selectedAvatar = savedAvatar;
-    } else if (this.userProfile && this.userProfile.avatar) {
+    } else if (
+      this.userProfile &&
+      this.userProfile.avatar &&
+      !this.userProfile.avatar.startsWith('http')
+    ) {
       this.selectedAvatar = this.userProfile.avatar;
     } else {
       this.selectedAvatar = 'assets/icon/avatar-neutral.png';
@@ -160,7 +177,6 @@ export class ProfilePage implements OnInit {
   updateAvatar(path: string) {
     // 🟢 LANGKAH OPTIMIS: Ubah UI secara instan biar user ngerasa responsif lek
     this.selectedAvatar = path;
-    localStorage.setItem('user_avatar', path);
 
     if (this.userProfile) {
       this.userProfile.avatar = path;
@@ -173,6 +189,9 @@ export class ProfilePage implements OnInit {
         : { name: '', email: '' };
       this.userProfile.avatar = path;
     }
+
+    // Simpan spesifik menggunakan email user saat ini
+    localStorage.setItem(this.getAvatarKey(), path);
     this.cdr.detectChanges();
 
     // 🟢 AMANKAN PAYLOAD: Jika data name/email kosong di memori, fallback ambil langsung dari cache local storage
@@ -253,24 +272,33 @@ export class ProfilePage implements OnInit {
       next: (res: any) => {
         if (res) {
           const dataTerbaru = res.data ? res.data : res;
-          this.userProfile = dataTerbaru;
 
-          // Paksa update localStorage dengan data tergress dari cPanel
+          this.userProfile = dataTerbaru;
+          const currentSavedAvatar = localStorage.getItem(this.getAvatarKey());
+
+          if (dataTerbaru && dataTerbaru.avatar) {
+            if (dataTerbaru.avatar.startsWith('http')) {
+              if (
+                currentSavedAvatar &&
+                !currentSavedAvatar.startsWith('http')
+              ) {
+                dataTerbaru.avatar = currentSavedAvatar;
+              } else {
+                dataTerbaru.avatar = 'assets/icon/avatar-neutral.png';
+              }
+            }
+          } else {
+            dataTerbaru.avatar = 'assets/icon/avatar-neutral.png';
+          }
+
+          this.selectedAvatar = dataTerbaru.avatar;
+
+          localStorage.setItem(this.getAvatarKey(), dataTerbaru.avatar);
           localStorage.setItem('user_data', JSON.stringify(dataTerbaru));
           localStorage.setItem('user', JSON.stringify(dataTerbaru));
 
-          // Sinkronisasi data stream pusat
           if (typeof this.authService.updateCurrentUserState === 'function') {
             this.authService.updateCurrentUserState(dataTerbaru);
-          }
-
-          // 🟢 KUNCI FIX MENTAL: Jika server mengembalikan data avatar yang valid, gunakan itu lek!
-          if (dataTerbaru && dataTerbaru.avatar) {
-            this.selectedAvatar = dataTerbaru.avatar;
-            localStorage.setItem('user_avatar', dataTerbaru.avatar);
-          } else {
-            // Jika di server null tapi di local storage ada data valid, amankan data local storage
-            this.loadSavedAvatar();
           }
 
           if (dataTerbaru.enrollments_count !== undefined) {
@@ -290,13 +318,12 @@ export class ProfilePage implements OnInit {
     });
   }
 
-  // 🟢 KUNCIAN FIX TOTAL: Pakai string murni langsung tanpa kurung siku biar Angular gak salah baca references!
   goToEdit() {
     this.navCtrl.navigateForward('/edit-profil');
   }
 
   goToCertificate() {
-    this.navCtrl.navigateForward('/certificate'); // ➔ Dijamin langsung lancar ke halaman sertifikat tanpa crash reload!
+    this.navCtrl.navigateForward('/certificate');
   }
 
   goToHistory() {
