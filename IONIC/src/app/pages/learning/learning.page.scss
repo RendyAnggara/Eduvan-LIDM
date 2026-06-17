@@ -9,22 +9,41 @@ $navy-border-tint: #e2edf5;
 // HEADER NAVY THEME INTEGRATION
 .header-navy {
   background: $navy-color;
-  height: 72px;
+  
+  // 🟢 KUNCI UTAMA 1: Hancurkan kuncian 72px lama lu lek! Paksa auto biar dia bisa melar turun ke bawah
+  height: auto !important; 
+  
+  // 🟢 KUNCI UTAMA 2: Takaran padding atas diset 46px + safe area HP poni lu. 
+  // Jarak bawah dikunci 20px biar bodi lengkungannya tetep simetris montok cantik!
+  padding: calc(46px + env(safe-area-inset-top, 0px)) 20px 20px 20px !important;
+  
   border-bottom-left-radius: 24px;
   border-bottom-right-radius: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 20px;
   box-shadow: 0 4px 14px rgba(9, 60, 93, 0.2);
+  
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100%;
+  box-sizing: border-box;
 
   ion-title {
     color: #ffffff;
     font-weight: 800;
-    font-size: 1.25rem;
+    font-size: 1.35rem; 
     letter-spacing: -0.3px;
-    text-align: center;
     padding: 0;
+    
+    // Paksa center murni di tengah layar HP
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    
+    // Pastikan tidak ada margin/padding gaib yang nahan dia di atas lek
+    margin: 0 !important; 
   }
 }
 
