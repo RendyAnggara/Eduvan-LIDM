@@ -7,7 +7,6 @@ use App\Models\Course;
 use App\Models\User;
 use App\Models\Enrollment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class CourseController extends Controller
 {
@@ -25,10 +24,11 @@ class CourseController extends Controller
         $course = Course::withCount('users')->find($id);
 
         // 2. Jika kursus tidak ditemukan, kirim respon error 404
-        if (!$course) {
+        if (!$course)
+        {
             return response()->json([
                 'success' => false,
-                'message' => 'Kursus tidak ditemukan lek!'
+                'message' => 'Kursus tidak ditemukan!'
             ], 404);
         }
 
@@ -46,42 +46,26 @@ class CourseController extends Controller
             'rating' => 'required|numeric|min:1|max:5'
         ]);
 
-        // 2. Pastikan kursusnya emang ada di database cPanel
         $course = Course::findOrFail($id);
-        $user = $request->user(); // Ambil data student yang sedang login
+        $user = $request->user();
 
-        // 3. Cek apakah student ini beneran udah beli kelasnya (Biar ga di-spam orang luar)
+        // 2. Cek apakah student ini beneran udah beli kelasnya
         $hasEnrolled = Enrollment::where('user_id', $user->id)
             ->where('course_id', $id)
             ->where('status', 'success')
             ->exists();
 
-        if (!$hasEnrolled) {
+        if (!$hasEnrolled)
+        {
             return response()->json([
                 'success' => false,
-                'message' => 'Lu belum beli atau melunasi kursus ini mbut, ga bisa ngasih rating!'
+                'message' => 'Kamu belum beli atau melunasi kursus ini, tidak bisa kasih rating!'
             ], 403);
         }
 
-        // 4. Gunakan DB table builder bawaan Laravel untuk menghemat space tanpa bikin Model baru
-        // Simpan atau update bintang dari student ini di tabel transaksional 'course_ratings'
-        DB::table('course_ratings')->updateOrInsert(
-            ['user_id' => $user->id, 'course_id' => $id], // Kondisi cek unik
-            [
-                'rating' => $request->rating,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]
-        );
-
-        // 5. HITUNG RATA-RATA: Tarik semua total rating masuk rumus AVG murni MySQL
-        $rataRataBintang = DB::table('course_ratings')
-            ->where('course_id', $id)
-            ->avg('rating');
-
-        // 6. UPDATE LIVE: Masukkan nilai pecahan desimal ke kolom rating di tabel courses lu mbut
+        // 3. LANGSUNG UPDATE: Gak perlu simpan ke course_ratings, langsung timpa kolom rating di tabel courses
         $course->update([
-            'rating' => round($rataRataBintang, 1) // otomatis dibulatkan 1 angka di belakang koma (ex: 4.8)
+            'rating' => $request->rating
         ]);
 
         return response()->json([

@@ -27,10 +27,13 @@ Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'resetPa
 Route::post('/xendit/callback', [EnrollmentController::class, 'handleCallback']);
 Route::get('/courses/{course_id}/contents', [ContentController::class, 'index']);
 Route::get('/certificates/{id}/download', [CertificateApiController::class, 'downloadMobile']);
+Route::get('auth/google', [AuthController::class, 'redirectToGoogle']);
+Route::get('auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
 
 
 // --- API Privat (Wajib bawa Token / auth:sanctum) ---
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function ()
+{
     Route::get('/user', [AuthController::class, 'me']);    // Ambil data profil
     Route::post('/logout', [AuthController::class, 'logout']); // Hapus token
     Route::post('/enrollments', [EnrollmentController::class, 'store']);
