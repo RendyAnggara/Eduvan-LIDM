@@ -15,6 +15,12 @@ use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Api\NotificationApiController;
 
 // --- API Publik (Bisa diakses tanpa login) ---
+Route::get('/', function () {
+    return response()->json([
+        'status' => 'success',
+        'message' => 'EduVan RESTful API Server is Running Live'
+    ]);
+});
 Route::get('/courses', [CourseController::class, 'index']);
 Route::get('/courses/{id}', [CourseController::class, 'show']);
 Route::post('/login', [AuthController::class, 'login']);
