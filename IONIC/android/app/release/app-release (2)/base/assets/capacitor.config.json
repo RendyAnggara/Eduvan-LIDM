@@ -1,0 +1,14 @@
+{
+	"appId": "com.rehalivan.eduvan",
+	"appName": "Eduvan Marketplace",
+	"webDir": "www",
+	"plugins": {
+		"SplashScreen": {
+			"launchShowDuration": 1000,
+			"launchAutoHide": true,
+			"backgroundColor": "#111827",
+			"androidSplashResourceName": "transparent",
+			"splashImmersive": true
+		}
+	}
+}
