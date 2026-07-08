@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CourseService } from '../../services/course.service';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { CourseService } from '../../services/course.service';
 
 @Component({
   selector: 'app-course-detail',
