@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\QuizProgressController;
 use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\TeacherController;
+use App\Http\Controllers\Admin\OrderController;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\File;
 
@@ -107,4 +109,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function ()
     // Notifikasi
     Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
     Route::post('/notifications/send', [NotificationController::class, 'store'])->name('admin.notifications.send');
+
+    // Modul 1: Guru import siswa massal via Web Admin
+    Route::post('/teacher/student', [TeacherController::class, 'storeStudent'])->name('teacher.student.store');
+    // Modul 2: Guru simulasi beli paket kuota kelas via Web Admin
+    Route::post('/teacher/checkout-simulated', [OrderController::class, 'checkoutSimulated'])->name('teacher.checkout.simulated');
 });
