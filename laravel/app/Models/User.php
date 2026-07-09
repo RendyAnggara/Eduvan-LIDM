@@ -24,6 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'nisn_or_nip',
         'otp_code',
         'otp_expiry',
     ];

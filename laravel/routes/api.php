@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\CertificateApiController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Api\NotificationApiController;
+use App\Http\Controllers\Api\VoucherController;
 
 // --- API Publik (Bisa diakses tanpa login) ---
 Route::get('/', function () {
@@ -38,8 +39,7 @@ Route::get('auth/google/callback', [AuthController::class, 'handleGoogleCallback
 
 
 // --- API Privat (Wajib bawa Token / auth:sanctum) ---
-Route::middleware('auth:sanctum')->group(function ()
-{
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'me']);    // Ambil data profil
     Route::post('/logout', [AuthController::class, 'logout']); // Hapus token
     Route::post('/enrollments', [EnrollmentController::class, 'store']);
@@ -67,4 +67,5 @@ Route::middleware('auth:sanctum')->group(function ()
     Route::post('/contents/mark-complete', [ContentController::class, 'markComplete']);
     Route::get('/notifications', [NotificationApiController::class, 'getNotifUser']);
     Route::post('/notifications/read/{id}', [NotificationApiController::class, 'markAsRead']);
+    Route::post('/student/redeem-voucher', [VoucherController::class, 'redeemVoucher']);
 });
