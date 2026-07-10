@@ -19,7 +19,7 @@ ion-content {
   
   // ➔ KUNCI RESPONSIVITAS 1: padding atas otomatis ngitung tinggi status bar HP native.
   // Kalau layarnya flat tanpa poni, dia pakai nilai aman bawaan (16px). Jadi anti-melar kejauhan
-  padding: calc(16px + env(safe-area-inset-top, 12px)) 20px 60px 20px;
+  padding: calc(16px + env(safe-area-inset-top, 12px)) 20px 20px 20px;
   
   display: flex;
   justify-content: space-between;
@@ -60,73 +60,18 @@ ion-content {
   }
 }
 
-/* ==========================================================================
-   2. SEARCH CONTAINER (Fluid Overlap Layout)
-   ========================================================================== */
-.search-container {
-  padding: 0 20px;
-  
-  // 🟢 KUNCI NAIK: Kita ubah dari -20px menjadi -28px biar dia ketarik naik ke atas sedikit
-  margin-top: -28px !important; 
-  margin-bottom: 24px;
-  box-sizing: border-box;
-
-  .search-inner {
-    background: #ffffff;
-    border-radius: 12px; 
-    padding: 4px 16px;  
-    display: flex;
-    align-items: center;
-    box-shadow: 0 12px 24px rgba(9, 60, 93, 0.06); 
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    transition: all 0.3s ease;
-
-    &:focus-within {
-      border-color: #093C5D; 
-      box-shadow: 0 0 0 3px rgba(9, 60, 93, 0.1);
-    }
-
-    ion-icon.search-click-icon {
-      color: #093C5D;
-      font-size: 20px; 
-      margin-right: 12px;
-      cursor: pointer;
-      
-      &:active {
-        transform: scale(0.85);
-      }
-    }
-
-    input {
-      border: none !important;
-      outline: none !important; 
-      box-shadow: none !important;
-      width: 100%;
-      height: 34px; 
-      font-size: 13.5px; 
-      color: #1A202C;
-      font-weight: 500;
-      background: transparent;
-
-      &::placeholder {
-        color: #718096;
-        font-weight: 400;
-      }
-    }
-  }
-}
-
 /* 3. WELCOME TEXT */
 .welcome-card-container {
   padding: 0 20px;
-  margin-bottom: 18px;
+  margin-top: 16px;
+  margin-bottom: 24px; // 🟢 UBAH DI SINI: Naikkan dari 18px ke 28px biar ada jarak ke bawah
   box-sizing: border-box;
 
   h2 {
     color: #1A202C;
-    font-size: 1.25rem; // Fluid responsive text
+    font-size: 1.25rem; 
     font-weight: 800;
-    margin: 0 0 4px 0;
+    margin: 0 0 7px 0;
   }
 
   p {
@@ -283,30 +228,33 @@ ion-content {
 }
 
 /* 7. PREMIUM VERTICAL COURSE CARDS (Horizontal Layout) */
-.course-list-vertical {
-  padding: 0 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+.course-grid-wrapper {
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); // ➔ Sakti! Maksa jadi 2 kolom sama rata ke bawah
+  gap: 16px; // Jarak antar card (atas, bawah, kiri, kanan)
   box-sizing: border-box;
 
+  // LAYOUT CARD BARU: Gambar di atas, info di bawah biar pas masuk 2 kolom
   .premium-course-card-horizontal {
     background: #ffffff;
     border-radius: 20px;
     padding: 12px;
     display: flex;
-    gap: 16px;
+    flex-direction: column; // ➔ Ubah jadi vertikal biar gambar di atas teks
+    gap: 12px;
     border: 1px solid rgba(226, 232, 240, 0.8);
     box-shadow: 0 10px 25px rgba(9, 60, 93, 0.04);
     transition: transform 0.3s ease;
+    width: 100%; // Ikut ukuran grid
 
     &:active {
       transform: scale(0.98);
     }
 
     .course-thumb-box {
-      width: 95px;
-      height: 95px;
+      width: 100%; // ➔ Gambar jadi full selebar card-nya
+      height: 110px; // Sesuaikan tinggi gambar biar estetik
       border-radius: 14px;
       position: relative;
       overflow: hidden;
@@ -337,15 +285,14 @@ ion-content {
     .course-info-box {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      flex: 1;
-      overflow: hidden;
+      gap: 6px;
+      width: 100%;
 
       h5 {
         color: #1A202C;
-        font-size: 13.5px;
+        font-size: 13px;
         font-weight: 800;
-        margin: 0 0 2px 0;
+        margin: 0;
         line-height: 1.4;
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -356,7 +303,7 @@ ion-content {
       .instructor {
         color: #718096;
         font-size: 11px;
-        margin: 0 0 6px 0;
+        margin: 0;
         font-weight: 500;
       }
 
@@ -364,30 +311,98 @@ ion-content {
         display: flex;
         align-items: center;
         gap: 4px;
-        margin-bottom: 4px;
 
         ion-icon {
           color: #ffb300;
-          font-size: 14px;
+          font-size: 13px;
         }
 
         .rating-val {
           color: #1A202C;
-          font-size: 12px;
+          font-size: 11.5px;
           font-weight: 700;
         }
 
         .rating-count {
           color: #718096;
-          font-size: 11px;
+          font-size: 10.5px;
         }
       }
 
       .course-price {
-        color: $navy-color;
-        font-size: 13.5px;
+        color: #093c5d;
+        font-size: 13px;
         font-weight: 800;
+        margin-top: 2px;
       }
     }
+  }
+}
+
+.section-title-box {
+  padding: 0 20px;
+  margin-top: 16px;
+  h4 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #093c5d;
+    margin: 0;
+  }
+}
+
+// TARUH DI PALING BAWAH FILE SCSS LU, JANGAN DI DALAM KELAS LAIN
+.insight-section {
+  padding: 20px;
+  margin-bottom: 30px; 
+  box-sizing: border-box;
+  clear: both; // Memastikan gak ada efek float dari layout atasnya
+}
+
+.insight-card-baru {
+  background: linear-gradient(135deg, #093c5d 0%, #0d5584 100%) !important; // Pake !important biar gak ditimpa class lain
+  border-radius: 24px;
+  padding: 20px;
+  box-shadow: 0 12px 30px rgba(9, 60, 93, 0.15);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    top: -50px;
+    right: -50px;
+  }
+
+  .insight-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff !important;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 50px;
+    display: inline-block;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  h3 {
+    color: #ffffff !important;
+    font-size: 18px;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    line-height: 1.3;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-size: 13px;
+    font-weight: 500;
+    margin: 0;
+    line-height: 1.5;
+    white-space: normal;
   }
 }
