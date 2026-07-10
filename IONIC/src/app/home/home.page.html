@@ -11,7 +11,7 @@
   <div class="konten-beranda"></div>
   <div class="main-wrapper">
     <div class="header-section">
-      <div class="brand">Edu<span>Van</span></div>
+      <div class="brand">Edu<span>Learn</span></div>
 
       <div class="notif-wrapper" (click)="goToNotif()">
         <ion-icon name="notifications-outline" class="icon-notif"></ion-icon>
@@ -39,22 +39,6 @@
       </div>
     </div>
 
-    <div class="search-container">
-      <div class="search-inner">
-        <ion-icon
-          name="search-outline"
-          class="search-click-icon"
-          (click)="fungsiCariKursus()"
-        ></ion-icon>
-        <input
-          type="text"
-          [(ngModel)]="keywordPencarian"
-          (keyup.enter)="fungsiCariKursus()"
-          placeholder="Cari kursus yang diinginkan"
-        />
-      </div>
-    </div>
-
     <div class="welcome-card-container">
       <div class="welcome-card-inner">
         <div class="text-group">
@@ -64,37 +48,19 @@
       </div>
     </div>
 
-    <div class="banner-iklan" (click)="goToBannerDetail()">
-      <div class="banner-text">
-        <h2>Tingkatkan Skill,<br />Wujudkan Masa Depan</h2>
-        <p>Belajar kapan saja, di mana saja bersama EduVan.</p>
-        <div class="banner-button">Jelajahi Kursus</div>
-      </div>
-      <div class="banner-image">
-        <img src="assets/icon/iklan.png" alt="Iklan EduVan" />
-      </div>
-    </div>
-
     <div class="category-list">
       <div class="category-item">
         <div class="cat-icon blue"><ion-icon name="code-slash"></ion-icon></div>
-        <p>Computer Science</p>
+        <p>Kelas Wajib</p>
       </div>
       <div class="category-item">
         <div class="cat-icon green">
           <ion-icon name="document-text"></ion-icon>
         </div>
-        <p>Microsoft Office</p>
+        <p>Kelas Pilihan</p>
       </div>
     </div>
-
-    <div class="label-row">
-      <h4>Kursus Populer</h4>
-      <span class="see-all" (click)="goToCourse()" style="cursor: pointer"
-        >Lihat semua</span
-      >
-    </div>
-
+    
     <div class="course-list-vertical">
       <div *ngIf="isLoading" style="text-align: center; padding: 30px">
         <ion-spinner name="crescent" color="primary"></ion-spinner>

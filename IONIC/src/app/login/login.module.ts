@@ -1,20 +1,17 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { IonicModule } from '@ionic/angular';
-
-import { CoursePageRoutingModule } from './course-routing.module';
-
-import { CoursePage } from './course.page';
+import { LoginPageRoutingModule } from './login-routing.module';
+import { LoginPage } from './login.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    CoursePageRoutingModule
+    LoginPageRoutingModule
   ],
-  declarations: [CoursePage]
+  declarations: [LoginPage]
 })
-export class CoursePageModule {}
+export class LoginPageModule {}
