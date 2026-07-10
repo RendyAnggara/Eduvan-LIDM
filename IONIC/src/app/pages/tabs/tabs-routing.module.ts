@@ -13,22 +13,10 @@ const routes: Routes = [
           import('../../home/home.module').then((m) => m.HomePageModule),
       },
       {
-        path: 'course',
-        loadChildren: () =>
-          import('../course/course.module').then((m) => m.CoursePageModule),
-      },
-      {
         path: 'my-learning',
         loadChildren: () =>
           import('../learning/learning.module').then(
             (m) => m.LearningPageModule
-          ),
-      },
-      {
-        path: 'wishlist',
-        loadChildren: () =>
-          import('../wishlist/wishlist.module').then(
-            (m) => m.WishlistPageModule
           ),
       },
       {

@@ -1,0 +1,71 @@
+<ion-content [fullscreen]="true">
+  <div class="banner-wrapper">
+    <h1 class="main-title">Welcome to EduLearn</h1>
+    
+    <div class="illustration-container">
+      <div class="welcome-ribbon">welcome</div>
+      
+      <img src="assets/images/login-illustration.png" alt="EduLearn Students" class="students-img" />
+    </div>
+    
+    <div class="curve-bottom"></div>
+  </div>
+
+  <div class="dots-indicator ion-text-center">
+    <span class="dot active"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+  </div>
+
+  <div class="navigation-header ion-padding-horizontal">
+    <div class="nav-arrow-btn left">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </div>
+    <div class="center-text">
+      <h2>Login</h2>
+      <p>Select</p>
+    </div>
+    <div class="nav-arrow-btn right">
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </div>
+  </div>
+
+  <ion-grid class="class-grid ion-padding">
+    <ion-row>
+      <ion-col size="6" (click)="selectClass(7)">
+        <div class="class-card">
+          <div class="badge-icon-wrapper yellow-bg">
+            <ion-icon name="book" class="card-icon"></ion-icon>
+            <span class="class-number">7</span>
+          </div>
+          <h3>Kelas 7</h3>
+          <button class="btn-start">Start learning</button>
+        </div>
+      </ion-col>
+      
+      <ion-col size="6" (click)="selectClass(8)">
+        <div class="class-card">
+          <div class="badge-icon-wrapper blue-bg">
+            <ion-icon name="book" class="card-icon"></ion-icon>
+            <span class="class-number">8</span>
+          </div>
+          <h3>Kelas 8</h3>
+          <button class="btn-start">Start learning</button>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row class="ion-margin-top ion-justify-content-center">
+      <ion-col size="6" (click)="selectClass(9)">
+        <div class="class-card">
+          <div class="badge-icon-wrapper green-bg">
+            <ion-icon name="book" class="card-icon"></ion-icon>
+            <span class="class-number">9</span>
+          </div>
+          <h3>Kelas 9</h3>
+          <button class="btn-start">Start learning</button>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
