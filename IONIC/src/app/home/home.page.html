@@ -49,18 +49,30 @@
     </div>
 
     <div class="category-list">
-      <div class="category-item">
-        <div class="cat-icon blue"><ion-icon name="code-slash"></ion-icon></div>
-        <p>Kelas Wajib</p>
-      </div>
-      <div class="category-item">
-        <div class="cat-icon green">
-          <ion-icon name="document-text"></ion-icon>
+      <!-- 🟢 KATEGORI 1: Computer Science -->
+      <div
+        class="category-item"
+        (click)="selectCategory('Computer Science')"
+        [class.active]="selectedCategory === 'Computer Science'"
+      >
+        <div class="cat-icon blue">
+          <ion-icon name="code-slash"></ion-icon>
         </div>
-        <p>Kelas Pilihan</p>
+        <p>Computer Science</p>
+      </div>
+
+      <div
+        class="category-item"
+        (click)="selectCategory('Microsoft Office')"
+        [class.active]="selectedCategory === 'Microsoft Office'"
+      >
+        <div class="cat-icon green">
+          <ion-icon name="apps"></ion-icon>
+        </div>
+        <p>Microsoft Office</p>
       </div>
     </div>
-    
+
     <div class="course-list-vertical">
       <div *ngIf="isLoading" style="text-align: center; padding: 30px">
         <ion-spinner name="crescent" color="primary"></ion-spinner>
@@ -69,55 +81,99 @@
         </p>
       </div>
 
-      <ng-container *ngIf="!isLoading">
-        <div
-          class="premium-course-card-horizontal"
-          *ngFor="let kursus of kursusTersaring"
-          (click)="goToDetail(kursus.id)"
-          style="cursor: pointer"
-        >
-          <div class="course-thumb-box">
-            <img
-              [src]="kursus.image ? kursus.image : getDefaultImage(kursus.category)"
-              (error)="handleImageError($event, kursus.category)"
-              alt="Course Image"
-            />
-            <div class="tag-best">{{ kursus.category || 'Populer' }}</div>
-          </div>
-
-          <div class="course-info-box">
-            <h5>{{ kursus.title }}</h5>
-            <p class="instructor">Instructor EduVan</p>
-
-            <div class="course-meta">
-              <ion-icon name="star"></ion-icon>
-              <span class="rating-val">{{ kursus.rating || '5.0' }}</span>
-              <span class="rating-count">(Live)</span>
-            </div>
-
-            <div class="course-price">
-              {{ kursus.price == 0 || kursus.price == '0' ? 'Gratis' : 'Rp ' +
-              (kursus.price | number:'1.0-0') }}
-            </div>
-          </div>
+      <!-- 🖥️ 1. RAK COMPUTER SCIENCE -->
+      <div *ngIf="!selectedCategory || selectedCategory === 'Computer Science'">
+        <div class="section-title-box">
+          <h4>Computer Science</h4>
         </div>
 
-        <div
-          *ngIf="kursusTersaring.length === 0"
-          style="text-align: center; padding: 40px; color: #94a3b8"
-        >
-          <ion-icon
-            name="star-outline"
-            style="
-              font-size: 40px;
-              color: #cbd5e1;
-              display: block;
-              margin: 0 auto 10px;
-            "
-          ></ion-icon>
-          <p>Belum ada kursus populer saat ini</p>
+        <!-- 🟢 GANTI CLASS DI SINI JADI GRID -->
+        <div class="course-grid-wrapper">
+          <ng-container *ngFor="let kursus of kursusTersaring">
+            <div
+              class="premium-course-card-horizontal"
+              *ngIf="kursus.category === 'Computer Science'"
+              (click)="goToDetail(kursus.id)"
+              style="cursor: pointer"
+            >
+              <!-- Isi layout item kursus lu tetep sama -->
+              <div class="course-thumb-box">
+                <img
+                  [src]="kursus.image ? kursus.image : getDefaultImage(kursus.category)"
+                  alt="Course Image"
+                />
+                <div class="tag-best">{{ kursus.category }}</div>
+              </div>
+              <div class="course-info-box">
+                <h5>{{ kursus.title }}</h5>
+                <p class="instructor">Instructor EduVan</p>
+                <div class="course-meta">
+                  <ion-icon name="star"></ion-icon>
+                  <span class="rating-val">{{ kursus.rating || '5.0' }}</span>
+                </div>
+                <div class="course-price">
+                  {{ kursus.price == 0 ? 'Gratis' : 'Rp ' + (kursus.price |
+                  number:'1.0-0') }}
+                </div>
+              </div>
+            </div>
+          </ng-container>
         </div>
-      </ng-container>
+      </div>
+
+      <!-- 📊 2. RAK MICROSOFT OFFICE -->
+      <div
+        *ngIf="!selectedCategory || selectedCategory === 'Microsoft Office'"
+        style="margin-top: 24px"
+      >
+        <div class="section-title-box">
+          <h4>Microsoft Office</h4>
+        </div>
+
+        <!-- 🟢 GANTI CLASS DI SINI JADI GRID -->
+        <div class="course-grid-wrapper">
+          <ng-container *ngFor="let kursus of kursusTersaring">
+            <div
+              class="premium-course-card-horizontal"
+              *ngIf="kursus.category === 'Microsoft Office'"
+              (click)="goToDetail(kursus.id)"
+              style="cursor: pointer"
+            >
+              <!-- Isi layout item kursus lu tetep sama -->
+              <div class="course-thumb-box">
+                <img
+                  [src]="kursus.image ? kursus.image : getDefaultImage(kursus.category)"
+                  alt="Course Image"
+                />
+                <div class="tag-best">{{ kursus.category }}</div>
+              </div>
+              <div class="course-info-box">
+                <h5>{{ kursus.title }}</h5>
+                <p class="instructor">Instructor EduVan</p>
+                <div class="course-meta">
+                  <ion-icon name="star"></ion-icon>
+                  <span class="rating-val">{{ kursus.rating || '5.0' }}</span>
+                </div>
+                <div class="course-price">
+                  {{ kursus.price == 0 ? 'Gratis' : 'Rp ' + (kursus.price |
+                  number:'1.0-0') }}
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="insight-section">
+    <div class="insight-card-baru">
+      <!-- Ganti namanya dikit biar gak bentrok -->
+      <div class="insight-badge">Tip Hari Ini ✨</div>
+      <h3>Jangan Takut Eror!</h3>
+      <p>
+        "Eror saat ngoding itu bukan tanda kamu gagal, tapi tanda kalau sistem
+        lagi ngasih tahu jalan yang bener. Tetap semangat ngulik Ionic-nya!"
+      </p>
     </div>
   </div>
 

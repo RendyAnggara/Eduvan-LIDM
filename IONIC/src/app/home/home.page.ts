@@ -16,6 +16,8 @@ export class HomePage implements OnInit {
   isLoading: boolean = true;
   kursusTersaring: any[] = [];
   unreadCount: number = 0;
+  selectedCategory: string | null = null;
+  courses: any[] = [];
 
   constructor(
     private router: Router,
@@ -27,13 +29,36 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
     this.ambilNamaUserLive();
-    this.muatDataBerandaTotal(); // Memuat data awal saat aplikasi pertama kali dibuka
+    this.muatDataBerandaTotal();
+    this.loadCourses(); // Memuat data awal saat aplikasi pertama kali dibuka
 
     // Otomatis memuat ulang jumlah angka lonceng jika ada sinyal perubahan dari service
     this.courseService.notifChanged$.subscribe((berubah: boolean) => {
       if (berubah) {
         this.muatJumlahNotifikasi();
       }
+    });
+  }
+
+  selectCategory(categoryName: string) {
+    if (this.selectedCategory === categoryName) {
+      this.selectedCategory = null;
+      this.kursusTersaring = this.courses; // Kalau reset, balikin semua data asli
+    } else {
+      this.selectedCategory = categoryName;
+      // Filter master data dan masukkan hasilnya ke kursusTersaring
+      this.kursusTersaring = this.courses.filter(
+        (kursus) => kursus.category === categoryName
+      );
+    }
+  }
+
+  loadCourses() {
+    this.courseService.getCourses().subscribe({
+      next: (res: any) => {
+        this.courses = res.data; // Simpan master data asli
+        this.kursusTersaring = res.data; // Tampilan awal
+      },
     });
   }
 
