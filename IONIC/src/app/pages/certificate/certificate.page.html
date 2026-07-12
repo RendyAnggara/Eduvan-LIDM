@@ -1,71 +1,66 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button
-        defaultHref="/tabs/profil"
-        text=""
-        color="dark"
-      ></ion-back-button>
-    </ion-buttons>
-
-    <ion-title>Sertifikat Saya</ion-title>
-  </ion-toolbar>
+<ion-header mode="ios" class="ion-no-border">
+  <!-- 🌊 SPANDUK BIRU GRADASI ATAS MODERN -->
+  <div class="header-navy-cert">
+    <div class="header-flex-row">
+      <div class="back-action-box">
+        <ion-back-button
+          defaultHref="/tabs/profil"
+          text=""
+          color="light"
+        ></ion-back-button>
+      </div>
+      <ion-title>Transkip Nilai Saya</ion-title>
+      <div class="right-spacer-passive"></div>
+    </div>
+  </div>
 </ion-header>
 
 <ion-content>
-  <div *ngIf="isLoading" style="text-align: center; padding-top: 50px">
-    <ion-spinner name="crescent" color="primary"></ion-spinner>
-
-    <p style="color: #64748b; font-size: 14px">Memeriksa sertifikat resmi...</p>
+  <!-- INDIKATOR LOADING -->
+  <div *ngIf="isLoading" class="loading-state-box">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Memeriksa Transkip Nilai resmi kamu...</p>
   </div>
 
+  <!-- KONTEN UTAMA SERTIFIKAT -->
   <div
     *ngIf="!isLoading && listSertifikat.length > 0"
     class="certificate-container"
   >
     <div class="cert-summary">
       <p>
-        Selamat! Berikut adalah daftar sertifikat resmi kamu yang sudah
+        Selamat! 🎉 Berikut adalah daftar Transkip Nilai resmi kamu yang sudah
         diverifikasi oleh <span>Admin EduVan</span>:
       </p>
     </div>
 
+    <!-- KARTU SERTIFIKAT BULAT LEMBUT -->
     <div class="certificate-card" *ngFor="let cert of listSertifikat">
       <div class="cert-badge">
-        <ion-icon name="ribbon-outline"></ion-icon>
+        <ion-icon name="ribbon"></ion-icon>
       </div>
 
       <div class="cert-info">
         <span class="cert-id">No: {{ cert.certificate_number }}</span>
-
         <h3>{{ cert.course?.title }}</h3>
-
         <p class="cert-date">
           Diterbitkan pada: {{ (cert.issued_at || cert.created_at) | date:'dd
           MMM yyyy' }}
         </p>
       </div>
 
+      <!-- TOMBOL UNDUH KONSISTEN BENTUK CHUBBY -->
       <div class="cert-action">
         <button
           class="btn-download"
           (click)="downloadPdfViaBrowser(cert.id)"
           [disabled]="isDownloading"
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 40px;
-            min-height: 40px;
-          "
         >
           <ion-spinner
             *ngIf="isDownloading && activeCertId === cert.id"
             name="crescent"
-            style="width: 20px; height: 20px; --color: #1d4ed8"
           >
           </ion-spinner>
-
           <ion-icon
             *ngIf="!(isDownloading && activeCertId === cert.id)"
             name="download-outline"
@@ -76,28 +71,13 @@
     </div>
   </div>
 
-  <div
-    *ngIf="!isLoading && listSertifikat.length === 0"
-    style="text-align: center; padding: 80px 24px; color: #94a3b8"
-  >
-    <ion-icon
-      name="shield-checkmark-outline"
-      style="font-size: 64px; color: #e2e8f0"
-    ></ion-icon>
-
-    <h3
-      style="
-        font-size: 16px;
-        font-weight: 700;
-        color: #475569;
-        margin-top: 16px;
-      "
-    >
-      Belum Ada Sertifikat Tersedia
-    </h3>
-    <p
-      style="font-size: 13px; color: #64748b; line-height: 1.5; margin-top: 8px"
-    >
+  <!-- KONDISI KETIKA BELUM ADA DATA SERTIFIKAT -->
+  <div *ngIf="!isLoading && listSertifikat.length === 0" class="empty-cert-box">
+    <div class="empty-icon-circle">
+      <ion-icon name="shield-checkmark-outline"></ion-icon>
+    </div>
+    <h3>Belum Ada Sertifikat Tersedia</h3>
+    <p>
       Sertifikat akan muncul di sini setelah kamu menyelesaikan seluruh materi
       kelas, lulus kuis, dan disetujui oleh Admin EduVan.
     </p>

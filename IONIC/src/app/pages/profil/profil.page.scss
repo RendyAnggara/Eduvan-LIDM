@@ -1,43 +1,64 @@
-$navy-color: #093C5D; // Warna biru utama EduVan
+$navy-color: #093C5D; 
 
 ion-content {
-  --background: #f8fafc;
+  // Menggunakan gradasi super lembut yang konsisten dengan beranda baru
+  --background: linear-gradient(180deg, #F4F7FA 0%, #E9EFF5 100%);
 }
 
+/* ==========================================================================
+   1. PROFILE HEADER SECTION (Dinamis Bergradasi)
+   ========================================================================== */
 .profile-header {
-  background: $navy-color; // Menggunakan warna biru solid khas EduVan
-  padding: 40px 20px;
+  // Diubah menggunakan gradasi dinamis modern agar tidak kaku
+  background: linear-gradient(135deg, #0022cc 0%, #0055ff 100%); 
+  padding: calc(40px + env(safe-area-inset-top, 12px)) 20px 45px 20px;
   text-align: center;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  box-shadow: none; 
+  border-bottom-left-radius: 40px; // Diberikan lengkungan bawah yang halus
+  border-bottom-right-radius: 40px;
+  box-shadow: 0 10px 25px rgba(0, 34, 204, 0.15); 
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -30px;
+    left: -10%;
+    width: 120%;
+    height: 90px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    transform: rotate(-3deg);
+  }
 
   .avatar-ring {
     position: relative;
     display: inline-block;
-    margin-bottom: 15px;
+    margin-bottom: 16px;
+    z-index: 5;
 
     .main-avatar {
-      width: 100px;
-      height: 100px;
+      width: 105px;
+      height: 105px;
       border-radius: 50%;
       object-fit: cover;
-      border: 3px solid #ffffff;
+      border: 4px solid #ffffff;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
       background: #e2e8f0;
     }
 
-    /* 🟢 SEGMEN PERBAIKAN: SILUET PREMIUM ALA FACEBOOK (MURNI CSS) */
     .default-avatar-placeholder {
-      width: 100px;
-      height: 100px;
+      width: 105px;
+      height: 105px;
       border-radius: 50%;
-      border: 3px solid #ffffff;
-      background: #e4e6eb; /* Warna abu-abu background khas FB */
+      border: 4px solid #ffffff;
+      background: #e4e6eb; 
       display: flex;
-      align-items: flex-end; /* Memaksa potongan pundak nempel di dasar lingkaran */
+      align-items: flex-end; 
       justify-content: center;
       overflow: hidden;
       position: relative;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 
       .fb-siluet-wrapper {
         position: relative;
@@ -49,119 +70,225 @@ ion-content {
         justify-content: flex-end;
       }
 
-      /* Kepala Bulat Siluet */
       .fb-head {
-        width: 32px;
-        height: 32px;
-        background: #bcc0c4; /* Warna abu ikon orang FB */
+        width: 34px;
+        height: 34px;
+        background: #bcc0c4; 
         border-radius: 50%;
         position: absolute;
-        bottom: 38px; /* Menggantung pas di atas pundak */
+        bottom: 40px; 
       }
 
-      /* Pundak Melengkung Berisi */
       .fb-shoulder {
-        width: 70px;
-        height: 35px;
+        width: 74px;
+        height: 36px;
         background: #bcc0c4;
-        border-radius: 35px 35px 0 0; /* Lengkungan pundak anatomi atas */
-        transform: translateY(4px); /* Kompensasi potongan biar rapi di lengkungan frame */
+        border-radius: 36px 36px 0 0; 
+        transform: translateY(4px); 
       }
     }
 
-    /* TOMBOL BADGE KAMERA */
     .edit-badge {
       position: absolute;
-      bottom: 0px;
-      right: 0px;
-      background: #ffffff;
-      color: $navy-color;
-      width: 32px;
-      height: 32px;
+      bottom: 2px;
+      right: 2px;
+      background: #ffb300; // Menggunakan aksen kuning emas agar lebih kontras menonjol
+      color: #093C5D;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid #ddd;
-      z-index: 10; /* Biar lapisannya gak ketutup siluet pundak */
+      border: 2px solid #ffffff;
+      z-index: 10; 
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      transition: all 0.2s ease;
 
       &:active {
-        transform: scale(0.9); /* Efek feedback mantul pas diklik */
+        transform: scale(0.85); 
+      }
+      
+      ion-icon {
+        font-size: 18px;
+        font-weight: 700;
       }
     }
   }
 
   .user-info {
-    h1 { color: #ffffff; font-size: 1.4rem; font-weight: 600; margin: 0; }
-    p { color: #d1d5db; font-size: 0.85rem; margin: 5px 0 10px 0; }
+    position: relative;
+    z-index: 5;
     
-    .badge-tag {
-      display: inline-block;
-      background: #ffffff;
-      padding: 3px 12px;
-      border-radius: 6px;
-      color: $navy-color;
-      font-size: 0.7rem;
-      font-weight: 700;
+    h1 { 
+      color: #ffffff; 
+      font-size: 1.5rem; 
+      font-weight: 800; 
+      margin: 0; 
+      letter-spacing: 0.3px;
+    }
+    p { 
+      color: rgba(255, 255, 255, 0.85); 
+      font-size: 0.9rem; 
+      margin: 6px 0 0 0; 
+      font-weight: 500;
     }
   }
 }
 
-/* KARTU STATISTIK KURSUS & SERTIFIKAT */
+/* ==========================================================================
+   2. STATS CARD SECTION (Bulat Lembut)
+   ========================================================================== */
 .stats-card {
   background: #ffffff;
-  margin: -20px 20px 0 20px; 
-  padding: 15px;
-  border-radius: 12px;
+  margin: -25px 24px 0 24px; 
+  padding: 18px 16px;
+  border-radius: 24px; // Diselaraskan membulat dengan grid beranda baru
   display: flex;
   align-items: center;
-  border: 1px solid #e5e7eb; 
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border: 1.5px solid #e2e8f0; 
+  box-shadow: 0 12px 24px rgba(9, 60, 93, 0.04);
+  position: relative;
+  z-index: 20;
 
   .stat-box {
     flex: 1;
     text-align: center;
     display: flex;
     flex-direction: column;
+    gap: 2px;
+    cursor: pointer;
     
-    .stat-value { font-size: 1.2rem; font-weight: 700; color: $navy-color; }
-    .stat-label { font-size: 0.75rem; color: #6b7280; }
+    .stat-value { font-size: 1.35rem; font-weight: 800; color: #093C5D; }
+    .stat-label { 
+      font-size: 0.8rem; 
+      color: #64748b; 
+      font-weight: 700;
+      
+      &.primary {
+        color: #0055ff; // Aksen teks sertifikat biru terang interaktif
+      }
+    }
   }
 
-  .divider { width: 1px; height: 30px; background: #e5e7eb; }
+  .divider { width: 1.5px; height: 32px; background: #e2e8f0; }
 }
 
-/* AREA MENU LIST BAWAH */
+/* ==========================================================================
+   3. MENU SYSTEM LIST BAWAH
+   ========================================================================== */
 .menu-container {
-  padding: 20px;
+  padding: 24px 24px 32px 24px;
 
   .menu-item {
     --background: #ffffff;
-    --border-radius: 8px;
-    margin-bottom: 8px;
-    border: 1px solid #e5e7eb;
-    font-weight: 500;
-    --color: #374151;
+    --border-radius: 20px; // Mengubah kelengkungan item menu menjadi kasual bulat lembut
+    margin-bottom: 12px;
+    border: 1.5px solid #e2e8f0;
+    font-weight: 700;
+    --color: #093C5D;
+    box-shadow: 0 8px 16px rgba(9, 60, 93, 0.02);
+    transition: all 0.2s ease;
+
+    &:active {
+      transform: scale(0.98);
+    }
 
     .icon-wrapper {
-      width: 36px;
-      height: 36px;
-      border-radius: 6px;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: 15px;
-      font-size: 1.1rem;
+      margin-right: 14px;
+      font-size: 1.2rem;
 
-      &.blue { background: #eff6ff; color: #1e40af; }
       &.orange { background: #fff7ed; color: #ea580c; }
       &.green { background: #f0fdf4; color: #166534; }
       &.purple { background: #f5f3ff; color: #6d28d9; }
       &.red { background: #fef2f2; color: #b91c1c; }
     }
     
-    .chevron { color: #9ca3af; font-size: 0.9rem; }
+    ion-label {
+      font-size: 14px;
+      letter-spacing: 0.2px;
+    }
+    
+    .chevron { color: #94a3b8; font-size: 0.95rem; }
   }
+}
+
+/* KUSTOMISASI KARTU INFORMASI & BANTUAN */
+.info-card-container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+
+  .custom-info-card {
+    margin: 0;
+    background: #ffffff;
+    border-radius: 24px; // Diubah membulat tebal serasi
+    border: 1.5px solid #e2e8f0;
+    box-shadow: 0 12px 24px rgba(9, 60, 93, 0.03);
+    padding: 6px 0;
+  }
+
+  .custom-card-header {
+    padding: 16px 20px 8px 20px;
+  }
+
+  .custom-card-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .custom-info-list {
+    padding: 0 10px;
+    background: transparent;
+  }
+
+  .info-list-item {
+    --background: transparent;
+    --padding-start: 10px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    font-weight: 700;
+
+    &:active {
+      opacity: 0.7;
+    }
+
+    .info-icon-box {
+      padding: 8px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-inline-end: 14px;
+      font-size: 1.1rem;
+
+      &.light-blue { background: #eff6ff; color: #3b82f6; }
+      &.light-green { background: #f0fdf4; color: #22c55e; }
+    }
+
+    .info-item-label {
+      font-size: 14.5px;
+      color: #093C5D;
+    }
+
+    .chevron { color: #94a3b8; font-size: 0.95rem; }
+  }
+}
+
+.logout-spacer {
+  height: 16px;
+}
+
+// Menghapus garis bawah bawaan list agar batas border kustom rapi
+ion-list {
+  background: transparent;
 }

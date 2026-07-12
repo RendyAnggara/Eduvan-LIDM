@@ -1,143 +1,274 @@
-ion-toolbar {
-  --background: #F4F7FA;
-  --color: #1A202C;
-  
+$navy-color: #093C5D; 
+
+ion-content {
+  // Menggunakan gradasi latar belakang super lembut agar serasi dengan profil & beranda
+  --background: linear-gradient(180deg, #F4F7FA 0%, #E9EFF5 100%);
+}
+
+// 🌊 SPANDUK ATAS GRADASI BIRU DENGAN VERTIKAL ALIGNMENT YANG SEIMBANG
+.header-navy-cert {
+  background: linear-gradient(180deg, #0022cc 0%, #0055ff 100%) !important; 
+  padding: calc(40px + env(safe-area-inset-top, 0px)) 16px 24px 16px !important;
+  border-bottom-left-radius: 36px;
+  border-bottom-right-radius: 36px;
+  box-shadow: 0 10px 25px rgba(0, 34, 204, 0.15);
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: -10%;
+    width: 120%;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    transform: rotate(-3deg);
+    z-index: 1;
+  }
+
+  .header-flex-row {
+    display: flex;
+    align-items: center; 
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+    z-index: 5;
+  }
+
+  .back-action-box {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    
+    ion-back-button {
+      margin: 0;
+      --color: #ffffff;
+      font-size: 16px;
+    }
+  }
+
   ion-title {
-    font-size: 18px;
-    font-weight: 700;
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 1.35rem; 
+    letter-spacing: 0.3px;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+  }
+
+  .right-spacer-passive {
+    width: 40px;
+    height: 40px;
   }
 }
 
-ion-content {
-  --background: #F4F7FA;
-}
-
+// WADAH KARTU SERTIFIKAT
 .certificate-container {
-  padding: 16px;
+  padding: 24px 20px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
-/* Teks Summary Atas */
 .cert-summary {
   margin-bottom: 4px;
   padding-left: 4px;
   
   p {
     margin: 0;
-    font-size: 13px;
-    color: #718096;
-    font-weight: 500;
+    font-size: 13.5px;
+    color: #64748b;
+    font-weight: 600;
+    line-height: 1.5;
     
     span {
-      color: #093C5D; /* Biru EduVan */
-      font-weight: 700;
+      color: #0055ff; // Diubah memakai warna biru terang agar pop-out kontras
+      font-weight: 800;
     }
   }
 }
 
-/* Desain Premium Card Sertifikat */
+// 🏅 KARTU SERTIFIKAT PREMIUM BULAT TEBAL (KASUAL NYAMAN DI PANDANG)
 .certificate-card {
   background: #ffffff;
-  border-radius: 20px;
+  border-radius: 24px; // Mengubah sudut kelengkungan dari 20px menjadi 24px membulat tebal
   padding: 18px 16px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(9, 60, 93, 0.06);
+  box-shadow: 0 12px 24px rgba(9, 60, 93, 0.03);
+  border: 1.5px solid #e2e8f0;
   transition: transform 0.2s ease;
 
   &:active {
-    transform: scale(0.98);
+    transform: scale(0.97);
   }
 
-  /* Efek garis dekorasi tipis warna emas di sisi kiri card */
+  // Efek aksen garis dekorasi vertikal tebal berwarna biru terang di sisi kiri kartu
   &::before {
     content: '';
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
-    width: 5px;
-    background: linear-gradient(to bottom, #D4AF37, #F3E5AB); /* Gradasi Emas */
+    width: 6px;
+    background: linear-gradient(to bottom, #0055ff, #38bdf8); 
   }
 
-  /* Pembungkus Ikon Medal Emas */
+  // Wadah Bulat Ikon Medali Aksen Kuning Emas Cerah
   .cert-badge {
-    width: 46px;
-    height: 46px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(243, 229, 171, 0.2));
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    background: #fff7ed;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    border: 1px solid #ffedd5;
 
     ion-icon {
-      font-size: 24px;
-      color: #D4AF37; /* Warna Gold Medal */
+      font-size: 26px;
+      color: #ffb300; 
     }
   }
 
-  /* Info Detail Teks */
   .cert-info {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
+    overflow: hidden;
 
     .cert-id {
       font-size: 10px;
-      font-weight: 700;
-      color: #a0aec0;
+      font-weight: 800;
+      color: #94a3b8;
       letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
 
     h3 {
       margin: 0;
-      font-size: 14px;
-      font-weight: 700;
-      color: #093C5D; /* Judul pakai warna utama Eduvan */
+      font-size: 14.5px;
+      font-weight: 800;
+      color: $navy-color; 
       line-height: 1.4;
     }
 
     .cert-date {
       margin: 0;
-      font-size: 11px;
-      color: #718096;
-      font-weight: 500;
+      font-size: 11.5px;
+      color: #64748b;
+      font-weight: 600;
     }
   }
 
-  /* Lingkaran Tombol Download di Kanan */
   .cert-action {
     flex-shrink: 0;
 
-.btn-download {
-        width: 38px;
-        height: 38px;
-        margin: 0;
-        background: #F4F7FA;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: none; /* 🟢 TAMBAHKAN INI: Biar garis luar button hilang */
-        outline: none; /* 🟢 TAMBAHKAN INI: Biar ga ada kotak biru pas diklik */
-        cursor: pointer;
+    // Tombol Download Bulat Lembut Interaktif
+    .btn-download {
+      width: 42px;
+      height: 42px;
+      margin: 0;
+      background: #f0f7ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #d0e3ff; 
+      outline: none; 
+      cursor: pointer;
+      transition: all 0.2s ease;
 
-        ion-icon {
-          font-size: 18px;
-          color: #093C5D; /* Warna Biru EduVan */
-        }
+      ion-icon {
+        font-size: 18px;
+        color: #0055ff; 
+      }
+      
+      ion-spinner {
+        width: 20px;
+        height: 20px;
+        --color: #0055ff;
+      }
+      
+      &:active {
+        background: #0055ff;
+        border-color: #0055ff;
         
-        &:active {
-          background: #e2e8f0; /* Efek gelap sedikit pas dipencet */
+        ion-icon {
+          color: #ffffff;
         }
       }
+    }
+  }
+}
+
+// UNIVERSAL STATE PENUNJUK LOADING & KOSONG
+.loading-state-box {
+  padding: 80px 24px;
+  text-align: center;
+  
+  ion-spinner {
+    --color: #0055ff;
+    width: 36px;
+    height: 36px;
+  }
+  
+  p {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 12px;
+  }
+}
+
+.empty-cert-box {
+  padding: 80px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .empty-icon-circle {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin-bottom: 4px;
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 800;
+    color: #093C5D;
+    margin-top: 16px;
+    margin-bottom: 0;
+  }
+
+  p {
+    font-size: 13.5px;
+    color: #64748b;
+    line-height: 1.5;
+    margin-top: 8px;
+    font-weight: 500;
+    padding: 0 10px;
   }
 }
