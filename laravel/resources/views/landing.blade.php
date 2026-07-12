@@ -25,10 +25,6 @@
             <a href="#alur" class="hover:text-teal-600 transition">ALUR SISTEM</a>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('teacher.login') }}"
-                class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2 border border-slate-950 rounded-xl text-xs transition shadow-xs tracking-wide">
-                Portal Guru
-            </a>
         </div>
     </nav>
     <header class="relative max-w-6xl mx-auto px-6 pt-20 pb-24 text-center flex flex-col items-center overflow-hidden">
