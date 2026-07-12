@@ -1,109 +1,123 @@
 $navy-color: #093c5d;
-$navy-light-surface: #f0f6fa;
-$navy-border-tint: #e2edf5;
+$navy-light-surface: #f0f7ff; // Warna biru pastel lembut untuk wadah ikon
+$navy-border-tint: #e2e8f0;
 
 * {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
 }
 
-// HEADER NAVY THEME INTEGRATION
+ion-content {
+  // Menggunakan gradasi latar belakang super lembut agar konsisten dengan beranda
+  --background: linear-gradient(180deg, #F4F7FA 0%, #E9EFF5 100%);
+}
+
+// 🌊 SPANDUK BIRU GRADASI ATAS MODERN (SELARAS DENGAN BANNER LOGIN & BERANDA)
 .header-navy {
-  background: $navy-color;
-  
-  // 🟢 KUNCI UTAMA 1: Hancurkan kuncian 72px lama lu Paksa auto biar dia bisa melar turun ke bawah
+  background: linear-gradient(180deg, #0022cc 0%, #0055ff 100%) !important; 
   height: auto !important; 
-  
-  // 🟢 KUNCI UTAMA 2: Takaran padding atas diset 46px + safe area HP poni lu. 
-  // Jarak bawah dikunci 20px biar bodi lengkungannya tetep simetris montok cantik!
-  padding: calc(46px + env(safe-area-inset-top, 0px)) 20px 20px 20px !important;
-  
-  border-bottom-left-radius: 24px;
-  border-bottom-right-radius: 24px;
-  box-shadow: 0 4px 14px rgba(9, 60, 93, 0.2);
-  
+  padding: calc(40px + env(safe-area-inset-top, 0px)) 20px 24px 20px !important;
+  border-bottom-left-radius: 36px;
+  border-bottom-right-radius: 36px;
+  box-shadow: 0 10px 25px rgba(0, 34, 204, 0.15);
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
   width: 100%;
   box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+
+  // Efek dekorasi lengkungan transparan tipis di background spanduk
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: -10%;
+    width: 120%;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    transform: rotate(-3deg);
+  }
 
   ion-title {
     color: #ffffff;
-    font-weight: 800;
-    font-size: 1.35rem; 
-    letter-spacing: -0.3px;
+    font-weight: 900;
+    font-size: 1.4rem; 
+    letter-spacing: 0.3px;
     padding: 0;
-    
-    // Paksa center murni di tengah layar HP
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     text-align: center !important;
     width: 100% !important;
-    
-    // Pastikan tidak ada margin/padding gaib yang nahan dia di atass
     margin: 0 !important; 
+    z-index: 5;
   }
 }
 
-// PREMIUM SEGMENT CONTROL OVERRIDE
+// KUSTOMISASI KONTROL SEGMEN (BULAT LEMBUT)
 .segment-container {
-  padding: 20px 16px 12px 16px;
+  padding: 24px 20px 12px 20px;
 
   ion-segment {
-    background: #edf2f7;
-    border-radius: 12px;
-    padding: 3px;
+    background: #e2e8f0;
+    border-radius: 16px; // Mengubah sudut segmen dari 12px menjadi 16px membulat kasual
+    padding: 4px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
 
     ion-segment-button {
       --background-checked: #ffffff;
-      --color-checked: #093c5d;
-      --color: #718096;
-      font-weight: 700;
-      font-size: 13px;
+      --color-checked: #0055ff; // Warna teks aktif diubah menjadi biru terang cerah
+      --color: #64748b;
+      font-weight: 800;
+      font-size: 13.5px;
       margin: 0;
-      border-radius: 10px;
-      min-height: 36px;
-      letter-spacing: -0.1px;
+      border-radius: 12px;
+      min-height: 38px;
     }
   }
 }
 
-// WRAPPER UTAMA LIST KURSUS
 .course-container {
-  padding: 8px 16px 32px 16px;
+  padding: 8px 20px 32px 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-// PREMIUM MODERN DESIGN FOR CARDS
+// KARTU PREMIUM MODERN (BULAT TEBAL KASUAL)
 .premium-course-card {
   background: #ffffff;
-  border: 1px solid $navy-border-tint;
-  border-radius: 20px;
+  border: 1.5px solid $navy-border-tint;
+  border-radius: 24px; // Mengubah sudut kartu dari 20px menjadi 24px tebal lembut
   padding: 16px;
-  box-shadow: 0 6px 16px rgba(9, 60, 93, 0.03);
+  box-shadow: 0 12px 24px rgba(9, 60, 93, 0.03);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   box-sizing: border-box;
   width: 100%;
+  transition: transform 0.2s ease;
 
-  // Baris Atas: Profil Image & Judul Kelas
+  &:active {
+    transform: scale(0.98);
+  }
+
   .card-main-body {
     display: flex;
     align-items: center;
     gap: 14px;
     width: 100%;
 
+    // Kotak Gambar Thumbnail Kelas
     .img-category-box {
-      width: 68px;
-      height: 68px;
+      width: 72px;
+      height: 72px;
       background: $navy-light-surface;
-      border: 1px solid $navy-border-tint;
-      border-radius: 14px;
+      border: 1.5px solid #d0e3ff;
+      border-radius: 18px; // Membulat tebal serasi
       display: flex;
       align-items: center;
       justify-content: center;
@@ -113,8 +127,7 @@ $navy-border-tint: #e2edf5;
       img {
         width: 100%;
         height: 100%;
-        object-fit: contain;
-        padding: 8px;
+        object-fit: cover; // Mengubah 'contain' menjadi 'cover' agar gambar penuh estetik
       }
     }
 
@@ -123,31 +136,26 @@ $navy-border-tint: #e2edf5;
       overflow: hidden;
 
       .category-badge-meta {
-        font-size: 9.5px;
-        font-weight: 700;
+        font-size: 10px;
+        font-weight: 800;
         text-transform: uppercase;
-        color: #5a738e;
+        color: #0055ff; // Warna label diubah menjadi biru terang
         letter-spacing: 0.6px;
         display: inline-block;
-        margin-bottom: 3px;
+        margin-bottom: 4px;
       }
 
       .course-title-text {
         margin: 0;
-        font-size: 14px;
+        font-size: 14.5px;
         font-weight: 800;
         color: $navy-color;
         line-height: 1.4;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
       }
     }
   }
 
-  // Baris Tengah: Komponen Progress
+  // Komponen Indikator Kemajuan Belajar
   .card-progress-zone {
     display: flex;
     flex-direction: column;
@@ -159,19 +167,19 @@ $navy-border-tint: #e2edf5;
       justify-content: space-between;
       align-items: center;
 
-      .lbl-prog { font-size: 11px; color: #64748b; font-weight: 500; }
-      .val-prog { font-size: 11.5px; color: $navy-color; font-weight: 700; }
+      .lbl-prog { font-size: 11.5px; color: #64748b; font-weight: 600; }
+      .val-prog { font-size: 12px; color: $navy-color; font-weight: 800; }
     }
 
     .custom-progress {
-      height: 6px;
-      border-radius: 4px;
-      --progress-background: #093c5d;
+      height: 8px; // Dipertebal sedikit agar mudah dipantau siswa
+      border-radius: 6px;
+      --progress-background: #0055ff; // Menggunakan warna progress bar biru terang
       --background: #e2edf5;
     }
   }
 
-  // Baris Bawah: Tombol Kontrol
+  // Tombol Aksi Kaki Kartu
   .card-action-footer {
     width: 100%;
     margin-top: 2px;
@@ -179,51 +187,64 @@ $navy-border-tint: #e2edf5;
     .action-grid-buttons {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       width: 100%;
 
       ion-button {
         margin: 0;
-        height: 38px;
-        font-size: 12.5px;
-        font-weight: 700;
-        --border-radius: 10px;
+        height: 44px; // Ditinggikan menjadi 44px agar lebih nyaman ditekan di ponsel
+        font-size: 13.5px;
+        font-weight: 800;
+        --border-radius: 14px; // Sudut kelengkungan disamakan
         --box-shadow: none;
       }
 
-      // Tombol Lanjut Belajar Dominan Navy
+      // Tombol Lanjut Belajar Bergradasi Biru
       .btn-action-main {
         flex: 1.3;
-        --background: #093c5d;
+        --background: linear-gradient(135deg, #0055ff 0%, #0033cc 100%);
         --color: #ffffff;
 
-        ion-icon { font-size: 14px; margin-left: 2px; }
+        ion-icon { font-size: 16px; margin-left: 4px; }
       }
 
-      // Tombol Kuis / Locked Outline
+      // Tombol Kuis (Kondisional Gaya Warna)
       .btn-action-sub {
         flex: 0.9;
-        font-size: 12px;
         --border-width: 1.5px;
+        
+        &.quiz-locked {
+          --border-color: #cbd5e1;
+          --color: #94a3b8;
+          --background: #f8fafc;
+        }
 
-        ion-icon { font-size: 14px; }
+        &.quiz-unlocked {
+          --border-color: #ffb300;
+          --color: #ea580c;
+          --background: #fff7ed;
+        }
+
+        ion-icon { font-size: 15px; }
       }
 
-      // Tombol Sukses Sertifikat Full Width
+      // Tombol Sertifikat Kelulusan
       .btn-action-success {
         width: 100%;
-        font-size: 13px;
         --border-width: 1.5px;
+        --border-color: #16a34a;
+        --color: #16a34a;
+        --background: #f0fdf4;
 
-        ion-icon { font-size: 15px; margin-right: 4px; }
+        ion-icon { font-size: 16px; margin-right: 4px; }
       }
     }
   }
 }
 
-// UNIVERSAL EMPTY & LOADING STATE BOX
+// WADAH KONDISI KOSONG / MEMUAT DATA
 .empty-state-box {
-  padding: 60px 24px;
+  padding: 80px 24px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -232,29 +253,29 @@ $navy-border-tint: #e2edf5;
   gap: 12px;
 
   ion-spinner {
-    --color: #093c5d;
-    width: 32px;
-    height: 32px;
+    --color: #0055ff;
+    width: 36px;
+    height: 36px;
   }
 
   .empty-icon-circle {
-    width: 64px;
-    height: 64px;
+    width: 68px;
+    height: 68px;
     border-radius: 50%;
-    background: #f1f5f9;
-    color: #94a3b8;
+    background: #e2e8f0;
+    color: #64748b;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 28px;
+    font-size: 30px;
     margin-bottom: 4px;
   }
 
   p {
     margin: 0;
-    font-size: 13.5px;
+    font-size: 14px;
     color: #64748b;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 1.4;
   }
 }

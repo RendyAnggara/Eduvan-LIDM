@@ -1,227 +1,215 @@
 ion-content {
-  --background: #f8fafc;
+  --background: #ffffff; 
 }
 
-/* 🟢 TAMBAHAN: ANIMASI MASUK FADE IN MELUNCUR HALUS */
-.auth-header-section, .form-card {
-  animation: meluncurHalus 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-@keyframes meluncurHalus {
-  from {
-    opacity: 0;
-    transform: translateY(30px); /* Efek terangkat lembut dari bawah */
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* KUMPULAN ANIMASI ROTASI KONSISTEN */
-@keyframes rotasiKanan {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes rotasiKiri {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
-}
-
-/* Sektor Header Biru Atas */
-.auth-header-section {
-  background: #093C5D; /* Warna Biru Utama Sesuai Keinginanmu */
-  height: 38vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-bottom-left-radius: 50px;
-  border-bottom-right-radius: 50px;
-  padding-bottom: 30px;
+// Spanduk Biru Bagian Atas
+.auth-top-banner {
+  background: linear-gradient(180deg, #0022cc 0%, #0055ff 100%); 
+  padding: 30px 24px 10px 24px;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
   position: relative;
+  overflow: hidden;
 
-  .icon-container {
-    background: rgba(255, 255, 255, 0.12);
-    padding: 20px;
+  // Efek dekorasi lengkungan transparan pada latar belakang spanduk
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: -10%;
+    width: 120%;
+    height: 90px;
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
-    border: 2px dashed rgba(255, 255, 255, 0.4);
-    color: white;
-    font-size: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 95px;
-    height: 95px;
-    animation: rotasiKanan 12s linear infinite; 
-    transform-origin: center center;
-    
-    ion-icon {
-      display: inline-block;
-      animation: rotasiKiri 12s linear infinite; /* Roket diam tegak di tengah */
-      transform-origin: center center;
+    transform: rotate(-5deg);
+  }
+
+  .header-text-group {
+    margin-top: 10px;
+    position: relative;
+    z-index: 5;
+
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h1 {
+        color: #ffffff;
+        font-size: 38px;
+        font-weight: 800;
+        margin: 0;
+      }
+
+      .back-circle-btn {
+        background: #ffffff;
+        color: #0022cc;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    .subtitle-text {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 13px;
+      margin: 8px 0 0 0;
+      font-weight: 500;
     }
   }
 
-  .brand-name {
-    color: white;
-    font-size: 36px;
-    font-weight: 800;
-    margin: 12px 0 4px 0;
-  }
+.illustration-box {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 25px;
+  position: relative;
+  z-index: 5;
 
-  .badge-subtitle {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 6px 18px;
-    border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+  img {
+    max-height: 160px;
+    object-fit: contain;
+    // Efek ini akan membuat ikon PNG transparan memiliki pendaran putih lembut di belakangnya
+    filter: drop-shadow(0 8px 25px rgba(255, 255, 255, 0.8)); 
+    }
   }
 }
 
-/* Sektor Kartu Input Putih */
-.form-card {
-  background: white;
-  margin: -45px 24px 20px 24px;
-  padding: 32px 24px;
-  border-radius: 30px;
-  box-shadow: 0 15px 35px rgba(9, 60, 93, 0.08);
-  position: relative;
-  z-index: 10;
+// Bagian Form Input Halaman Login
+.auth-form-body {
+  padding: 24px;
+  background: #ffffff;
 
-  h2 {
-    color: #093C5D;
+  // Mengubah label teks menjadi lebih tebal dan berwarna biru kasual
+  .input-label-flat {
+    color: #1e5e8a;
+    font-size: 12px;
     font-weight: 800;
-    font-size: 24px;
-    text-align: center;
-    margin: 0 0 4px 0;
+    margin-bottom: 8px;
+    display: block;
+    margin-top: 16px;
     letter-spacing: 0.5px;
   }
 
-  .instruction-text {
-    color: #64748b;
-    font-size: 13px;
-    text-align: center;
-    margin-bottom: 25px;
+  // Mengubah kotak input menjadi bulat lembut dengan warna biru pastel segar
+  .auth-input-flat {
+    --background: #f0f7ff; // Warna latar belakang pastel lembut
+    --border-radius: 16px; // Sudut dibuat membulat lembut, tidak kaku
+    --padding-start: 16px;
+    border: 1.5px solid #d0e3ff; // Batas garis tipis sewarna
+    margin-bottom: 4px;
+    transition: all 0.3s ease;
+
+    // Efek interaktif saat kolom input mulai diketik oleh siswa
+    &:focus-within {
+      border-color: #0055ff;
+      --background: #ffffff; // Berubah menjadi putih bersih agar fokus
+      box-shadow: 0 0 0 4px rgba(0, 85, 255, 0.15); // Efek cahaya biru
+    }
+
+    // Mengubah warna dan ukuran ikon agar lebih jelas dilihat
+    ion-icon {
+      color: #1e5e8a;
+      font-size: 22px;
+      margin-right: 6px;
+    }
+
+    .eye-toggle {
+      color: #94a3b8;
+      cursor: pointer;
+    }
+
+    ion-input {
+      --padding-top: 14px;
+      --padding-bottom: 14px;
+      font-size: 14px;
+      color: #093C5D;
+      font-weight: 600;
+    }
   }
 }
 
-.input-label {
-  color: #093C5D;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 6px;
-  display: block;
-}
-
-.auth-input-box {
-  --background: #f8fafc;
-  --border-radius: 16px;
-  --padding-start: 16px;
-  border: 1px solid #e2e8f0;
-  margin-bottom: 6px;
-  transition: all 0.3s ease;
-
-  &:focus-within {
-    border-color: #093C5D;
-    box-shadow: 0 0 0 3px rgba(9, 60, 93, 0.1);
-  }
-
-  ion-icon {
-    color: #093C5D;
-    font-size: 20px;
-  }
-  
-  .eye-icon {
-    cursor: pointer;
-    color: #94a3b8;
-  }
-
-  ion-input {
-    --padding-top: 14px;
-    --padding-bottom: 14px;
-    font-size: 15px;
-    color: #1e293b;
-  }
-}
-
-/* Notifikasi error merah di bawah box */
-.error-msg {
-  color: #ef4444;
-  font-size: 11px;
-  margin: 0 0 14px 6px;
-  font-weight: 500;
-}
-
-.forgot-password-link {
-  text-align: left;
+// Desain Tombol Pintas Elemen Domain
+.quick-tags-smp {
   margin-top: 6px;
-  margin-bottom: 25px;
-  
+  margin-bottom: 8px;
+  display: flex;
+  gap: 8px;
+
   span {
-    color: #093C5D;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+
+    &:active {
+      background: #0055ff;
+      color: white;
+    }
+  }
+}
+
+// Desain Teks Peringatan Validasi
+.error-text-santai {
+  color: #dc2626;
+  font-size: 11px;
+  margin: 4px 0 8px 4px;
+  font-weight: 600;
+}
+
+// Tata Letak Checkbox dan Lupa Password
+.form-options-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  margin-bottom: 24px;
+
+  .remember-chk {
+    --size: 18px;
+    --border-radius: 6px; // Checkbox dibuat membulat agar serasi
+    --color-checked: #0055ff;
     font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
+    color: #4b5563;
+    font-weight: 600;
   }
-}
 
-/* Tombol Sign In */
-ion-button.auth-btn {
-  --background: #093C5D;
-  --background-activated: #06273d;
-  --color: white;
-  --border-radius: 16px;
-  font-weight: 700;
-  font-size: 15px;
-  height: 52px;
-  letter-spacing: 0.5px;
-  box-shadow: 0 8px 20px rgba(9, 60, 93, 0.2);
-  text-transform: uppercase;
-}
-
-/* Footer Tautan Halaman */
-.footer-links {
-  text-align: center;
-  margin-top: 22px;
-  font-size: 13px;
-  color: #64748b;
-
-  .link-bold {
-    color: #093C5D;
+  .forgot-btn {
+    color: #7c3aed;
+    font-size: 12px;
     font-weight: 700;
     cursor: pointer;
-    margin-left: 4px;
     
-    &:hover { text-decoration: underline; }
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
+// Tombol Login Biru Utama
+ion-button.auth-btn-blue {
+  --background: linear-gradient(135deg, #0055ff 0%, #0033cc 100%); // Gradasi biru modern
+  --background-activated: #ffb300; // Tombol berubah menjadi kuning emas saat ditekan
+  --color-activated: #093C5D;
+  --color: #ffffff;
+  --border-radius: 16px; // Kelengkungan tombol disamakan dengan kotak input
+  font-weight: 800;
+  font-size: 16px;
+  height: 54px; // Sedikit lebih tinggi agar mudah ditekan pada layar ponsel
+  box-shadow: 0 8px 20px rgba(0, 85, 255, 0.25);
+  text-transform: none;
 
-.custom-login-toast {
-  --background: #093C5D; /* Menggunakan warna biru dongker utama kamu */
-  --box-shadow: 0 10px 25px rgba(9, 60, 93, 0.25);
-  --border-radius: 16px; /* Selaras dengan border-radius input box kamu */
-  margin-top: 25px;
-  padding: 6px 12px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  font-size: 14px;
-
-  &::part(button) {
-    --color: #ffffff;
-    font-size: 22px;
-    margin-right: 10px;
-    opacity: 1;
-  }
-  
-  &::part(message) {
-    color: #ffffff;
-    padding: 10px 0;
+  .btn-arrow {
+    font-size: 18px;
+    margin-left: 6px;
+    display: inline-block;
+    vertical-align: middle;
   }
 }

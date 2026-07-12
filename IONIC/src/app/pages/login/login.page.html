@@ -1,111 +1,110 @@
 <ion-content>
-  <div class="auth-header-section">
-    <div class="icon-container">
-      <ion-icon name="rocket-outline"></ion-icon>
+  <!-- Bagian Spanduk Biru Atas dengan Ilustrasi -->
+  <div class="auth-top-banner">
+    <div class="header-text-group">
+      <div class="title-row">
+        <h1>Masuk</h1>
+      </div>
+      <p class="subtitle-text">
+        Rasakan lingkungan belajar yang lebih menyenangkan
+      </p>
     </div>
-    <div class="brand-name">Eduvan</div>
-    <div class="badge-subtitle">LEARNING COURSE MARKETPLACE</div>
+
+    <!-- Wadah untuk Gambar Ilustrasi Pembelajaran -->
+    <div class="illustration-box">
+      <img src="assets/images/logoedulearn.png" alt="Ilustrasi Pembelajaran" />
+    </div>
   </div>
 
-  <div class="form-card" [formGroup]="loginForm">
-    <h2>SELAMAT DATANG!</h2>
-    <p class="instruction-text">
-      Masukkan kredensial Anda untuk melanjutkan belajar
-    </p>
-
-    <span class="input-label">ALAMAT EMAIL</span>
-    <ion-item lines="none" class="auth-input-box">
+  <!-- Bagian Form Input Utama -->
+  <div class="auth-form-body" [formGroup]="loginForm">
+    <!-- Input Alamat Email -->
+    <span class="input-label-flat">Alamat Email Siswa</span>
+    <ion-item lines="none" class="auth-input-flat">
       <ion-icon name="mail-outline" slot="start"></ion-icon>
       <ion-input
         type="email"
-        placeholder="nama@email.com"
+        placeholder="Masukkan email kamu..."
         formControlName="email"
       ></ion-input>
+      <ion-icon
+        name="checkmark-circle"
+        slot="end"
+        class="valid-check"
+        *ngIf="loginForm.get('email')?.value && !loginForm.get('email')?.errors?.['email']"
+      ></ion-icon>
     </ion-item>
-    <p
-      class="error-msg"
-      *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid"
+
+    <!-- Tombol Pintas Domain untuk Mempercepat Pengetikan -->
+    <div
+      class="quick-tags-smp"
+      *ngIf="loginForm.get('email')?.value && !loginForm.get('email')?.value.includes('@')"
     >
-      Masukkan alamat email yang valid
+      <span
+        (click)="loginForm.get('email')?.setValue(loginForm.get('email')?.value + '@gmail.com')"
+        >+ @gmail.com</span
+      >
+    </div>
+
+    <!-- Peringatan Validasi Email Real-time -->
+    <p
+      class="error-text-santai"
+      *ngIf="loginForm.get('email')?.value && loginForm.get('email')?.errors?.['email']"
+    >
+      Oops! Format email kamu belum benar nih, cek lagi ya ✍️
     </p>
 
-    <span class="input-label">PASSWORD</span>
-    <ion-item lines="none" class="auth-input-box">
+    <!-- Input Kata Sandi / Password -->
+    <span class="input-label-flat">Kata Sandi</span>
+    <ion-item lines="none" class="auth-input-flat">
       <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
       <ion-input
         [type]="showPassword ? 'text' : 'password'"
-        placeholder="••••••••"
+        placeholder="Masukkan kata sandi kamu..."
         formControlName="password"
       ></ion-input>
       <ion-icon
         [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"
         slot="end"
-        class="eye-icon"
+        class="eye-toggle"
         (click)="togglePassword()"
       ></ion-icon>
     </ion-item>
+
+    <!-- Peringatan Validasi Password Real-time -->
     <p
-      class="error-msg"
-      *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid"
+      class="error-text-santai"
+      *ngIf="loginForm.get('password')?.value && loginForm.get('password')?.value.length < 6"
     >
-      Password wajib diisi
+      Kata sandi minimal 6 karakter ya, yuk dilengkapin! 🔑
     </p>
 
-    <div class="forgot-password-link">
-      <span (click)="goToForgotPassword()">Lupa Password?</span>
+    <!-- Opsi Remember Me dan Lupa Password -->
+    <div class="form-options-row">
+      <ion-checkbox mode="md" justify="start" class="remember-chk"
+        >Ingat saya</ion-checkbox
+      >
+      <span class="forgot-btn" (click)="goToForgotPassword()"
+        >Lupa kata sandi?</span
+      >
     </div>
 
+    <!-- Tombol Utama Masuk Aplikasi -->
     <ion-button
       expand="block"
-      class="auth-btn"
+      class="auth-btn-blue"
       (click)="onLogin()"
       [disabled]="isLoading"
     >
       <ion-spinner
         name="crescent"
         *ngIf="isLoading"
-        style="--color: #04145f; width: 24px; height: 24px"
+        style="--color: #ffffff; width: 22px; height: 22px"
       ></ion-spinner>
-      <span *ngIf="!isLoading">MASUK</span>
+      <span *ngIf="!isLoading"
+        >Mulai Belajar
+        <ion-icon name="arrow-forward-outline" class="btn-arrow"></ion-icon
+      ></span>
     </ion-button>
-
-    <div
-      class="or-divider"
-      style="
-        text-align: center;
-        margin: 15px 0;
-        color: #a3a3a3;
-        font-size: 14px;
-        position: relative;
-      "
-    >
-      <span>atau masuk dengan</span>
-    </div>
-
-    <ion-button
-      expand="block"
-      fill="outline"
-      class="google-btn"
-      (click)="loginWithGoogle()"
-      [disabled]="isLoading"
-      style="
-        --border-color: #e5e7eb;
-        --color: #ff0000;
-        margin-bottom: 20px;
-        font-weight: bold;
-      "
-    >
-      <ion-icon
-        name="logo-google"
-        slot="start"
-        style="color: #ea4335"
-      ></ion-icon>
-      GOOGLE
-    </ion-button>
-
-    <div class="footer-links">
-      Belum punya akun?
-      <span class="link-bold" (click)="goToRegister()">Daftar Gratis</span>
-    </div>
   </div>
 </ion-content>
