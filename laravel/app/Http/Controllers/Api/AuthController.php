@@ -17,7 +17,6 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        // 1. Gunakan validator manual agar jika gagal di HP, kita bisa lempar pesan yang jelas
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
@@ -33,7 +32,6 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        // 2. Cek user & kecocokan password
         if (!$user || !Hash::check($request->password, $user->password))
         {
             return response()->json([
@@ -42,17 +40,14 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // 3. BYPASS / LONGGARKAN STATUS VERIFIKASI UNTUK TESTING DI HP ASLI
         if (!$user->email_verified_at)
         {
             $user->email_verified_at = now();
             $user->save();
         }
 
-        // 4. Generate Token Sanctum
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        // Amankan statistik relasi agar ikut terbawa ke JSON murni
         $enrollmentsCount = DB::table('enrollments')->where('user_id', $user->id)->count();
         $certificatesCount = DB::table('certificates')->where('user_id', $user->id)->count();
 
@@ -66,13 +61,12 @@ class AuthController extends Controller
             'user' => $userArray
         ], 200);
     }
-
-    public function register(Request $request)
+    public function createStudentByTeacher(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:30',
+            'name' => 'required|string|max:50',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
+            'nisn_or_nip' => 'nullable|string|max:20'
         ]);
 
         if ($validator->fails())
@@ -82,86 +76,26 @@ class AuthController extends Controller
                 'message' => $validator->errors()->first()
             ], 422);
         }
-
-        $otp = rand(100000, 999999);
+        $generatedPassword = 'eduvan' . rand(1000, 9999);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => Hash::make($generatedPassword),
             'role' => 'student',
-            'otp_code' => $otp,
-            'otp_expiry' => now()->addMinutes(10),
-            'avatar' => 'assets/icon/avatar-neutral.png', // Set default awal string lokal agar konsisten
+            'nisn_or_nip' => $request->nisn_or_nip,
+            'email_verified_at' => now(),
+            'avatar' => 'assets/icon/avatar-neutral.png',
         ]);
-
-        $this->sendOtpEmail($user->email, $otp);
+        $this->sendStudentCredentialsEmail($user->name, $user->email, $generatedPassword);
 
         return response()->json([
             'success' => true,
-            'message' => 'Registrasi berhasil! Silakan cek email untuk kode verifikasi.',
+            'message' => 'Akun siswa berhasil dibuat! Kredensial telah dikirim ke email siswa.',
             'user' => $user
         ], 201);
     }
-
-    public function verifyOtp(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'otp' => 'required',
-        ]);
-
-        $user = User::where('email', $request->email)
-            ->where('otp_code', $request->otp)
-            ->where('otp_expiry', '>', now())
-            ->first();
-
-        if ($user)
-        {
-            $user->email_verified_at = now();
-            $user->otp_code = null;
-            $user->otp_expiry = null;
-            $user->save();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Email berhasil diverifikasi! Silakan login.'
-            ]);
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Kode OTP salah atau sudah kadaluarsa.'
-        ], 400);
-    }
-
-    public function resendOtp(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email'
-        ]);
-
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user)
-        {
-            return response()->json(['success' => false, 'message' => 'Email tidak ditemukan.'], 404);
-        }
-
-        $otp = rand(100000, 999999);
-        $user->otp_code = $otp;
-        $user->otp_expiry = now()->addMinutes(10);
-        $user->save();
-
-        $this->sendOtpEmail($user->email, $otp);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Kode OTP baru telah dikirim ke email Anda.'
-        ]);
-    }
-
-    private function sendOtpEmail($email, $otp)
+    private function sendStudentCredentialsEmail($name, $email, $password)
     {
         $mail = new PHPMailer(true);
         try
@@ -178,7 +112,7 @@ class AuthController extends Controller
             $mail->addAddress($email);
 
             $mail->isHTML(true);
-            $mail->Subject = 'Kode Verifikasi Akun EduVan';
+            $mail->Subject = 'Akses Login Aplikasi EduVan';
 
             $mail->Body    = '
             <!DOCTYPE html>
@@ -188,16 +122,19 @@ class AuthController extends Controller
             </head>
             <body style="font-family: Arial, sans-serif; background-color: #f3f4f6; padding: 20px; color: #333333; margin: 0;">
                 <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
-                    <h2 style="text-align: center; color: #111827; margin-bottom: 25px; font-size: 24px;">Eduvan</h2>
-                    <p style="font-size: 16px; line-height: 1.5; margin-bottom: 10px;"><b>Halo!</b></p>
-                    <p style="font-size: 16px; line-height: 1.5; color: #4b5563;">Kamu menerima email ini untuk memverifikasi pendaftaran akun EduVan kamu. Berikut adalah kode OTP rahasia kamu:</p>
-                    <div style="background-color: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; text-align: center; margin: 25px 0;">
-                        <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #111827;">' . $otp . '</span>
+                    <h2 style="text-align: center; color: #00A896; margin-bottom: 25px; font-size: 24px;">Eduvan</h2>
+                    <p style="font-size: 16px; line-height: 1.5; margin-bottom: 10px;"><b>Halo ' . htmlspecialchars($name) . ',</b></p>
+                    <p style="font-size: 16px; line-height: 1.5; color: #4b5563;">Akun pembelajaran EduVan kamu telah berhasil dibuat oleh Guru. Silakan gunakan informasi di bawah ini untuk masuk ke dalam aplikasi:</p>
+
+                    <div style="background-color: #f8fafc; border-left: 4px solid #00A896; border-radius: 4px; padding: 15px; margin: 25px 0;">
+                        <p style="margin: 5px 0; font-size: 16px;"><strong>Email:</strong> ' . htmlspecialchars($email) . '</p>
+                        <p style="margin: 5px 0; font-size: 16px;"><strong>Password:</strong> <span style="color: #003366; font-weight: bold; letter-spacing: 1px;">' . $password . '</span></p>
                     </div>
-                    <p style="font-size: 14px; color: #6b7280; line-height: 1.5;">Kode OTP ini hanya berlaku selama 10 menit ke depan.</p>
-                    <p style="font-size: 14px; color: #6b7280; line-height: 1.5; margin-top: 20px;">Jika kamu tidak merasa melakukan permintaan pendaftaran ini, abaikan saja email ini.</p>
+
+                    <p style="font-size: 14px; color: #ef4444; line-height: 1.5;"><em>Mohon jangan berikan password ini kepada siapapun demi keamanan akun kamu.</em></p>
+
                     <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-                    <p style="font-size: 14px; color: #9ca3af; text-align: center; margin: 0; line-height: 1.5;">Regards,<br><strong style="color: #4b5563;">Eduvan</strong></p>
+                    <p style="font-size: 14px; color: #9ca3af; text-align: center; margin: 0; line-height: 1.5;">Semangat Belajar!<br><strong style="color: #4b5563;">Tim Guru Eduvan</strong></p>
                     <p style="font-size: 11px; color: #9ca3af; text-align: center; margin-top: 20px;">&copy; 2026 Eduvan. All rights reserved.</p>
                 </div>
             </body>
@@ -208,7 +145,7 @@ class AuthController extends Controller
         }
         catch (Exception $e)
         {
-            // Tetap aman jika kirim email gagal
+        
         }
     }
 
@@ -227,7 +164,6 @@ class AuthController extends Controller
         $enrollmentsCount = DB::table('enrollments')->where('user_id', $user->id)->count();
         $certificatesCount = DB::table('certificates')->where('user_id', $user->id)->count();
 
-        // Paksa disatukan ke format Array Arrayable agar tidak null pas sampai di client side
         $userArray = $user->toArray();
         $userArray['enrollments_count'] = $enrollmentsCount;
         $userArray['certificates_count'] = $certificatesCount;
@@ -297,7 +233,6 @@ class AuthController extends Controller
             {
                 $user->google_id = $gId;
 
-                // ðŸ”’ SEHAT 100%: Kunci aset internal, jangan biarkan link google (http) merusak state di DB MySQL
                 if (empty($user->avatar) || !str_starts_with($user->avatar, 'assets/icon/'))
                 {
                     $user->avatar = $gAvatar;
@@ -318,7 +253,7 @@ class AuthController extends Controller
                 $user->name = $gName;
                 $user->email = $gEmail;
                 $user->google_id = $gId;
-                $user->avatar = 'assets/icon/avatar-neutral.png'; // Jika beneran akun baru gress, pakai tipe aset lokal
+                $user->avatar = 'assets/icon/avatar-neutral.png';
                 $user->password = Hash::make(rand(11111111, 99999999));
                 $user->role = 'student';
                 $user->email_verified_at = now();
@@ -329,7 +264,6 @@ class AuthController extends Controller
             $user->tokens()->delete();
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            // Integrasikan statistik kursus saat kompilasi link callback Google Auth lek
             $enrollmentsCount = DB::table('enrollments')->where('user_id', $user->id)->count();
             $certificatesCount = DB::table('certificates')->where('user_id', $user->id)->count();
 
@@ -382,7 +316,6 @@ class AuthController extends Controller
         }
     }
 
-    // ðŸŸ¢ BONUS FUNGSI LOGOUT AMAN: Hapus token Sanctum aktif saat student keluar aplikasi
     public function logout(Request $request)
     {
         if ($request->user())

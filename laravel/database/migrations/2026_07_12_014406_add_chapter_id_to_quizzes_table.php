@@ -6,14 +6,10 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up()
     {
-        Schema::table('courses', function (Blueprint $table) {
-            $table->string('category')->nullable()->after('title'); // Contoh: Web Dev, Mobile, Design
-            $table->decimal('rating', 3, 1)->default(0); // Contoh: 4.5
+        Schema::table('quizzes', function (Blueprint $table) {
+            $table->foreignId('chapter_id')->nullable()->after('course_id')->constrained('chapters')->onDelete('cascade');
         });
     }
 
@@ -22,7 +18,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('courses', function (Blueprint $table) {
+        Schema::table('quizzes', function (Blueprint $table) {
             //
         });
     }

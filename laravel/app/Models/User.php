@@ -24,6 +24,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'school_id',
+        'class',
         'nisn_or_nip',
         'otp_code',
         'otp_expiry',
@@ -64,6 +66,11 @@ class User extends Authenticatable
 
     public function quizResults()
     {
-        return $this->hasMany(QuizResult::class);
+        return $this->hasMany(\App\Models\QuizResult::class, 'user_id');
+    }
+
+    public function school()
+    {
+        return $this->belongsTo(School::class);
     }
 }

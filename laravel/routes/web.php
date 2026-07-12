@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\File;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\StudentController;
@@ -9,41 +11,39 @@ use App\Http\Controllers\Admin\QuizProgressController;
 use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\NotificationController;
-use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\OrderController;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\File;
+use App\Http\Controllers\Web\Teacher\TeacherController;
+use App\Http\Controllers\Web\Teacher\TeacherAuthController;
+use App\Http\Controllers\Web\Teacher\MaterialController;
+use App\Http\Controllers\Web\Teacher\QuizController;
 
-Route::get('/', function ()
-{
-    return redirect('/admin/login');
+
+Route::get('/', function () {
+    return redirect()->route('landing.page');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Jalur Autentikasi Admin (Bisa Diakses Tanpa Login)
-|--------------------------------------------------------------------------
-*/
+Route::get('/landing', function () {
+    return view('landing');
+})->name('landing.page');
+
+// Admin Auth
 Route::get('admin/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
 Route::post('admin/login', [AdminAuthController::class, 'login']);
 Route::post('admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
+// Teacher Auth
+Route::get('teacher/login', [TeacherAuthController::class, 'showLoginForm'])->name('teacher.login');
+Route::post('teacher/login', [TeacherAuthController::class, 'login']);
+Route::post('teacher/logout', [TeacherAuthController::class, 'logout'])->name('teacher.logout');
 
-
-Route::get('uploads/proofs/{filename}', function ($filename)
-{
-
+Route::get('uploads/proofs/{filename}', function ($filename) {
     $cleanFilename = str_replace('uploads/proofs/', '', $filename);
-
-    // Path menuju file asli di core Laravel lu
     $path = public_path('uploads/proofs/' . $cleanFilename);
 
-    if (!File::exists($path))
-    {
+    if (!File::exists($path)) {
         abort(404);
     }
-    if (ob_get_level())
-    {
+    if (ob_get_level()) {
         ob_end_clean();
     }
 
@@ -56,14 +56,7 @@ Route::get('uploads/proofs/{filename}', function ($filename)
     return $response;
 })->where('filename', '.*');
 
-/*
-|--------------------------------------------------------------------------
-| Jalur Khusus Admin (DIKUNCI TOTAL via Middleware Auth & Admin)
-|--------------------------------------------------------------------------
-| Hanya user yang SUDAH LOGIN dan memiliki ROLE 'admin' yang bisa masuk ke sini.
-*/
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function ()
-{
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     // Manajemen Courses
@@ -109,9 +102,47 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function ()
     // Notifikasi
     Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
     Route::post('/notifications/send', [NotificationController::class, 'store'])->name('admin.notifications.send');
+});
 
-    // Modul 1: Guru import siswa massal via Web Admin
-    Route::post('/teacher/student', [TeacherController::class, 'storeStudent'])->name('teacher.student.store');
-    // Modul 2: Guru simulasi beli paket kuota kelas via Web Admin
-    Route::post('/teacher/checkout-simulated', [OrderController::class, 'checkoutSimulated'])->name('teacher.checkout.simulated');
+Route::middleware(['auth', 'role:teacher,admin'])->prefix('teacher')->group(function () {
+    // Dashboard Guru
+    Route::get('/dashboard', [TeacherController::class, 'indexDashboard'])->name('teacher.dashboard');
+
+    // Manajemen Siswa
+    Route::get('/students', [TeacherController::class, 'indexStudents'])->name('teacher.students.index');
+    Route::post('/students/store', [TeacherController::class, 'storeStudentByTeacher'])->name('teacher.students.store');
+    Route::post('/student/store-massal', [TeacherController::class, 'storeStudent'])->name('teacher.student.store');
+    Route::delete('/students/{id}', [TeacherController::class, 'destroyStudent'])->name('teacher.student.destroy');
+    Route::put('/students/{id}/update', [TeacherController::class, 'updateStudentByTeacher'])->name('teacher.students.update');
+    Route::post('/students/{id}/resend', [TeacherController::class, 'resendStudentAccount'])->name('teacher.students.resend');
+    Route::get('/students/{id}/export-rapor', [TeacherController::class, 'exportRaporPdf'])->name('teacher.students.export_rapor');
+    Route::get('/students/{id}/progress', [TeacherController::class, 'showStudentProgress'])->name('teacher.students.show_progress');
+    Route::get('/students/{id}/quizzes', [TeacherController::class, 'showStudentQuizzes'])->name('teacher.students.show_quizzes');
+    Route::get('/teacher/students/{student_id}/quizzes/{quiz_result_id}/review', [TeacherController::class,'reviewStudentAnswers'])->name('teacher.students.review_quiz');
+
+    Route::get('/students/download-template', [TeacherController::class, 'downloadExcelTemplate'])->name('teacher.students.download_template');
+    Route::post('/students/import-excel', [TeacherController::class, 'importStudentsExcel'])->name('teacher.students.import_excel');
+
+    // Simulasi Pembelian
+    Route::post('/checkout-simulated', [OrderController::class, 'checkoutSimulated'])->name('teacher.checkout.simulated');
+
+    // materi
+    Route::get('/material', [MaterialController::class, 'index'])->name('teacher.material.index');
+    Route::post('/material/chapter', [MaterialController::class, 'storeChapter'])->name('teacher.material.store_chapter');
+    Route::post('/material/course', [MaterialController::class, 'storeCourse'])->name('teacher.material.store_course');
+    Route::get('/material/manage/{id}', [MaterialController::class, 'manage'])->name('teacher.material.manage');
+    Route::delete('/material/chapter/{id}', [MaterialController::class, 'destroyChapter'])->name('teacher.material.destroy_chapter');
+    Route::post('/material/lesson', [MaterialController::class, 'storeLesson'])->name('teacher.material.store_lesson');
+    Route::get('/material/lesson/{id}/edit', [MaterialController::class, 'editContent'])->name('teacher.material.edit_content');
+    Route::put('/material/lesson/{id}/update', [MaterialController::class, 'updateContent'])->name('teacher.material.update_content');
+    Route::delete('/material/lesson/{id}', [MaterialController::class, 'destroyLesson'])->name('teacher.material.destroy_lesson');
+    Route::put('/material/course/{id}', [MaterialController::class, 'updateCourse'])->name('teacher.material.update_course');
+
+    //Quiz
+    Route::get('/quiz', [QuizController::class, 'index'])->name('teacher.quiz.index');
+    Route::post('/quiz', [QuizController::class, 'store'])->name('teacher.quiz.store');
+    Route::delete('/quiz/{id}', [QuizController::class, 'destroy'])->name('teacher.quiz.destroy');
+    Route::get('/quiz/{id}/questions', [QuizController::class, 'manageQuestions'])->name('teacher.quiz.questions');
+    Route::post('/quiz/{id}/questions', [QuizController::class, 'storeQuestion'])->name('teacher.quiz.store_question');
+    Route::delete('/quiz/question/{id}', [QuizController::class, 'destroyQuestion'])->name('teacher.quiz.destroy_question');
 });
