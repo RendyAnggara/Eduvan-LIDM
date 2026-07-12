@@ -5,24 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Quiz extends Model
+class Chapter extends Model
 {
     use HasFactory;
 
-    protected $table = 'quizzes';
     protected $fillable = [
         'course_id',
-        'title',
-        'time_limit'
-    ];
+        'title'
+        ];
 
     public function course()
     {
         return $this->belongsTo(Course::class, 'course_id');
     }
 
-    public function questions()
+    public function lessons()
     {
-        return $this->hasMany(Question::class, 'quiz_id');
+        return $this->hasMany(Lesson::class, 'chapter_id');
     }
 }

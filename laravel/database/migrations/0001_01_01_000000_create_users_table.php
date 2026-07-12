@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('role', ['admin', 'student'])->default('student');
+            $table->enum('role', ['admin', 'teacher', 'student'])->default('student');
+            $table->foreignId('school_id')->nullable()->constrained('schools')->onDelete('cascade');
             $table->rememberToken();
             $table->timestamps();
             $table->string('otp_code')->nullable();

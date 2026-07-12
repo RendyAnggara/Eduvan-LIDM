@@ -14,9 +14,13 @@ return new class extends Migration
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('category');
+            $table->enum('grade_level', ['7', '8', '9'])->nullable();
+            $table->enum('course_type', ['school', 'premium'])->default('school');
             $table->text('description');
             $table->integer('price');
             $table->string('image')->nullable();
+            $table->decimal('rating', 3, 1)->default(0.0);
             $table->timestamps();
         });
     }
