@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { SplashPageRoutingModule } from './splash-routing.module';
-import { SplashPage } from './splash.page'; // Tetap import gambarnya
+import { SplashPage } from './splash.page';
 
 @NgModule({
   imports: [
@@ -11,9 +11,8 @@ import { SplashPage } from './splash.page'; // Tetap import gambarnya
     FormsModule,
     IonicModule,
     SplashPageRoutingModule,
-    SplashPage, // 🟢 KUNCIANNYA: Pindahkan SplashPage ke dalam array IMPORTS sini!
+    SplashPage, 
   ],
-  // 🔴 BARIS DECLARATIONS YANG EROR TADI SUDAH DIHAPUS TOTAL / DIKOSONGKAN
   declarations: [],
 })
 export class SplashPageModule {}

@@ -1,5 +1,4 @@
 <ion-header mode="ios" class="ion-no-border">
-  <!-- 🌊 SPANDUK BIRU GRADASI ATAS MODERN -->
   <div class="header-navy-cert">
     <div class="header-flex-row">
       <div class="back-action-box">
@@ -16,13 +15,11 @@
 </ion-header>
 
 <ion-content>
-  <!-- INDIKATOR LOADING -->
   <div *ngIf="isLoading" class="loading-state-box">
     <ion-spinner name="crescent"></ion-spinner>
     <p>Memeriksa Transkip Nilai resmi kamu...</p>
   </div>
 
-  <!-- KONTEN UTAMA SERTIFIKAT -->
   <div
     *ngIf="!isLoading && listSertifikat.length > 0"
     class="certificate-container"
@@ -34,7 +31,6 @@
       </p>
     </div>
 
-    <!-- KARTU SERTIFIKAT BULAT LEMBUT -->
     <div class="certificate-card" *ngFor="let cert of listSertifikat">
       <div class="cert-badge">
         <ion-icon name="ribbon"></ion-icon>
@@ -49,7 +45,6 @@
         </p>
       </div>
 
-      <!-- TOMBOL UNDUH KONSISTEN BENTUK CHUBBY -->
       <div class="cert-action">
         <button
           class="btn-download"
@@ -71,7 +66,6 @@
     </div>
   </div>
 
-  <!-- KONDISI KETIKA BELUM ADA DATA SERTIFIKAT -->
   <div *ngIf="!isLoading && listSertifikat.length === 0" class="empty-cert-box">
     <div class="empty-icon-circle">
       <ion-icon name="shield-checkmark-outline"></ion-icon>

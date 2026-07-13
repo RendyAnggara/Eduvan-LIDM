@@ -1,8 +1,6 @@
 <ion-header mode="ios" class="ion-no-border">
-  <!-- SPANDUK BIRU GRADASI ATAS DENGAN STRUKTUR BARU -->
   <div class="header-navy-player">
     <div class="header-flex-row">
-      <!-- Wadah Tombol Kembali Visual -->
       <div class="back-action-box">
         <ion-back-button
           defaultHref="/tabs/learning"
@@ -10,15 +8,12 @@
           color="light"
         ></ion-back-button>
       </div>
-      <!-- Judul Halaman -->
       <ion-title>Belajar Sekarang</ion-title>
-      <!-- Spacer Kanan Pasif Agar Judul Tetap Berada Murni di Tengah -->
       <div class="right-spacer-passive"></div>
     </div>
   </div>
 </ion-header>
 <ion-content>
-  <!-- PEMUTAR VIDEO THEATER MODE -->
   <div class="video-container">
     <iframe
       *ngIf="safeVideoUrl"
@@ -42,14 +37,11 @@
     </div>
   </div>
 
-  <!-- AREA KONTEN UTAMA -->
   <div class="content-wrapper">
     <h2>{{ courseDetail?.title || 'Memuat Nama Kursus...' }}</h2>
     <p class="instructor">
       Oleh: {{ courseDetail?.instructor || 'EduVan Instructor' }}
     </p>
-
-    <!-- KELOMPOK DAFTAR KURIKULUM -->
     <div class="curriculum-section">
       <h3>Kurikulum</h3>
 
@@ -93,7 +85,6 @@
       </ion-list>
     </div>
 
-    <!-- TOMBOL STATUS SELESAI -->
     <ion-button
       expand="block"
       [class.btn-action-cancel]="isCompleted"

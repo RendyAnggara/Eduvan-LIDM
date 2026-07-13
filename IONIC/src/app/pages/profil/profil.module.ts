@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { ProfilPageRoutingModule } from './profil-routing.module';
-import { ProfilePage } from './profil.page'; // Perbaikan di sini
+import { ProfilePage } from './profil.page';
 
 @NgModule({
   imports: [

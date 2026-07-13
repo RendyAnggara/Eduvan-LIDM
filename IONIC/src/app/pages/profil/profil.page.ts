@@ -16,7 +16,6 @@ import { CourseService } from '../../services/course.service';
 export class ProfilePage implements OnInit {
   userProfile: any = null;
 
-  // Default awal ke gambar netral universal
   selectedAvatar: string = 'assets/icon/avatar-neutral.png';
 
   isSkModalOpen: boolean = false;
@@ -58,7 +57,6 @@ export class ProfilePage implements OnInit {
     private courseService: CourseService
   ) {}
 
-  // 🛠️ FUNGSI PEMBANTU: Biar key avatar unik per email user
   private getAvatarKey(): string {
     if (this.userProfile && this.userProfile.email) {
       return `user_avatar_${this.userProfile.email}`;
@@ -75,7 +73,6 @@ export class ProfilePage implements OnInit {
   }
 
   ngOnInit() {
-    // 🟢 SINKRONISASI CACHE AWAL
     const localUserData =
       localStorage.getItem('user_data') || localStorage.getItem('user');
     if (localUserData) {
@@ -88,8 +85,6 @@ export class ProfilePage implements OnInit {
         this.userProfile = user;
         const currentSavedAvatar = localStorage.getItem(this.getAvatarKey());
         let targetAvatar = user.avatar;
-
-        // 🔒 FILTER BENTURAN PUSAT: Jika server mengembalikan tipe link google (http) tapi local storage punya path internal valid per user, paksa pakai path internal
         if (
           targetAvatar &&
           targetAvatar.startsWith('http') &&
@@ -109,7 +104,6 @@ export class ProfilePage implements OnInit {
   }
 
   ionViewWillEnter() {
-    // Ambil data darurat dari localStorage pas transisi page
     const localUserData =
       localStorage.getItem('user_data') || localStorage.getItem('user');
     if (localUserData) {
@@ -175,13 +169,11 @@ export class ProfilePage implements OnInit {
   }
 
   updateAvatar(path: string) {
-    // 🟢 LANGKAH OPTIMIS: Ubah UI secara instan biar user ngerasa responsif
     this.selectedAvatar = path;
 
     if (this.userProfile) {
       this.userProfile.avatar = path;
     } else {
-      // Antisipasi jika userProfile null di memori, kita buat object instan sementara dari LocalStorage
       const localUserData =
         localStorage.getItem('user_data') || localStorage.getItem('user');
       this.userProfile = localUserData
@@ -189,12 +181,8 @@ export class ProfilePage implements OnInit {
         : { name: '', email: '' };
       this.userProfile.avatar = path;
     }
-
-    // Simpan spesifik menggunakan email user saat ini
     localStorage.setItem(this.getAvatarKey(), path);
     this.cdr.detectChanges();
-
-    // 🟢 AMANKAN PAYLOAD: Jika data name/email kosong di memori, fallback ambil langsung dari cache local storage
     let currentName = this.userProfile?.name;
     let currentEmail = this.userProfile?.email;
 
@@ -219,15 +207,9 @@ export class ProfilePage implements OnInit {
         this.authService.updateProfile(payload).subscribe({
           next: (res: any) => {
             console.log('✅ Avatar tersimpan di cPanel Server!', res);
-
-            // Ambil data user murni dari response Laravel (bisa res.user atau res langsung)
             const dataUserTerbaru = res.user ? res.user : res;
-
-            // Satukan data terbaru ke local storage biar sinkron luar dalam
             localStorage.setItem('user_data', JSON.stringify(dataUserTerbaru));
             localStorage.setItem('user', JSON.stringify(dataUserTerbaru));
-
-            // Update stream pusat agar ngOnInit tidak mendeteksi data lama
             if (typeof this.authService.updateCurrentUserState === 'function') {
               this.authService.updateCurrentUserState(dataUserTerbaru);
             }
@@ -288,11 +270,10 @@ export class ProfilePage implements OnInit {
               }
             }
           } else {
-            // Jika dari server NULL/kosong, cek dulu memori HP
             if (currentSavedAvatar && !currentSavedAvatar.startsWith('http')) {
-              dataTerbaru.avatar = currentSavedAvatar; // Pakai yang ada di HP biar gak balik netral
+              dataTerbaru.avatar = currentSavedAvatar;
             } else {
-              dataTerbaru.avatar = 'assets/icon/avatar-neutral.png'; // Fallback total baru netral
+              dataTerbaru.avatar = 'assets/icon/avatar-neutral.png';
             }
           }
 

@@ -19,11 +19,7 @@ export class QuizPage implements OnInit {
   loading: boolean = true;
   quizStatus: string = '';
   quizScore: number = 0;
-
-  // Diisi dynamic dari database Laravel
   questions: any[] = [];
-
-  // Ditambahkan: Array untuk menyimpan jawaban user di setiap index soal agar tidak hilang/ter-reset saat navigasi
   userAnswers: string[] = [];
 
   constructor(
@@ -33,7 +29,6 @@ export class QuizPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Mengambil parameter ID Kursus dari URL (misal: /quiz/:id)
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.courseId = Number(idParam);
@@ -48,33 +43,25 @@ export class QuizPage implements OnInit {
     this.courseService.getQuizQuestions(this.courseId).subscribe({
       next: (res: any) => {
         this.loading = false;
-        console.log('Response Kuis dari Laravel:', res); // Cek isi objek asli di inspect console browser
+        console.log('Response Kuis dari Laravel:', res);
 
         if (!res) {
           this.questions = [];
           return;
         }
-
-        // Jalur 1: Jika Laravel membungkusnya di dalam res.data
         if (res.success && res.data) {
           this.questions = Array.isArray(res.data) ? res.data : [res.data];
         }
-        // Jalur 2: Jika Laravel mengembalikan objek kuis yang di dalamnya ada array questions (res.data.questions)
         else if (res.data && res.data.questions) {
           this.questions = res.data.questions;
         }
-        // Jalur 3: Jika API langsung melempar Array mentah []
         else if (Array.isArray(res)) {
           this.questions = res;
         }
-        // Jalur 4: Cadangan jika struktur berupa objek tunggal langsung dimasukkan ke array
         else {
           this.questions = res.questions || [];
         }
-
-        // Ditambahkan: Inisialisasi panjang array jawaban user sesuai jumlah soal dari Laravel
         this.userAnswers = new Array(this.questions.length).fill('');
-
         console.log('Hasil parsing array questions untuk UI:', this.questions);
       },
       error: (err: any) => {
@@ -92,17 +79,12 @@ export class QuizPage implements OnInit {
   selectAnswer(val: string) {
     console.log('User memilih opsi:', val);
     this.selectedAnswer = val;
-
-    // Ditambahkan: Simpan nilai jawaban ke dalam array pelacak index soal saat ini
     this.userAnswers[this.currentQuestionIndex] = val;
   }
 
   nextQuestion() {
-    // Fungsi checkScore() bawaan kamu tetap berjalan normal di sini
     if (this.currentQuestionIndex < this.questions.length - 1) {
       this.currentQuestionIndex++;
-
-      // Diubah: Ambil jawaban yang sebelumnya sudah pernah dipilih di soal ini (jika ada)
       this.selectedAnswer = this.userAnswers[this.currentQuestionIndex] || '';
     }
   }
@@ -110,14 +92,11 @@ export class QuizPage implements OnInit {
   prevQuestion() {
     if (this.currentQuestionIndex > 0) {
       this.currentQuestionIndex--;
-
-      // Diubah: Kembalikan jawaban yang sudah dipilih sebelumnya saat student mundur ke soal lama
       this.selectedAnswer = this.userAnswers[this.currentQuestionIndex] || '';
     }
   }
 
   checkScore() {
-    // Disesuaikan: Hitung total jawaban benar secara berkala dari seluruh isi array userAnswers
     this.score = 0;
     this.userAnswers.forEach((ans, index) => {
       if (ans === this.questions[index]?.answer) {
@@ -134,11 +113,7 @@ export class QuizPage implements OnInit {
     } else {
       this.quizScore = 0;
     }
-
-    // DIUBAH: Tidak peduli berapa nilainya, statusnya selalu dianggap 'passed' (selesai)
     this.quizStatus = 'passed';
-
-    // Kirim data ke endpoint progress Laravel
     this.courseService
       .updateQuizProgress(this.courseId, this.quizScore)
       .subscribe({
@@ -154,7 +129,6 @@ export class QuizPage implements OnInit {
   }
 
   finishQuiz() {
-    // Karena semua status sudah pasti 'passed', tombol akan langsung mengarahkan user pulang ke My Learning
     this.goBack();
   }
 }

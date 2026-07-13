@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth'; 
-import { ToastController, LoadingController } from '@ionic/angular'; // TAMBAHKAN LoadingController DI SINI
+import { ToastController, LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-forgot-password',
@@ -18,7 +18,7 @@ export class ForgotPasswordPage implements OnInit {
     private authService: AuthService, 
     private router: Router,
     private toastCtrl: ToastController,
-    private loadingCtrl: LoadingController // DAFTARKAN DI SINI
+    private loadingCtrl: LoadingController
   ) {}
 
   ngOnInit() {}
@@ -40,7 +40,7 @@ export class ForgotPasswordPage implements OnInit {
       return;
     }
 
-    // MEMBUAT & MEMUNCULKAN LOADING SEGERA SETELAH DIKLIK
+
     const loading = await this.loadingCtrl.create({
       message: 'Mengirim kode OTP...',
       spinner: 'crescent'
@@ -49,12 +49,12 @@ export class ForgotPasswordPage implements OnInit {
 
     this.authService.sendResetOtp(this.email).subscribe({
       next: async (res: any) => {
-        await loading.dismiss(); // Matikan loading saat sukses
+        await loading.dismiss(); 
         this.presentToast(res.message, 'success');
         this.step = 2; 
       },
       error: async (error: any) => {
-        await loading.dismiss(); // Matikan loading saat gagal
+        await loading.dismiss(); 
         this.presentToast(error.error?.message || 'Gagal mengirim OTP', 'danger');
       }
     });
@@ -66,7 +66,6 @@ export class ForgotPasswordPage implements OnInit {
       return;
     }
 
-    // MEMBUAT & MEMUNCULKAN LOADING SEGERA SETELAH DIKLIK
     const loading = await this.loadingCtrl.create({
       message: 'Memverifikasi kode...',
       spinner: 'crescent'
@@ -75,14 +74,14 @@ export class ForgotPasswordPage implements OnInit {
 
     this.authService.verifyResetOtp(this.email, this.otpCode).subscribe({
       next: async (res: any) => {
-        await loading.dismiss(); // Matikan loading saat sukses
+        await loading.dismiss();
         this.presentToast(res.message, 'success');
         this.router.navigate(['/reset-password'], {
           state: { email: this.email, otp: this.otpCode }
         });
       },
       error: async (error: any) => {
-        await loading.dismiss(); // Matikan loading saat gagal
+        await loading.dismiss();
         this.presentToast(error.error?.message || 'Kode OTP salah atau expired!', 'danger');
       }
     });

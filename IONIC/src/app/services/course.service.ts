@@ -9,7 +9,6 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class CourseService {
-  // Ganti dengan URL API backend marketplace kamu
   private apiUrl = 'https://eduvan.rehalivan.com/api/courses';
   private baseApiUrl = 'https://eduvan.rehalivan.com/api';
 
@@ -18,27 +17,19 @@ export class CourseService {
   public notifChanged$ = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) {}
-
-  // Fungsi pembantu untuk menyisipkan Token Login JWT/Sanctum Laravel ke Header API
   private dapatkanHeaderAutentikasi() {
     let tokenUser = localStorage.getItem('token');
-
-    // Jika 'token' kosong, coba cek apakah tokennya nyelip di dalam objek 'userData'
     if (!tokenUser) {
       const userDataRaw = localStorage.getItem('userData');
       if (userDataRaw) {
         try {
-          // Jika isi userData itu berupa JSON string objek, kita bongkar dulu
           const parsedData = JSON.parse(userDataRaw);
           tokenUser = parsedData.token || parsedData.access_token || null;
         } catch (e) {
-          // Jika bukan JSON string (berarti string token murni), langsung ambil
           tokenUser = userDataRaw;
         }
       }
     }
-
-    // Bersihkan token dari karakter petik ganda gaib yang sering ikut dari JSON string
     if (tokenUser) {
       tokenUser = String(tokenUser).replace(/"/g, '').trim();
     }
@@ -58,7 +49,6 @@ export class CourseService {
     return this.http.get(`${this.apiUrl}/${id}`);
   }
 
-  // 1. Fungsi untuk membeli kursus (Mendapatkan link Invoice Xendit)
   buyCourse(courseId: number): Observable<any> {
     const payload = { course_id: courseId };
     return this.http.post(`${this.baseApiUrl}/enrollments`, payload, {
@@ -66,14 +56,12 @@ export class CourseService {
     });
   }
 
-  // 2. Fungsi untuk mengambil isi materi/video berdasarkan ID Kursus (Gembok Akses)
   getCourseContents(courseId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/${courseId}/contents`, {
       headers: this.dapatkanHeaderAutentikasi(),
     });
   }
 
-  // 3. Fungsi untuk melihat riwayat pembelian / daftar kursus saya (My Learning)
   getMyEnrollments(): Observable<any> {
     return this.http.get(`${this.baseApiUrl}/enrollments`, {
       headers: this.dapatkanHeaderAutentikasi(),
@@ -99,24 +87,14 @@ export class CourseService {
     );
   }
 
-  //notifikasi
   ambilDaftarNotifikasi(): Observable<any> {
-    // 1. Ambil token bearer login mahasiswa yang tersimpan di memori hp/browser
     const token = localStorage.getItem('token');
-
-    // 2. Pasang headers wajib agar lolos dari barikade middleware auth:sanctum
     const headers = {
       Authorization: `Bearer ${token}`,
       Accept: 'application/json',
     };
-
-    // 3. Tembak endpoint API-nya!
     return this.http.get(`${this.baseApiUrl}/notifications`, { headers });
   }
-
-  // =========================================================================
-  // LOGIKA WISHLIST ASLI (KONEKSI LIVE SERVERS CPANEL)
-  // =========================================================================
 
   ambilDaftarWishlist(): Observable<any> {
     return this.http.get(`${this.baseApiUrl}/wishlist`, {
@@ -132,13 +110,11 @@ export class CourseService {
   }
 
   getQuizQuestions(courseId: number): Observable<any> {
-    // Mengubah /quiz/{id} menjadi /courses/{id}/quizzes sesuai api.php Laravel
     return this.http.get(`${this.baseApiUrl}/courses/${courseId}/quizzes`, {
       headers: this.dapatkanHeaderAutentikasi(),
     });
   }
 
-  // 2. Kirim lembar jawaban kuis ke server Laravel untuk dikoreksi otomatis
   submitQuizAnswers(courseId: number, answers: any[]): Observable<any> {
     const payload = {
       course_id: courseId,
@@ -149,30 +125,23 @@ export class CourseService {
     });
   }
 
-  // TAMBAHKAN FUNGSI INI DI PALING BAWAH (JANGAN HAPUS KODE DI ATASNYA)
   updateQuizProgress(courseId: number, score: number): Observable<any> {
     const payload = {
       course_id: courseId,
       score: score,
     };
-
-    // Memicu RxJS BehaviorSubject agar halaman My Learning tahu ada progress baru yang selesai
     this.progressChanged$.next(true);
-
-    // DIUBAH: Menembak endpoint progress kuis yang valid sesuai isi api.php Laravel kamu
     return this.http.post(`${this.baseApiUrl}/progress/submit-quiz`, payload, {
       headers: this.dapatkanHeaderAutentikasi(),
     });
   }
 
-  //certificate
   getMyCertificates(): Observable<any> {
     return this.http.get(`${this.baseApiUrl}/my-certificates`, {
       headers: this.dapatkanHeaderAutentikasi(),
     });
   }
 
-  // 🟢 TAMBAHAN SAKTI: Menembak API Rating ke cPanel Laravel secara Live
   kirimRatingCourse(courseId: number, bintang: number): Observable<any> {
     const payload = {
       rating: bintang,
@@ -187,7 +156,6 @@ export class CourseService {
     );
   }
   buyCourseManual(formData: FormData): Observable<any> {
-    // 1. Ambil token murni menggunakan logic pembersihan yang sudah kamu buat di atas
     let tokenUser = localStorage.getItem('token');
     if (!tokenUser) {
       const userDataRaw = localStorage.getItem('userData');
@@ -203,14 +171,10 @@ export class CourseService {
     if (tokenUser) {
       tokenUser = String(tokenUser).replace(/"/g, '').trim();
     }
-
-    // 2. KUNCI SAKTI: Cukup bawa Authorization, JANGAN isi Content-Type manual
     const headers = new HttpHeaders({
       Authorization: `Bearer ${tokenUser}`,
       Accept: 'application/json',
     });
-
-    // 3. Tembak FormData murni ke endpoint API enrollments backend Ivan
     return this.http.post(`${this.baseApiUrl}/enrollments`, formData, {
       headers,
     });
@@ -221,8 +185,6 @@ export class CourseService {
       headers: this.dapatkanHeaderAutentikasi(),
     });
   }
-
-  // Mengirimkan permintaan ke server Laravel untuk mengubah status read_at berdasarkan ID Notifikasi
   tandaiNotifikasiTerbaca(idNotif: string): Observable<any> {
     return this.http
       .post(
@@ -235,7 +197,6 @@ export class CourseService {
       .pipe(
         tap((res: any) => {
           if (res && res.status === 'success') {
-            // 🟢 KUNCI UTAMA: Sinyal perubahan baru dikirim ke beranda SETELAH server Laravel sukses merespon
             this.notifChanged$.next(true);
           }
         }),

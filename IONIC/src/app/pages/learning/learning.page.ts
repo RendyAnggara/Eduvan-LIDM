@@ -25,19 +25,14 @@ export class LearningPage implements OnInit, OnDestroy {
     private courseService: CourseService,
   ) {}
 
-  // --- FUNGSI TAMBAHAN UNTUK GAMBAR ---
-  // --- FUNGSI LOGO DINAMIS BERDASARKAN KATEGORI ---
   getCategoryLogo(category: string): string {
-    // Pastikan kategori tidak null/undefined
     const cat = (category || '').toLowerCase();
 
-    // Logika deteksi kategori
     if (cat.includes('computer science')) {
       return 'assets/icon/computer-science.jpeg';
     } else if (cat.includes('microsoft office')) {
       return 'assets/icon/microsoft-office.jpeg';
     } else {
-      // Fallback jika kategori tidak dikenal atau kosong
       return 'assets/icon/favicon.png';
     }
   }
@@ -134,11 +129,6 @@ export class LearningPage implements OnInit, OnDestroy {
     }
   }
   goToSertifikat() {
-    // Jalur resmi jika halaman sertifikat kalian terdaftar di dalam menu tabs:
     this.router.navigate(['/tabs/certificate']);
-    
-    // 💡 Tips Tambahan Ivan:
-    // Jika halaman sertifikatnya bersarang di dalam submenu profil (misal tabs -> profil -> sertifikat),
-    // jalurnya diganti menjadi: this.router.navigate(['/tabs/profil/certificate']);
   }
 }

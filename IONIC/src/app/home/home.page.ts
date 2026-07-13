@@ -24,15 +24,14 @@ export class HomePage implements OnInit {
     private authService: AuthService,
     private searchService: SearchService,
     private courseService: CourseService,
-    private cdr: ChangeDetectorRef // 🟢 Tambahan wajib: inject ChangeDetectorRef biar UI langsung render nama
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     this.ambilNamaUserLive();
     this.muatDataBerandaTotal();
-    this.loadCourses(); // Memuat data awal saat aplikasi pertama kali dibuka
+    this.loadCourses();
 
-    // Otomatis memuat ulang jumlah angka lonceng jika ada sinyal perubahan dari service
     this.courseService.notifChanged$.subscribe((berubah: boolean) => {
       if (berubah) {
         this.muatJumlahNotifikasi();
@@ -43,10 +42,9 @@ export class HomePage implements OnInit {
   selectCategory(categoryName: string) {
     if (this.selectedCategory === categoryName) {
       this.selectedCategory = null;
-      this.kursusTersaring = this.courses; // Kalau reset, balikin semua data asli
+      this.kursusTersaring = this.courses;
     } else {
       this.selectedCategory = categoryName;
-      // Filter master data dan masukkan hasilnya ke kursusTersaring
       this.kursusTersaring = this.courses.filter(
         (kursus) => kursus.category === categoryName
       );
@@ -56,14 +54,13 @@ export class HomePage implements OnInit {
   loadCourses() {
     this.courseService.getCourses().subscribe({
       next: (res: any) => {
-        this.courses = res.data; // Simpan master data asli
-        this.kursusTersaring = res.data; // Tampilan awal
+        this.courses = res.data; 
+        this.kursusTersaring = res.data;
       },
     });
   }
 
   ionViewWillEnter() {
-    // 🟢 ANTISIPASI TRANSISI DEEP LINK: Ambil nama dari localStorage jika state memori belum sinkron sempurna
     const localUserData =
       localStorage.getItem('user_data') || localStorage.getItem('user');
     if (localUserData) {
@@ -78,15 +75,9 @@ export class HomePage implements OnInit {
     }
 
     this.muatJumlahNotifikasi();
-
-    // 🟢 RE-FETCH DATA BERANDA: Pastikan data kursus di-refresh menggunakan token login Google yang baru didapat
     this.muatDataBerandaTotal();
   }
 
-  /**
-   * 🟢 FUNGSI BARU: Fungsi pusat untuk memuat seluruh konten beranda dari cPanel.
-   * Fungsi ini mendukung tarikan penyegaran layar (Pull-to-Refresh).
-   */
   muatDataBerandaTotal(refresherEvent?: CustomEvent) {
     if (!refresherEvent) {
       this.isLoading = true;
@@ -100,7 +91,7 @@ export class HomePage implements OnInit {
           .sort(
             (a: any, b: any) => Number(b.rating || 0) - Number(a.rating || 0)
           )
-          .slice(0, 10); // 🟢 BERSIH & AMAN: Menampilkan tepat 10 data rating tertinggi dari database
+          .slice(0, 10);
       },
       error: (err) => {
         console.error('Gagal memuat kursus dari cPanel:', err);
@@ -129,21 +120,16 @@ export class HomePage implements OnInit {
     });
   }
 
-  /**
-   * 🟢 Handler untuk menangkap aksi geser tarik layar dari atas ke bawah
-   */
   handleRefresh(event: CustomEvent) {
     console.log('User melakukan refresh halaman...');
 
-    // Jalankan fungsi load data bawaan halaman Anda
     this.ngOnInit();
 
-    // 🟢 EFEK TRANSISI HALUS: Beri jeda sedikit sebelum menutup spinner
     setTimeout(() => {
       if (event && event.target) {
         (event.target as any).complete();
       }
-    }, 800); // Roda berputar akan selesai dengan transisi fade-out yang rapi
+    }, 800);
   }
 
   muatJumlahNotifikasi() {

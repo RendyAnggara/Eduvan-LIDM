@@ -1,31 +1,24 @@
-/* Impor font dari Google Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
 @import "@ionic/angular/css/core.css";
 
 :root {
-  /* Palette Premium Eduvan */
   --edu-accent: #1565c0;
   --edu-bg: #f4f7fa;
   --edu-white: #ffffff;
   --edu-text-main: #1a202c;
   --edu-text-muted: #718096;
-
-  /* Shadow & Border */
   --premium-shadow: 0 20px 40px rgba(9, 60, 93, 0.08),
     0 5px 15px rgba(0, 0, 0, 0.03);
   --glass-shadow: 0 8px 32px 0 rgba(9, 60, 93, 0.1);
   --soft-border: 1px solid rgba(226, 232, 240, 0.8);
 }
-
-/* Terapkan ke seluruh aplikasi */
 body {
   font-family: var(--ion-font-family);
   color: var(--edu-text-main);
   background-color: var(--edu-bg);
 }
 
-/* Judul agar konsisten */
 h1,
 h2,
 h3,
@@ -36,8 +29,6 @@ h6 {
   font-weight: 700;
   color: var(--ion-color-primary);
 }
-
-/* Reset elemen form agar mengikuti font */
 ion-button,
 ion-input,
 ion-textarea,
@@ -46,7 +37,6 @@ ion-label {
   font-family: var(--ion-font-family);
 }
 
-/* Komponen Eduvan Premium */
 .edu-card {
   background: var(--edu-white);
   border-radius: 28px;
@@ -69,8 +59,6 @@ ion-button {
 
 .premium-avatar-sheet {
   --background: transparent;
-
-  /* Posisi di tengah dan efek melayang */
   .action-sheet-wrapper {
     max-width: 320px;
     margin: auto;
@@ -81,7 +69,6 @@ ion-button {
     padding: 8px;
   }
 
-  /* Style tombol di dalam sheet */
   .action-sheet-button {
     font-family: var(--ion-font-family);
     font-weight: 600;
@@ -101,16 +88,11 @@ ion-button {
   }
 }
 
-// =========================================================================
-// PREMIUM CUSTOM OVERLAY ALERT FOR EDUVAN (MINIMALIST & CLEAN VERSION)
-// =========================================================================
-
-// 🟢 1. Tema Alert Sukses (Minimalist Deep Slate & Soft Green)
 .eduvan-alert-success {
-  --background: #1e293b !important; // Deep Slate solid & bersih
+  --background: #1e293b !important;
   --box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3),
     0 10px 10px -5px rgba(0, 0, 0, 0.2);
-  --border-radius: 24px; // Jauh lebih smooth dan melengkung alami
+  --border-radius: 24px;
 
   .alert-head {
     text-align: center;
@@ -119,37 +101,31 @@ ion-button {
     h2.alert-title {
       color: #22986c;
       font-size: 19px;
-      font-weight: 600; // Tidak terlalu tebal kaku
+      font-weight: 600;
       letter-spacing: -0.3px;
     }
   }
 
   .alert-message {
-    color: #94a3b8; // Teks abu-abu soft clean
+    color: #94a3b8;
     text-align: center;
     font-size: 13.5px;
     line-height: 1.6;
     padding: 0 28px 28px 28px;
   }
   ion-refresher {
-    /* Warna Spinner (Lingkaran Sabit) saat berputar */
-    --ion-color-primary: #ffca28; /* Kuning Emas/Gold biar kontras */
+    --ion-color-primary: #ffca28;
 
     ion-refresher-content {
-      /* Gaya Teks "Tarik..." dan "Menyelaraskan..." */
-      color: #093c5d !important; /* Warna Utama Navy EduVan */
+      color: #093c5d !important;
       font-weight: 600;
       font-size: 14px;
       letter-spacing: 0.3px;
-
-      /* Gaya Ikon Panah Saat Ditarik */
       .refresher-pulling-icon {
         color: #093c5d;
         font-size: 26px;
         transition: transform 0.2s ease-in-out;
       }
-
-      /* Gaya Spinner Lingkaran */
       ion-spinner {
         width: 28px;
         height: 28px;
@@ -158,46 +134,37 @@ ion-button {
     }
   }
 
-  /* Styling Toast Keluar Premium Melayang di Atas Tabs Menu */
   .toast-keluar-premium {
-    /* 1. Pengaturan Posisi Melayang di Atas Tabs */
-    --baseline: 90px; /* Mengangkat posisi dasar toast melayang tepat di atas menu bawah */
-    margin-bottom: 30px; /* Tambahan jarak aman untuk layar HP berponi bawah (gesture bar) */
-
-    /* 2. Desain Kapsul Minimalis Modern (Glassmorphic) */
+    --baseline: 90px;
+    margin-bottom: 30px; 
     --background: rgba(
       25,
       35,
       50,
       0.95
-    ); /* Warna navy gelap semi-transparan premium */
+    );
     --color: #ffffff;
-    --border-radius: 24px; /* Sudut melengkung halus modern */
-    --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35); /* Efek bayangan tegas agar tampak melayang */
-
-    /* 3. Layout & Jarak Internal */
-    max-width: 85% !important; /* Agar kapsul tidak melebar terlalu penuh ke sisi layar */
+    --border-radius: 24px; 
+    --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35); 
+    max-width: 85% !important;
     left: 50% !important;
     transform: translateX(
       -50%
-    ) !important; /* Memastikan posisi persis di tengah-tengah layar */
+    ) !important;
     padding: 4px 16px;
 
-    /* 4. Teks Desain */
     font-weight: 600;
     font-size: 13.5px;
     letter-spacing: 0.5px;
 
-    /* 5. Dekorasi Ikon */
     ion-icon {
-      color: #ffd54f !important; /* Warna kuning gold cerah */
+      color: #ffd54f !important; 
       font-size: 19px;
       margin-right: 8px;
-      animation: bounceIcon 1.2s ease-in-out infinite alternate; /* Efek pantulan lembut */
+      animation: bounceIcon 1.2s ease-in-out infinite alternate;
     }
   }
 
-  /* Animasi Pantulan Lembut Khusus Ikon */
   @keyframes bounceIcon {
     0% {
       transform: translateY(0);
@@ -205,7 +172,7 @@ ion-button {
     100% {
       transform: translateY(
         -3px
-      ); /* Ikon akan melompat naik-turun secara halus */
+      );
     }
   }
 
@@ -213,7 +180,7 @@ ion-button {
     padding: 0 24px 24px 24px;
 
     button.alert-button {
-      background: #22986c; // Indigo solid flat clean (gaya iOS premium minimalis)
+      background: #22986c; 
       color: #ffffff !important;
       width: 100%;
       margin: 0;
@@ -221,7 +188,7 @@ ion-button {
       font-weight: 600;
       font-size: 14px;
       height: 44px;
-      box-shadow: none; // Hapus shadow lebay di tombol
+      box-shadow: none; 
 
       .alert-button-inner {
         justify-content: center;
@@ -230,7 +197,6 @@ ion-button {
   }
 }
 
-// 🔴 2. Tema Alert Gagal (Minimalist Deep Slate & Soft Red)
 .eduvan-alert-error {
   --background: #1e293b !important;
   --box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3),
@@ -242,7 +208,7 @@ ion-button {
     padding: 32px 24px 12px 24px;
 
     h2.alert-title {
-      color: #f87171; // Merah pastel lembut
+      color: #f87171; 
       font-size: 19px;
       font-weight: 600;
       letter-spacing: -0.3px;
@@ -261,7 +227,7 @@ ion-button {
     padding: 0 24px 24px 24px;
 
     button.alert-button {
-      background: #ef4444; // Red flat clean
+      background: #ef4444; 
       color: #ffffff !important;
       width: 100%;
       margin: 0;
@@ -279,16 +245,16 @@ ion-button {
 }
 
 .eduvan-alert-logout {
-  --background: #0c162e !important; // Biru kegelapan premium (Slate Dark Blue), bukan abu-abu semen lagi
+  --background: #0c162e !important; 
   --box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  --border-radius: 24px; // Sudut melengkung halus & modern
+  --border-radius: 24px; 
 
   .alert-head {
     text-align: center;
     padding: 36px 24px 14px 24px;
 
     h2.alert-title {
-      color: #f8fafc; // Putih bersih kontras tinggi, sangat clean
+      color: #f8fafc;
       font-size: 19px;
       font-weight: 600;
       letter-spacing: -0.3px;
@@ -296,14 +262,13 @@ ion-button {
   }
 
   .alert-message {
-    color: #94a3b8; // Abu-abu soft murni, kontrasnya pas di latar gelap
+    color: #94a3b8; 
     text-align: center;
     font-size: 14px;
     line-height: 1.6;
     padding: 0 24px 28px 24px;
   }
 
-  // Tata letak tombol berdampingan ala iOS/Modern App
   .alert-button-group {
     display: flex !important;
     flex-direction: row !important;
@@ -315,32 +280,29 @@ ion-button {
       flex: 1 !important;
       width: 50% !important;
       margin: 0 !important;
-      height: 46px; // Sedikit lebih tinggi biar empuk ditekan di HP
-      border-radius: 16px; // Menyesuaikan style border-radius ion-button Eduvan
+      height: 46px; 
+      border-radius: 16px; 
       font-size: 14px;
       font-weight: 600;
-      text-transform: none; // Hapus uppercase kaku bawaan Android
+      text-transform: none; 
 
       .alert-button-inner {
         justify-content: center;
       }
     }
 
-    // Tombol Batal: Dibuat semi-transparan murni tanpa border kaku, text biru muda cerah
     button.alert-btn-batal {
       background: rgba(255, 255, 255, 0.04) !important;
-      color: #38bdf8 !important; // Akses biru muda cerah agar clean tapi tetap jelas
+      color: #38bdf8 !important;
 
       &:active {
         background: rgba(255, 255, 255, 0.08) !important;
       }
     }
-
-    // Tombol Keluar: Menggunakan soft crimson/coral premium, tegas tapi tidak menusuk mata
     button.alert-btn-keluar {
-      background: #f43f5e !important; // Rose/Crimson koral modern menggantikan merah solid biasa
+      background: #f43f5e !important;
       color: #ffffff !important;
-      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3); // Soft glow efek melayang pada tombol utama
+      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
 
       &:active {
         background: #e11d48 !important;
@@ -350,7 +312,6 @@ ion-button {
 }
 
 ion-app {
-  // Gunakan warna dasar yang match dengan splash screen/login eduvan lu lek
   --background: #f4f7fa !important;
   background-color: #f4f7fa !important;
 }

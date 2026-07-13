@@ -2,7 +2,6 @@ ion-content {
   --background: #ffffff; 
 }
 
-// Spanduk Biru Bagian Atas
 .auth-top-banner {
   background: linear-gradient(180deg, #0022cc 0%, #0055ff 100%); 
   padding: 30px 24px 10px 24px;
@@ -11,7 +10,6 @@ ion-content {
   position: relative;
   overflow: hidden;
 
-  // Efek dekorasi lengkungan transparan pada latar belakang spanduk
   &::before {
     content: '';
     position: absolute;
@@ -74,18 +72,15 @@ ion-content {
   img {
     max-height: 160px;
     object-fit: contain;
-    // Efek ini akan membuat ikon PNG transparan memiliki pendaran putih lembut di belakangnya
     filter: drop-shadow(0 8px 25px rgba(255, 255, 255, 0.8)); 
     }
   }
 }
 
-// Bagian Form Input Halaman Login
 .auth-form-body {
   padding: 24px;
   background: #ffffff;
 
-  // Mengubah label teks menjadi lebih tebal dan berwarna biru kasual
   .input-label-flat {
     color: #1e5e8a;
     font-size: 12px;
@@ -96,23 +91,19 @@ ion-content {
     letter-spacing: 0.5px;
   }
 
-  // Mengubah kotak input menjadi bulat lembut dengan warna biru pastel segar
   .auth-input-flat {
-    --background: #f0f7ff; // Warna latar belakang pastel lembut
-    --border-radius: 16px; // Sudut dibuat membulat lembut, tidak kaku
+    --background: #f0f7ff;
+    --border-radius: 16px;
     --padding-start: 16px;
-    border: 1.5px solid #d0e3ff; // Batas garis tipis sewarna
+    border: 1.5px solid #d0e3ff;
     margin-bottom: 4px;
     transition: all 0.3s ease;
 
-    // Efek interaktif saat kolom input mulai diketik oleh siswa
     &:focus-within {
       border-color: #0055ff;
-      --background: #ffffff; // Berubah menjadi putih bersih agar fokus
-      box-shadow: 0 0 0 4px rgba(0, 85, 255, 0.15); // Efek cahaya biru
+      --background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(0, 85, 255, 0.15);
     }
-
-    // Mengubah warna dan ukuran ikon agar lebih jelas dilihat
     ion-icon {
       color: #1e5e8a;
       font-size: 22px;
@@ -134,7 +125,6 @@ ion-content {
   }
 }
 
-// Desain Tombol Pintas Elemen Domain
 .quick-tags-smp {
   margin-top: 6px;
   margin-bottom: 8px;
@@ -157,7 +147,6 @@ ion-content {
   }
 }
 
-// Desain Teks Peringatan Validasi
 .error-text-santai {
   color: #dc2626;
   font-size: 11px;
@@ -165,7 +154,6 @@ ion-content {
   font-weight: 600;
 }
 
-// Tata Letak Checkbox dan Lupa Password
 .form-options-row {
   display: flex;
   justify-content: space-between;
@@ -175,7 +163,7 @@ ion-content {
 
   .remember-chk {
     --size: 18px;
-    --border-radius: 6px; // Checkbox dibuat membulat agar serasi
+    --border-radius: 6px;
     --color-checked: #0055ff;
     font-size: 13px;
     color: #4b5563;
@@ -193,16 +181,15 @@ ion-content {
     }
   }
 }
-// Tombol Login Biru Utama
 ion-button.auth-btn-blue {
-  --background: linear-gradient(135deg, #0055ff 0%, #0033cc 100%); // Gradasi biru modern
-  --background-activated: #ffb300; // Tombol berubah menjadi kuning emas saat ditekan
+  --background: linear-gradient(135deg, #0055ff 0%, #0033cc 100%);
+  --background-activated: #ffb300;
   --color-activated: #093C5D;
   --color: #ffffff;
-  --border-radius: 16px; // Kelengkungan tombol disamakan dengan kotak input
+  --border-radius: 16px;
   font-weight: 800;
   font-size: 16px;
-  height: 54px; // Sedikit lebih tinggi agar mudah ditekan pada layar ponsel
+  height: 54px;
   box-shadow: 0 8px 20px rgba(0, 85, 255, 0.25);
   text-transform: none;
 

@@ -1,5 +1,4 @@
 <ion-content [fullscreen]="true">
-  <!-- Bagian Header Profil Biru Dinamis -->
   <div class="profile-header">
     <div class="avatar-container">
       <div class="avatar-ring">
@@ -31,7 +30,6 @@
     </div>
   </div>
 
-  <!-- Kartu Statistik Bulat Lembut -->
   <div class="stats-card">
     <div class="stat-box">
       <span class="stat-value">{{ angkaKursus }}</span>
@@ -44,10 +42,8 @@
     </div>
   </div>
 
-  <!-- Area Menu Navigasi Siswa -->
   <div class="menu-container">
     <ion-list lines="none">
-      <!-- MENU SERTIFIKAT -->
       <ion-item routerLink="/certificate" class="menu-item">
         <div class="icon-wrapper orange" slot="start">
           <ion-icon name="ribbon"></ion-icon>
@@ -56,7 +52,6 @@
         <ion-icon name="chevron-forward" slot="end" class="chevron"></ion-icon>
       </ion-item>
 
-      <!-- MENU RIWAYAT TRANSAKSI -->
       <ion-item routerLink="/riwayat-transaksi" class="menu-item">
         <div class="icon-wrapper green" slot="start">
           <ion-icon name="receipt"></ion-icon>
@@ -65,7 +60,6 @@
         <ion-icon name="chevron-forward" slot="end" class="chevron"></ion-icon>
       </ion-item>
 
-      <!-- MENU NOTIFIKASI -->
       <ion-item routerLink="/notifications" class="menu-item">
         <div class="icon-wrapper purple" slot="start">
           <ion-icon name="notifications"></ion-icon>
@@ -74,7 +68,6 @@
         <ion-icon name="chevron-forward" slot="end" class="chevron"></ion-icon>
       </ion-item>
 
-      <!-- KARTU INFORMASI & BANTUAN -->
       <div class="info-card-container">
         <ion-card mode="ios" class="custom-info-card">
           <ion-card-header class="custom-card-header">
@@ -84,7 +77,6 @@
           </ion-card-header>
 
           <ion-list lines="none" class="custom-info-list">
-            <!-- SYARAT & KETENTUAN -->
             <ion-item
               button
               detail="false"
@@ -103,7 +95,6 @@
               ></ion-icon>
             </ion-item>
 
-            <!-- KEBIJAKAN PRIVASI -->
             <ion-item
               button
               detail="false"
@@ -124,10 +115,7 @@
           </ion-list>
         </ion-card>
       </div>
-
       <div class="logout-spacer"></div>
-
-      <!-- TOMBOL KELUAR -->
       <ion-item
         button
         (click)="bukaKonfirmasiKeluar()"
@@ -141,7 +129,6 @@
     </ion-list>
   </div>
 
-  <!-- MODAL DAN ALERT -->
   <ion-alert
     [isOpen]="isLogoutAlertOpen"
     header="Konfirmasi Keluar"
@@ -151,7 +138,6 @@
     (didDismiss)="isLogoutAlertOpen = false"
   ></ion-alert>
 
-  <!-- MODAL SYARAT & KETENTUAN -->
   <ion-modal
     [isOpen]="isSkModalOpen"
     (didDismiss)="setSkModal(false)"
@@ -346,7 +332,6 @@
     </ng-template>
   </ion-modal>
 
-  <!-- MODAL KEBIJAKAN PRIVASI -->
   <ion-modal
     [isOpen]="isPrivacyModalOpen"
     (didDismiss)="setPrivacyModal(false)"
