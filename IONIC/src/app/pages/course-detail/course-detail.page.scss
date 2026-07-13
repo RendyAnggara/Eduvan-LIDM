@@ -1,13 +1,11 @@
 $navy-color: #093c5d;
 
-// ⚡ OVERRIDE FONT AGAR BERSIH, TAJAM, DAN PREMIUM
 * {
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
     Arial, sans-serif !important;
 }
 
-// HEADER & TOOLBAR (THEMED PREMIUM BACKGROUND)
 ion-toolbar {
   --background: #093c5d;
   background: #093c5d;
@@ -23,7 +21,6 @@ ion-toolbar {
   }
 }
 
-/* --- Header Banner Image --- */
 .image-header {
   position: relative;
   width: 100%;
@@ -99,18 +96,15 @@ ion-toolbar {
       font-size: 12px;
     }
 
-    // Aksen warna khusus icon star
     &.rating-box ion-icon {
       color: #eab308;
     }
 
-    // Aksen warna khusus icon siswa
     &.student-box ion-icon {
       color: #10b981;
     }
   }
 
-  // Garis pembatas vertikal tipis di tengah antara rating & siswa
   .meta-divider {
     width: 1px;
     height: 16px;
@@ -119,7 +113,6 @@ ion-toolbar {
   }
 }
 
-/* --- Baris Pengajar Premium --- */
 .instructor-row {
   display: flex;
   align-items: center;

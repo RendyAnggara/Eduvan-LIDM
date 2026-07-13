@@ -98,11 +98,10 @@ export class LoginPage implements OnInit {
           }
 
           if (userData) {
-            // 🟢 INTEGRASI FIX: Jika user sukses login baru, simpan avatar bawaan dari DB ke local storage aslinya
             if (userData.avatar) {
               localStorage.setItem('user_avatar', userData.avatar);
             } else {
-              localStorage.removeItem('user_avatar'); // Bersihkan sisa-sisa avatar akun sebelumnya jika di DB null
+              localStorage.removeItem('user_avatar');
             }
 
             this.auth.updateCurrentUserState(userData);
@@ -189,8 +188,6 @@ export class LoginPage implements OnInit {
 
         if (event.data.user) {
           const googleUser = event.data.user;
-
-          // 🟢 INTEGRASI FIX GOOGLE (POPUP): Sinkronisasikan avatar fresh bawaan login Google
           if (googleUser.avatar) {
             localStorage.setItem('user_avatar', googleUser.avatar);
           } else {

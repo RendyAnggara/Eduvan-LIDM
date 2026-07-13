@@ -5,7 +5,6 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class SearchService {
-  // BehaviorSubject bertindak sebagai "penyimpan data"
   private searchSource = new BehaviorSubject<string>('');
   currentKeyword = this.searchSource.asObservable();
 

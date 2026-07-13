@@ -1,5 +1,4 @@
 <ion-content>
-  <!-- Bagian Spanduk Biru Atas dengan Ilustrasi -->
   <div class="auth-top-banner">
     <div class="header-text-group">
       <div class="title-row">
@@ -10,15 +9,12 @@
       </p>
     </div>
 
-    <!-- Wadah untuk Gambar Ilustrasi Pembelajaran -->
     <div class="illustration-box">
       <img src="assets/images/logoedulearn.png" alt="Ilustrasi Pembelajaran" />
     </div>
   </div>
 
-  <!-- Bagian Form Input Utama -->
   <div class="auth-form-body" [formGroup]="loginForm">
-    <!-- Input Alamat Email -->
     <span class="input-label-flat">Alamat Email Siswa</span>
     <ion-item lines="none" class="auth-input-flat">
       <ion-icon name="mail-outline" slot="start"></ion-icon>
@@ -35,7 +31,6 @@
       ></ion-icon>
     </ion-item>
 
-    <!-- Tombol Pintas Domain untuk Mempercepat Pengetikan -->
     <div
       class="quick-tags-smp"
       *ngIf="loginForm.get('email')?.value && !loginForm.get('email')?.value.includes('@')"
@@ -46,7 +41,6 @@
       >
     </div>
 
-    <!-- Peringatan Validasi Email Real-time -->
     <p
       class="error-text-santai"
       *ngIf="loginForm.get('email')?.value && loginForm.get('email')?.errors?.['email']"
@@ -54,7 +48,6 @@
       Oops! Format email kamu belum benar nih, cek lagi ya ✍️
     </p>
 
-    <!-- Input Kata Sandi / Password -->
     <span class="input-label-flat">Kata Sandi</span>
     <ion-item lines="none" class="auth-input-flat">
       <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
@@ -71,7 +64,6 @@
       ></ion-icon>
     </ion-item>
 
-    <!-- Peringatan Validasi Password Real-time -->
     <p
       class="error-text-santai"
       *ngIf="loginForm.get('password')?.value && loginForm.get('password')?.value.length < 6"
@@ -79,7 +71,6 @@
       Kata sandi minimal 6 karakter ya, yuk dilengkapin! 🔑
     </p>
 
-    <!-- Opsi Remember Me dan Lupa Password -->
     <div class="form-options-row">
       <ion-checkbox mode="md" justify="start" class="remember-chk"
         >Ingat saya</ion-checkbox
@@ -89,7 +80,6 @@
       >
     </div>
 
-    <!-- Tombol Utama Masuk Aplikasi -->
     <ion-button
       expand="block"
       class="auth-btn-blue"

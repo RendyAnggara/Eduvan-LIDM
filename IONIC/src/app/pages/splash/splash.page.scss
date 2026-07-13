@@ -12,12 +12,9 @@
   align-items: center;
   
   img {
-    // 🟢 KUNCIAN ANTI-GEPENG: Atur lebar, biarkan tinggi auto biar ngikutin rasio asli logo kotaknya!
     width: 220px; 
     height: auto;
     object-fit: contain; 
-    
-    // Sambungkan ke nama animasi yang bener di bawah
     animation: fadeInScale 1.5s ease-in-out forwards;
   }
 }
@@ -32,8 +29,6 @@
     transform: scale(1);
   }
 }
-
-// 🟢 ANIMASI MEMUDARKAN FULL LAYAR SEBELUM PINDAH ROUTING
 .fade-out-screen {
   transition: opacity 0.5s ease-in-out;
   opacity: 0 !important;

@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://eduvan.rehalivan.com/api' // Hapus /v1 nya
+  apiUrl: 'https://eduvan.rehalivan.com/api'
 };
 
 /*

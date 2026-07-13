@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
-import { ToastController, LoadingController } from '@ionic/angular'; // TAMBAHKAN LoadingController DI SINI
+import { ToastController, LoadingController } from '@ionic/angular';
 
 @Component({
   selector: 'app-reset-password',
@@ -21,7 +21,7 @@ export class ResetPasswordPage implements OnInit {
     private authService: AuthService, 
     private router: Router,
     private toastCtrl: ToastController,
-    private loadingCtrl: LoadingController // DAFTARKAN DI SINI
+    private loadingCtrl: LoadingController
   ) {}
 
   ngOnInit() {
@@ -52,8 +52,6 @@ export class ResetPasswordPage implements OnInit {
       this.presentToast('Konfirmasi password tidak cocok!', 'warning');
       return;
     }
-
-    // MEMBUAT & MEMUNCULKAN LOADING SEGERA SETELAH DIKLIK
     const loading = await this.loadingCtrl.create({
       message: 'Memperbarui password...',
       spinner: 'crescent'
@@ -69,12 +67,12 @@ export class ResetPasswordPage implements OnInit {
 
     this.authService.resetPassword(payload).subscribe({
       next: async (res: any) => {
-        await loading.dismiss(); // Matikan loading saat sukses
+        await loading.dismiss(); 
         this.presentToast('Mantap! ' + res.message, 'success');
         this.router.navigate(['/login']);
       },
       error: async (error: any) => {
-        await loading.dismiss(); // Matikan loading saat gagal
+        await loading.dismiss(); 
         if (error.status === 422 && error.error.errors) {
           const validationErrors = Object.values(error.error.errors).join('\n');
           this.presentToast('Validasi Gagal:\n' + validationErrors, 'danger');

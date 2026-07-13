@@ -49,7 +49,6 @@
     </div>
 
     <div class="category-list">
-      <!-- 🟢 KATEGORI 1: Mata Pelajaran Wajib -->
       <div
         class="category-item"
         (click)="selectCategory('Computer Science')"
@@ -60,7 +59,6 @@
         </div>
         <p>Mata Pelajaran Wajib</p>
       </div>
-      <!-- 🟢 KATEGORI 1: Mata Pelajaran Wajib -->
       <div
         class="category-item"
         (click)="selectCategory('Microsoft Office')"
@@ -80,14 +78,10 @@
           Menghubungkan ke server EduVan...
         </p>
       </div>
-
-      <!-- 🖥️ 1. RAK Mata Pelajaran Wajib -->
       <div *ngIf="!selectedCategory || selectedCategory === 'Computer Science'">
         <div class="section-title-box">
           <h4>Mata Pelajaran Wajib</h4>
         </div>
-
-        <!-- 🟢 GANTI CLASS DI SINI JADI GRID -->
         <div class="course-grid-wrapper">
           <ng-container *ngFor="let kursus of kursusTersaring">
             <div
@@ -96,7 +90,6 @@
               (click)="goToDetail(kursus.id)"
               style="cursor: pointer"
             >
-              <!-- Isi layout item kursus lu tetep sama -->
               <div class="course-thumb-box">
                 <img
                   [src]="kursus.image ? kursus.image : getDefaultImage(kursus.category)"
@@ -120,8 +113,6 @@
           </ng-container>
         </div>
       </div>
-
-      <!-- 📊 2. RAK Mata Pelajaran Pilihan -->
       <div
         *ngIf="!selectedCategory || selectedCategory === 'Microsoft Office'"
         style="margin-top: 24px"
@@ -129,8 +120,6 @@
         <div class="section-title-box">
           <h4>Mata Pelajaran Pilihan</h4>
         </div>
-
-        <!-- 🟢 GANTI CLASS DI SINI JADI GRID -->
         <div class="course-grid-wrapper">
           <ng-container *ngFor="let kursus of kursusTersaring">
             <div
@@ -139,7 +128,6 @@
               (click)="goToDetail(kursus.id)"
               style="cursor: pointer"
             >
-              <!-- Isi layout item kursus lu tetep sama -->
               <div class="course-thumb-box">
                 <img
                   [src]="kursus.image ? kursus.image : getDefaultImage(kursus.category)"

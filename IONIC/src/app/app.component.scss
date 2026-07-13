@@ -1,12 +1,10 @@
-// 📁 Jalur file: src/app/app.component.scss
-
 .lost-connection-modal {
   --background: rgba(
     15,
     23,
     42,
     0.75
-  ); // Efek backdrop gelap mewah (glassmorphism vibe)
+  );
   --width: 88%;
   --height: auto;
   --max-width: 340px;
@@ -16,7 +14,7 @@
 
   &::part(content) {
     border-radius: 24px;
-    background: #ffffff; // Card dasar putih bersih
+    background: #ffffff;
     overflow: hidden;
   }
 }
@@ -32,17 +30,17 @@
     position: relative;
     width: 84px;
     height: 84px;
-    background: #fef2f2; // Lingkaran merah super soft
+    background: #fef2f2; 
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 22px;
-    box-shadow: 0 0 20px rgba(239, 68, 68, 0.15); // Efek glow merah tipis di luar lingkaran
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
 
     .wifi-icon {
       font-size: 44px;
-      color: #ef4444; // Warna merah tegas modern
+      color: #ef4444;
     }
 
     .cross-line {
@@ -50,30 +48,30 @@
       width: 54px;
       height: 4px;
       background: #ef4444;
-      transform: rotate(-45deg); // Garis coret miring penanda offline
+      transform: rotate(-45deg); 
       border-radius: 4px;
-      border: 2px solid #fef2f2; // Pemisah biar garisnya kelihatan tajam
+      border: 2px solid #fef2f2; 
     }
   }
 
   h2 {
     font-size: 22px;
     font-weight: 700;
-    color: #0f172a; // Warna teks gelap pekat
+    color: #0f172a; 
     margin: 0 0 10px 0;
     letter-spacing: -0.3px;
   }
 
   p {
     font-size: 14px;
-    color: #64748b; // Warna teks sekunder abu-abu adem
+    color: #64748b; 
     line-height: 1.6;
     margin: 0 0 28px 0;
     padding: 0 6px;
   }
 
   .retry-btn {
-    --background: #1e3a8a; // Warna biru navy gelap khas utama EduVan
+    --background: #1e3a8a; 
     --background-activated: #1d4ed8;
     --border-radius: 14px;
     --box-shadow: 0 6px 16px rgba(30, 58, 138, 0.25);

@@ -6,11 +6,8 @@ ion-content {
   --background: linear-gradient(180deg, #F4F7FA 0%, #E9EFF5 100%);
 }
 
-// 🌊 SPANDUK ATAS GRADASI BIRU MODERN
-// 🌊 SPANDUK ATAS GRADASI BIRU DENGAN FIX VERTIKAL ALIGNMENT
 .header-navy-player {
   background: linear-gradient(180deg, #0022cc 0%, #0055ff 100%) !important; 
-  // Mengatur padding atas secara dinamis mengikuti safe area/poni HP dan jarak bawah yang seimbang
   padding: calc(20px + env(safe-area-inset-top, 0px)) 16px 20px 16px !important;
   border-bottom-left-radius: 32px;
   border-bottom-right-radius: 32px;
@@ -33,17 +30,15 @@ ion-content {
     z-index: 1;
   }
 
-  // Baris Kontainer Utama
   .header-flex-row {
     display: flex;
-    align-items: center; // Memastikan seluruh elemen di dalamnya sejajar lurus di tengah secara vertikal
+    align-items: center;
     justify-content: space-between;
     width: 100%;
     position: relative;
     z-index: 5;
   }
 
-  // Wadah Tombol Kembali (Bentuk Kotak Transparan yang Nyaman Ditekan)
   .back-action-box {
     width: 40px;
     height: 40px;
@@ -58,7 +53,6 @@ ion-content {
     }
   }
 
-  // Judul Halaman Murni Berada di Tengah
   ion-title {
     color: #ffffff;
     font-weight: 900;
@@ -70,14 +64,12 @@ ion-content {
     flex: 1;
   }
 
-  // Elemen Penyeimbang Sisi Kanan
   .right-spacer-passive {
     width: 40px;
     height: 40px;
   }
 }
 
-// 📺 AREA PEMUTAR VIDEO ELEGAN
 .video-container {
   width: 100%;
   height: 220px;
@@ -121,7 +113,6 @@ ion-content {
   }
 }
 
-// 📑 WADAH RAK KONTENS
 .content-wrapper {
   padding: 24px 20px 32px 20px; 
 
@@ -141,7 +132,6 @@ ion-content {
     font-weight: 600;
   }
 
-  // AREA KOTAK KURIKULUM (BULAT LEMBUT KASUAL)
   .curriculum-section {
     margin-top: 20px;
 
@@ -172,20 +162,18 @@ ion-content {
       padding: 0 !important;
       display: flex;
       flex-direction: column;
-      gap: 10px; // Diberikan sela antar materi agar tidak menempel kaku
+      gap: 10px;
 
       ion-item {
         background: #ffffff;
         border: 1.5px solid $navy-border-tint;
-        border-radius: 18px; // Membulat tebal khas anak sekolah
+        border-radius: 18px;
         margin: 0;
         --min-height: 54px;
         --padding-start: 14px;
         --padding-end: 14px;
         box-shadow: 0 6px 12px rgba(9, 60, 93, 0.02);
         transition: all 0.2s ease;
-
-        // Visual ketika baris materi sedang aktif diputar
         &.item-active {
           border-color: #0055ff;
           background: #f0f7ff;
@@ -203,10 +191,8 @@ ion-content {
             color: #0055ff;
           }
         }
-
         ion-label {
           margin: 0;
-
           h2 {
             margin: 0;
             font-size: 14px !important;
@@ -218,8 +204,6 @@ ion-content {
     }
   }
 }
-
-// 🟢 TOMBOL MASUK UTAMA (BERGRADASI BIRU DINAMIS)
 ion-button.auth-btn-blue {
   --background: linear-gradient(135deg, #0055ff 0%, #0033cc 100%);
   --background-activated: #ffb300;
@@ -233,14 +217,12 @@ ion-button.auth-btn-blue {
   margin-bottom: 12px;
   box-shadow: 0 8px 20px rgba(0, 85, 255, 0.25);
   text-transform: none;
-
   .btn-arrow {
     font-size: 18px;
     margin-left: 6px;
   }
 }
 
-// TOMBOL AKSI BATALKAN SELESAI
 ion-button.btn-action-cancel {
   --background: #fef2f2;
   --border-color: #fca5a5;
