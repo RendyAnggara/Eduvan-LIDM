@@ -12,17 +12,29 @@ class MaterialController extends Controller
 {
     public function index(Request $request)
     {
-        $schoolId = Auth::user()->school_id;
+        $userId = Auth::id();
         $selectedClass = $request->input('class_level');
-        $coursesQuery = Course::where('course_type', 'school');
+
+        $coursesQuery = Course::where('course_type', 'school')
+            ->whereHas('teachers', function ($query) use ($userId) {
+                $query->where('course_user.user_id', $userId);
+            });
+
         if (!empty($selectedClass)) {
             $coursesQuery->where('grade_level', $selectedClass);
         }
+
         $coursesGrouped = $coursesQuery->withCount(['chapters'])
             ->latest()
             ->get()
             ->groupBy('grade_level');
-        $allSelectCourses = Course::where('course_type', 'school')->latest()->get();
+
+        $allSelectCourses = Course::where('course_type', 'school')
+            ->whereHas('teachers', function ($query) use ($userId) {
+                $query->where('course_user.user_id', $userId);
+            })
+            ->latest()
+            ->get();
 
         return view('teacher.material.index', compact('coursesGrouped', 'allSelectCourses', 'selectedClass'));
     }
@@ -35,7 +47,7 @@ class MaterialController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        Course::create([
+        $course = Course::create([
             'title' => $request->title,
             'grade_level' => $request->grade_level,
             'course_type' => 'school',
@@ -46,34 +58,50 @@ class MaterialController extends Controller
             'image' => ''
         ]);
 
+        $course->teachers()->attach(Auth::id());
+
         return redirect()->back()->with('success', 'Mata Pelajaran baru berhasil didaftarkan!');
     }
 
-    public function storeChapter(Request $request)
+ public function storeChapter(Request $request)
     {
         $request->validate([
             'course_id' => 'required|exists:courses,id',
             'title' => 'required|string|max:255',
         ]);
 
+        $course = Course::where('id', $request->course_id)
+            ->whereHas('teachers', function ($query) {
+                $query->where('course_user.user_id', Auth::id());
+            })
+            ->firstOrFail();
+
         Chapter::create([
-            'course_id' => $request->course_id,
+            'course_id' => $course->id,
             'title' => $request->title,
         ]);
 
         return redirect()->back()->with('success', 'Bab baru berhasil ditambahkan ke dalam kurikulum!');
     }
 
-    public function manage($id)
+   public function manage($id)
     {
-        $course = Course::where('course_type', 'school')->with(['chapters.lessons'])->findOrFail($id);
+        $course = Course::where('course_type', 'school')
+            ->whereHas('teachers', function ($query) {
+                $query->where('course_user.user_id', Auth::id());
+            })
+            ->with(['chapters.lessons'])
+            ->findOrFail($id);
 
         return view('teacher.material.manage', compact('course'));
     }
 
     public function destroyChapter($id)
     {
-        $chapter = Chapter::findOrFail($id);
+        $chapter = Chapter::whereHas('course.teachers', function ($query) {
+            $query->where('course_user.user_id', Auth::id());
+        })->findOrFail($id);
+
         $chapter->delete();
 
         return redirect()->back()->with('success', 'Bab beserta seluruh data pertemuan di dalamnya berhasil dihapus!');
@@ -81,7 +109,10 @@ class MaterialController extends Controller
 
     public function destroyLesson($id)
     {
-        $lesson = \App\Models\Lesson::findOrFail($id);
+        $lesson = \App\Models\Lesson::whereHas('chapter.course.teachers', function ($query) {
+            $query->where('course_user.user_id', Auth::id());
+        })->findOrFail($id);
+
         $lesson->delete();
 
         return redirect()->back()->with('success', 'Pertemuan berhasil dihapus dari daftar bab!');
@@ -93,9 +124,12 @@ class MaterialController extends Controller
             'chapter_id' => 'required|exists:chapters,id',
             'title' => 'required|string|max:255',
         ]);
+        $chapter = Chapter::whereHas('course.teachers', function ($query) {
+            $query->where('course_user.user_id', Auth::id());
+        })->findOrFail($request->chapter_id);
 
         $lesson = \App\Models\Lesson::create([
-            'chapter_id' => $request->chapter_id,
+            'chapter_id' => $chapter->id,
             'title' => $request->title,
             'video_url' => null,
             'content_text' => null,
@@ -107,7 +141,9 @@ class MaterialController extends Controller
 
     public function editContent($id)
     {
-        $lesson = \App\Models\Lesson::with(['chapter.course'])->findOrFail($id);
+        $lesson = \App\Models\Lesson::whereHas('chapter.course.teachers', function ($query) {
+            $query->where('course_user.user_id', Auth::id());
+        })->with(['chapter.course'])->findOrFail($id);
 
         return view('teacher.material.edit_content', compact('lesson'));
     }
@@ -119,7 +155,10 @@ class MaterialController extends Controller
             'content_text' => 'nullable|string',
         ]);
 
-        $lesson = \App\Models\Lesson::findOrFail($id);
+        $lesson = \App\Models\Lesson::whereHas('chapter.course.teachers', function ($query) {
+            $query->where('course_user.user_id', Auth::id());
+        })->findOrFail($id);
+
         $lesson->update([
             'video_url' => $request->video_url,
             'content_text' => $request->content_text,
@@ -137,7 +176,12 @@ class MaterialController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        $course = Course::where('course_type', 'school')->findOrFail($id);
+        $course = Course::where('course_type', 'school')
+            ->whereHas('users', function ($query) {
+                $query->where('users.id', Auth::id());
+            })
+            ->findOrFail($id);
+
         $course->update([
             'title' => $request->title,
             'grade_level' => $request->grade_level,

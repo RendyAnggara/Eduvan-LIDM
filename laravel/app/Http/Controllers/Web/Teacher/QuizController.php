@@ -7,21 +7,48 @@ use App\Models\Quiz;
 use App\Models\Course;
 use App\Models\Question;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class QuizController extends Controller
 {
     public function index()
     {
-        $quizzes = Quiz::with('course')->withCount('questions')->get();
-        $courses = Course::where('course_type', 'school')->get();
+        $userId = Auth::id();
+
+        $quizzes = Quiz::whereHas('course.teachers', function ($query) use ($userId) {
+                $query->where('course_user.user_id', $userId);
+            })
+            ->with('course')
+            ->withCount('questions')
+            ->get();
+
+        $courses = Course::where('course_type', 'school')
+            ->whereHas('teachers', function ($query) use ($userId) {
+                $query->where('course_user.user_id', $userId);
+            })
+            ->get();
 
         return view('teacher.quiz.index', compact('quizzes', 'courses'));
     }
 
     public function store(Request $request)
     {
+        $userId = Auth::id();
+
         $request->validate([
-            'course_id' => 'required|exists:courses,id',
+            'course_id' => [
+                'required',
+                'exists:courses,id',
+                function ($attribute, $value, $fail) use ($userId) {
+                    $exists = Course::where('id', $value)
+                        ->whereHas('teachers', function ($q) use ($userId) {
+                            $q->where('course_user.user_id', $userId);
+                        })->exists();
+                    if (!$exists) {
+                        $fail('Mata pelajaran yang dipilih tidak valid untuk otoritas akun Anda.');
+                    }
+                },
+            ],
             'title' => 'required|string|max:255',
             'time_limit' => 'required|integer|min:1',
         ]);
@@ -35,10 +62,12 @@ class QuizController extends Controller
         return redirect()->back()->with('success', 'Paket kuis baru berhasil dibuat! Silakan klik kelola soal untuk mengisi pertanyaan.');
     }
 
-
     public function destroy($id)
     {
-        $quiz = Quiz::findOrFail($id);
+        $quiz = Quiz::whereHas('course.teachers', function ($query) {
+            $query->where('course_user.user_id', Auth::id());
+        })->findOrFail($id);
+
         $quiz->delete();
 
         return redirect()->back()->with('success', 'Paket kuis berhasil dihapus!');
@@ -46,7 +75,12 @@ class QuizController extends Controller
 
     public function manageQuestions($id)
     {
-        $quiz = Quiz::with(['course', 'questions'])->findOrFail($id);
+        $quiz = Quiz::whereHas('course.teachers', function ($query) {
+                $query->where('course_user.user_id', Auth::id());
+            })
+            ->with(['course', 'questions'])
+            ->findOrFail($id);
+
         return view('teacher.quiz.questions', compact('quiz'));
     }
 
@@ -60,9 +94,12 @@ class QuizController extends Controller
             'option_d' => 'required|string',
             'correct_answer' => 'required|in:A,B,C,D',
         ]);
+        $quiz = Quiz::whereHas('course.teachers', function ($query) {
+            $query->where('course_user.user_id', Auth::id());
+        })->findOrFail($id);
 
         Question::create([
-            'quiz_id' => $id,
+            'quiz_id' => $quiz->id,
             'question_text' => $request->question_text,
             'option_a' => $request->option_a,
             'option_b' => $request->option_b,
@@ -76,7 +113,10 @@ class QuizController extends Controller
 
     public function destroyQuestion($id)
     {
-        $question = Question::findOrFail($id);
+        $question = Question::whereHas('quiz.course.teachers', function ($query) {
+            $query->where('course_user.user_id', Auth::id());
+        })->findOrFail($id);
+
         $question->delete();
 
         return redirect()->back()->with('success', 'Soal berhasil dihapus dari kuis!');

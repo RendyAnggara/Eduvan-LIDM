@@ -22,10 +22,12 @@ class Course extends Model
     {
         return $this->hasMany(Content::class)->orderBy('order', 'asc');
     }
+
     public function quizzes()
     {
         return $this->hasMany(Quiz::class);
     }
+
     public function enrollments(): HasMany
     {
         return $this->hasMany(Enrollment::class);
@@ -44,5 +46,10 @@ class Course extends Model
     public function chapters()
     {
         return $this->hasMany(\App\Models\Chapter::class, 'course_id');
+    }
+
+    public function teachers()
+    {
+        return $this->belongsToMany(User::class, 'course_user', 'course_id', 'user_id');
     }
 }
