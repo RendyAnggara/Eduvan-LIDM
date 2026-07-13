@@ -122,3 +122,4 @@ class QuizController extends Controller
         return redirect()->back()->with('success', 'Soal berhasil dihapus dari kuis!');
     }
 }
+    
