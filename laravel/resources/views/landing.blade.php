@@ -15,16 +15,15 @@
 
 <body class="bg-slate-50 font-sans antialiased text-slate-800 selection:bg-teal-500 selection:text-white">
     <nav
-        class="bg-white/70 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200/60 py-3.5 px-6 md:px-12 flex justify-between items-center w-full">
-        <a href="#" class="text-2xl font-black tracking-tight text-slate-900">
-            Edu<span class="text-teal-600">Learn</span>
-        </a>
-
-        <div class="hidden md:flex items-center gap-8 text-xs font-bold text-slate-500 tracking-wide">
+        class="bg-white/70 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200/60 py-3.5 px-6 md:px-12 grid grid-cols-2 md:grid-cols-3 items-center w-full">
+        <div class="flex justify-start">
+            <a href="#" class="text-2xl font-black tracking-tight text-slate-900">
+                Edu<span class="text-teal-600">Learn</span>
+            </a>
+        </div>
+        <div class="hidden md:flex items-center justify-center gap-8 text-xs font-bold text-slate-500 tracking-wide">
             <a href="#fitur" class="hover:text-teal-600 transition">FITUR UTAMA</a>
             <a href="#alur" class="hover:text-teal-600 transition">ALUR SISTEM</a>
-        </div>
-        <div class="flex items-center gap-3">
         </div>
     </nav>
     <header class="relative max-w-6xl mx-auto px-6 pt-20 pb-24 text-center flex flex-col items-center overflow-hidden">
