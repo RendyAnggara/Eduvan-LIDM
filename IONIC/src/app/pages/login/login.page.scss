@@ -1,227 +1,239 @@
 ion-content {
-  --background: #f8fafc;
+  --background: linear-gradient(180deg, #f8fafc 0%, #edf4f9 100%); 
+  font-family: 'Poppins', sans-serif !important; // Memaksa font Poppins aktif di seluruh area content
 }
 
-/* 🟢 TAMBAHAN: ANIMASI MASUK FADE IN MELUNCUR HALUS */
-.auth-header-section, .form-card {
-  animation: meluncurHalus 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-@keyframes meluncurHalus {
-  from {
-    opacity: 0;
-    transform: translateY(30px); /* Efek terangkat lembut dari bawah */
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* KUMPULAN ANIMASI ROTASI KONSISTEN */
-@keyframes rotasiKanan {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes rotasiKiri {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
-}
-
-/* Sektor Header Biru Atas */
-.auth-header-section {
-  background: #093C5D; /* Warna Biru Utama Sesuai Keinginanmu */
-  height: 38vh;
+// 1. Spanduk Atas dengan Efek Lengkungan Elips 3D & Posisi Tengah
+.auth-top-banner {
+  background: linear-gradient(135deg, #0022cc 0%, #0055ff 100%); 
+  padding: calc(44px + env(safe-area-inset-top, 12px)) 24px 65px 24px; 
+  border-bottom-left-radius: 50% 30px; 
+  border-bottom-right-radius: 50% 30px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 51, 204, 0.25);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-bottom-left-radius: 50px;
-  border-bottom-right-radius: 50px;
-  padding-bottom: 30px;
-  position: relative;
+  align-items: center; // ➔ MEMBUAT SEMUA ELEMEN DI DALAM BANNER RATA TENGAH
 
-  .icon-container {
-    background: rgba(255, 255, 255, 0.12);
-    padding: 20px;
+  .banner-bubble {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.09);
     border-radius: 50%;
-    border: 2px dashed rgba(255, 255, 255, 0.4);
-    color: white;
-    font-size: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 95px;
-    height: 95px;
-    animation: rotasiKanan 12s linear infinite; 
-    transform-origin: center center;
     
-    ion-icon {
-      display: inline-block;
-      animation: rotasiKiri 12s linear infinite; /* Roket diam tegak di tengah */
-      transform-origin: center center;
+    &.bubble-1 {
+      width: 160px;
+      height: 160px;
+      top: -50px;
+      right: -30px;
+    }
+    
+    &.bubble-2 {
+      width: 100px;
+      height: 100px;
+      bottom: -10px;
+      left: -20px;
     }
   }
 
-  .brand-name {
-    color: white;
-    font-size: 36px;
-    font-weight: 800;
-    margin: 12px 0 4px 0;
+  .header-text-group {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    text-align: center; // ➔ MEMBUAT TEKS SUBJUDUL RATA TENGAH
+
+    .title-row {
+      display: flex;
+      justify-content: center; // ➔ MEMBUAT JUDUL "MASUK" PERSIS DI TENGAH
+      align-items: center;
+      width: 100%;
+
+      h1 {
+        color: #ffffff;
+        font-size: 38px;
+        font-weight: 700;
+        margin: 0;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        font-family: 'Poppins', sans-serif !important; // Mengunci font judul
+      }
+    }
+
+    .subtitle-text {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      margin: 10px 0 0 0; 
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: 0.2px;
+      font-family: 'Poppins', sans-serif !important;
+    }
   }
 
-  .badge-subtitle {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 6px 18px;
-    border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-}
+  .illustration-box {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    position: relative;
+    z-index: 5;
 
-/* Sektor Kartu Input Putih */
-.form-card {
-  background: white;
-  margin: -45px 24px 20px 24px;
-  padding: 32px 24px;
-  border-radius: 30px;
-  box-shadow: 0 15px 35px rgba(9, 60, 93, 0.08);
-  position: relative;
-  z-index: 10;
-
-  h2 {
-    color: #093C5D;
-    font-weight: 800;
-    font-size: 24px;
-    text-align: center;
-    margin: 0 0 4px 0;
-    letter-spacing: 0.5px;
-  }
-
-  .instruction-text {
-    color: #64748b;
-    font-size: 13px;
-    text-align: center;
-    margin-bottom: 25px;
-  }
-}
-
-.input-label {
-  color: #093C5D;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 6px;
-  display: block;
-}
-
-.auth-input-box {
-  --background: #f8fafc;
-  --border-radius: 16px;
-  --padding-start: 16px;
-  border: 1px solid #e2e8f0;
-  margin-bottom: 6px;
-  transition: all 0.3s ease;
-
-  &:focus-within {
-    border-color: #093C5D;
-    box-shadow: 0 0 0 3px rgba(9, 60, 93, 0.1);
-  }
-
-  ion-icon {
-    color: #093C5D;
-    font-size: 20px;
-  }
-  
-  .eye-icon {
-    cursor: pointer;
-    color: #94a3b8;
-  }
-
-  ion-input {
-    --padding-top: 14px;
-    --padding-bottom: 14px;
-    font-size: 15px;
-    color: #1e293b;
+    img {
+      max-height: 140px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: #ffffff;
+      padding: 4px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+      border: 4px solid rgba(255, 255, 255, 0.3);
+    }
   }
 }
 
-/* Notifikasi error merah di bawah box */
-.error-msg {
-  color: #ef4444;
-  font-size: 11px;
-  margin: 0 0 14px 6px;
-  font-weight: 500;
+// 2. Bagian Form Input Dengan Efek Kedalaman Dimensi (Soft UI)
+.auth-form-body {
+  padding: 30px 24px;
+  background: transparent;
+
+  .input-label-flat {
+    color: #093C5D; 
+    font-size: 13.5px;
+    font-weight: 700; 
+    margin-bottom: 10px;
+    display: block;
+    margin-top: 20px;
+    letter-spacing: 0.3px;
+    font-family: 'Poppins', sans-serif !important;
+  }
+
+  .auth-input-flat {
+    --background: #ffffff;
+    --border-radius: 20px; 
+    --padding-start: 18px;
+    border: 1.5px solid #e2e8f0; 
+    margin-bottom: 4px;
+    box-shadow: 0 6px 15px rgba(9, 60, 93, 0.04), inset 0 2px 4px rgba(0, 0, 0, 0.01);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Poppins', sans-serif !important;
+
+    &:focus-within {
+      border-color: #0055ff;
+      transform: translateY(-3px); 
+      box-shadow: 0 12px 24px rgba(0, 85, 255, 0.12);
+    }
+
+    ion-icon {
+      color: #475569;
+      font-size: 20px;
+      margin-right: 10px;
+    }
+
+    .valid-check {
+      color: #2dd36f;
+      font-size: 22px;
+    }
+
+    .eye-toggle {
+      color: #94a3b8;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    ion-input {
+      --padding-top: 16px;
+      --padding-bottom: 16px;
+      font-size: 14.5px;
+      color: #093C5D;
+      font-weight: 500;
+      font-family: 'Poppins', sans-serif !important; // Memaksa font teks input berubah
+    }
+  }
 }
 
-.forgot-password-link {
-  text-align: left;
-  margin-top: 6px;
-  margin-bottom: 25px;
-  
+// 3. Tombol Pintas Domain Cepat
+.quick-tags-smp {
+  margin-top: 8px;
+  margin-left: 4px;
+  display: flex;
+  gap: 8px;
+
   span {
-    color: #093C5D;
-    font-size: 13px;
+    background: #ffffff;
+    color: #0055ff;
+    font-size: 11px;
     font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
     cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+    font-family: 'Poppins', sans-serif !important;
+
+    &:active {
+      background: #0055ff;
+      color: #ffffff;
+    }
   }
 }
 
-/* Tombol Sign In */
-ion-button.auth-btn {
-  --background: #093C5D;
-  --background-activated: #06273d;
-  --color: white;
-  --border-radius: 16px;
-  font-weight: 700;
-  font-size: 15px;
-  height: 52px;
-  letter-spacing: 0.5px;
-  box-shadow: 0 8px 20px rgba(9, 60, 93, 0.2);
-  text-transform: uppercase;
+.error-text-santai {
+  color: #eb445a;
+  font-size: 11.5px;
+  margin: 6px 0 4px 6px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif !important;
 }
 
-/* Footer Tautan Halaman */
-.footer-links {
-  text-align: center;
+// 4. Baris Opsi Checkbox & Lupa Sandi
+.form-options-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-top: 22px;
-  font-size: 13px;
-  color: #64748b;
+  margin-bottom: 32px;
+  padding: 0 4px;
 
-  .link-bold {
-    color: #093C5D;
+  .remember-chk {
+    --size: 20px;
+    --border-radius: 6px; 
+    --color-checked: #0055ff;
+    font-size: 13.5px;
+    color: #475569;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif !important;
+  }
+
+  .forgot-btn {
+    color: #0055ff;
+    font-size: 13.5px;
     font-weight: 700;
     cursor: pointer;
-    margin-left: 4px;
-    
-    &:hover { text-decoration: underline; }
+    letter-spacing: 0.2px;
+    font-family: 'Poppins', sans-serif !important;
   }
 }
 
-.custom-login-toast {
-  --background: #093C5D; /* Menggunakan warna biru dongker utama kamu */
-  --box-shadow: 0 10px 25px rgba(9, 60, 93, 0.25);
-  --border-radius: 16px; /* Selaras dengan border-radius input box kamu */
-  margin-top: 25px;
-  padding: 6px 12px;
+// 5. Tombol Utama Super 3D Melayang
+ion-button.auth-btn-blue {
+  --background: linear-gradient(135deg, #0055ff 0%, #0022cc 100%); 
+  --color: #ffffff;
+  --border-radius: 20px; 
   font-weight: 700;
-  letter-spacing: 0.5px;
-  font-size: 14px;
+  font-size: 16px;
+  height: 56px; 
+  box-shadow: 0 10px 28px rgba(0, 85, 255, 0.4); 
+  text-transform: none;
+  transition: all 0.2s ease;
+  margin: 0;
+  font-family: 'Poppins', sans-serif !important;
 
-  &::part(button) {
-    --color: #ffffff;
-    font-size: 22px;
-    margin-right: 10px;
-    opacity: 1;
+  &:active {
+    transform: scale(0.97);
+    box-shadow: 0 4px 12px rgba(0, 85, 255, 0.2);
   }
-  
-  &::part(message) {
-    color: #ffffff;
-    padding: 10px 0;
+
+  .btn-arrow {
+    font-size: 20px;
+    margin-left: 8px;
   }
 }

@@ -68,10 +68,10 @@ export class HomePage implements OnInit {
       localStorage.getItem('user_data') || localStorage.getItem('user');
     if (localUserData) {
       try {
-        const user = JSON.parse(localUserData);
-        const namaLengkap = user.name || user.nama || user.fullname || 'User';
-        this.namaUser = namaLengkap.split(' ')[0];
-        this.cdr.detectChanges();
+          const user = JSON.parse(localUserData);
+          const namaLengkap = user.name || user.nama || user.fullname || 'User';
+          this.namaUser = namaLengkap; //  Langsung masukkan seluruh nama lengkapnya
+          this.cdr.detectChanges();
       } catch (e) {
         console.error('Gagal parse user data di beranda:', e);
       }
@@ -160,17 +160,17 @@ export class HomePage implements OnInit {
     });
   }
 
-  ambilNamaUserLive() {
-    this.authService.currentUser$.subscribe((user: any) => {
-      if (user) {
-        const namaLengkap = user.name || user.nama || user.fullname || 'User';
-        this.namaUser = namaLengkap.split(' ')[0];
-        this.cdr.detectChanges();
-      } else {
-        this.namaUser = 'User';
-      }
-    });
-  }
+ambilNamaUserLive() {
+  this.authService.currentUser$.subscribe((user: any) => {
+    if (user) {
+      const namaLengkap = user.name || user.nama || user.fullname || 'User';
+      this.namaUser = namaLengkap; //  Nama lengkap utuh tanpa dipotong spasi
+      this.cdr.detectChanges();
+    } else {
+      this.namaUser = 'User';
+    }
+  });
+}
 
   goToDetail(id?: any) {
     if (id) {

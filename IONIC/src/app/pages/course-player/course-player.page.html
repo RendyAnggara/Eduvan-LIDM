@@ -1,17 +1,25 @@
 <ion-header mode="ios" class="ion-no-border">
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/tabs/learning"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Belajar Sekarang</ion-title>
-  </ion-toolbar>
+  <!-- SPANDUK BIRU GRADASI ATAS DENGAN STRUKTUR BARU -->
+  <div class="header-navy-player">
+    <div class="header-flex-row">
+      <!-- Wadah Tombol Kembali Visual -->
+      <div class="back-action-box">
+        <ion-back-button
+          defaultHref="/tabs/learning"
+          text=""
+          color="light"
+        ></ion-back-button>
+      </div>
+      <!-- Judul Halaman -->
+      <ion-title>Belajar Sekarang</ion-title>
+      <!-- Spacer Kanan Pasif Agar Judul Tetap Berada Murni di Tengah -->
+      <div class="right-spacer-passive"></div>
+    </div>
+  </div>
 </ion-header>
-
 <ion-content>
-  <div
-    class="video-container"
-    style="background: #000; width: 100%; height: 220px; position: relative"
-  >
+  <!-- PEMUTAR VIDEO THEATER MODE -->
+  <div class="video-container">
     <iframe
       *ngIf="safeVideoUrl"
       [src]="safeVideoUrl"
@@ -25,74 +33,57 @@
         picture-in-picture;
       "
       allowfullscreen
-      style="width: 100%; height: 100%; border: none"
     >
     </iframe>
 
-    <div
-      class="video-placeholder"
-      *ngIf="!safeVideoUrl"
-      style="
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      "
-    >
+    <div class="video-placeholder" *ngIf="!safeVideoUrl">
       <ion-icon name="play-circle-outline"></ion-icon>
       <p>Pilih materi di bawah untuk memutar video</p>
     </div>
   </div>
 
+  <!-- AREA KONTEN UTAMA -->
   <div class="content-wrapper">
-    <h2>{{ courseDetail?.title || 'Memuat Name Kursus...' }}</h2>
+    <h2>{{ courseDetail?.title || 'Memuat Nama Kursus...' }}</h2>
     <p class="instructor">
       Oleh: {{ courseDetail?.instructor || 'EduVan Instructor' }}
     </p>
 
+    <!-- KELOMPOK DAFTAR KURIKULUM -->
     <div class="curriculum-section">
       <h3>Kurikulum</h3>
 
       <div *ngIf="loading" class="ion-text-center ion-padding">
-        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <ion-spinner name="crescent"></ion-spinner>
       </div>
 
       <p
         *ngIf="!loading && contents.length === 0"
-        style="
-          color: #a0aec0;
-          font-size: 14px;
-          text-align: center;
-          margin: 20px 0;
-        "
+        class="empty-curriculum-text"
       >
         Belum ada materi video yang diunggah untuk kelas ini.
       </p>
 
-      <ion-list lines="full" *ngIf="!loading && contents.length > 0">
+      <ion-list lines="none" *ngIf="!loading && contents.length > 0">
         <div #aktif style="display: contents">
           <ion-item
             button
             *ngFor="let materi of contents; let i = index"
             (click)="putarMateri(materi); aktif.className = i.toString()"
-            [style.--background]="aktif.className === i.toString() ? '#e2e8f0' : 'transparent'"
+            [class.item-active]="aktif.className === i.toString()"
           >
             <ion-icon
               slot="start"
               [name]="materi.is_completed === 1 ? 'checkmark-circle' : 'play-circle'"
-              [color]="materi.is_completed === 1 ? 'success' : 'primary'"
+              [class.completed-icon]="materi.is_completed === 1"
+              [class.uncompleted-icon]="materi.is_completed !== 1"
             >
             </ion-icon>
 
             <ion-label>
               <h2
-                [style.color]="materi.is_completed === 1 ? 'var(--ion-color-success)' : 'inherit'"
-                [style.font-weight]="materi.is_completed === 1 || aktif.className === i.toString() ? '700' : 'normal'"
+                [style.color]="materi.is_completed === 1 ? '#16a34a' : '#093c5d'"
+                [style.font-weight]="materi.is_completed === 1 || aktif.className === i.toString() ? '800' : '600'"
               >
                 {{ i + 1 }}. {{ materi.title }}
               </h2>
@@ -102,13 +93,19 @@
       </ion-list>
     </div>
 
+    <!-- TOMBOL STATUS SELESAI -->
     <ion-button
       expand="block"
-      [color]="isCompleted ? 'danger' : 'primary'"
-      class="finish-btn"
+      [class.btn-action-cancel]="isCompleted"
+      [class.auth-btn-blue]="!isCompleted"
       (click)="markAsComplete()"
     >
-      {{ isCompleted ? 'BATALKAN SELESAI' : 'TANDAI SELESAI' }}
+      {{ isCompleted ? 'Batalkan Selesai 🔄' : 'Tandai Selesai' }}
+      <ion-icon
+        name="checkmark-done-outline"
+        slot="end"
+        *ngIf="!isCompleted"
+      ></ion-icon>
     </ion-button>
   </div>
 </ion-content>
