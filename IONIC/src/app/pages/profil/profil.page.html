@@ -47,7 +47,6 @@
   <!-- Area Menu Navigasi Siswa -->
   <div class="menu-container">
     <ion-list lines="none">
-      <!-- MENU SERTIFIKAT -->
       <ion-item routerLink="/certificate" class="menu-item">
         <div class="icon-wrapper orange" slot="start">
           <ion-icon name="ribbon"></ion-icon>
@@ -74,39 +73,54 @@
         <ion-icon name="chevron-forward" slot="end" class="chevron"></ion-icon>
       </ion-item>
 
-      <!-- SYARAT & KETENTUAN (Menggunakan class menu-item agar seragam) -->
-      <ion-item
-        button
-        detail="false"
-        mode="ios"
-        class="menu-item"
-        (click)="setSkModal(true)"
-      >
-        <div slot="start" class="icon-wrapper light-blue">
-          <ion-icon name="document-text"></ion-icon>
-        </div>
-        <ion-label>Syarat & Ketentuan</ion-label>
-        <ion-icon name="chevron-forward" slot="end" class="chevron"></ion-icon>
-      </ion-item>
+      <div class="info-card-container">
+        <ion-card mode="ios" class="custom-info-card">
+          <ion-card-header class="custom-card-header">
+            <ion-card-title class="custom-card-title">
+              Informasi & Bantuan
+            </ion-card-title>
+          </ion-card-header>
 
-      <!-- KEBIJAKAN PRIVASI (Menggunakan class menu-item agar seragam) -->
-      <ion-item
-        button
-        detail="false"
-        mode="ios"
-        class="menu-item"
-        (click)="setPrivacyModal(true)"
-      >
-        <div slot="start" class="icon-wrapper light-green">
-          <ion-icon name="shield-checkmark"></ion-icon>
-        </div>
-        <ion-label>Kebijakan Privasi</ion-label>
-        <ion-icon name="chevron-forward" slot="end" class="chevron"></ion-icon>
-      </ion-item>
+          <ion-list lines="none" class="custom-info-list">
+            <ion-item
+              button
+              detail="false"
+              mode="ios"
+              class="info-list-item"
+              (click)="setSkModal(true)"
+            >
+              <div slot="start" class="info-icon-box light-blue">
+                <ion-icon name="document-text"></ion-icon>
+              </div>
+              <ion-label class="info-item-label">Syarat & Ketentuan</ion-label>
+              <ion-icon
+                name="chevron-forward"
+                slot="end"
+                class="chevron"
+              ></ion-icon>
+            </ion-item>
 
+            <ion-item
+              button
+              detail="false"
+              mode="ios"
+              class="info-list-item"
+              (click)="setPrivacyModal(true)"
+            >
+              <div slot="start" class="info-icon-box light-green">
+                <ion-icon name="shield-checkmark"></ion-icon>
+              </div>
+              <ion-label class="info-item-label">Kebijakan Privasi</ion-label>
+              <ion-icon
+                name="chevron-forward"
+                slot="end"
+                class="chevron"
+              ></ion-icon>
+            </ion-item>
+          </ion-list>
+        </ion-card>
+      </div>
       <div class="logout-spacer"></div>
-
-      <!-- TOMBOL KELUAR -->
       <ion-item
         button
         (click)="bukaKonfirmasiKeluar()"
@@ -119,11 +133,12 @@
       </ion-item>
     </ion-list>
   </div>
+  
   <!-- ALERT KONFIRMASI KELUAR -->
   <ion-alert
     [isOpen]="isLogoutAlertOpen"
     header="Konfirmasi Keluar"
-    message="Apakah kamu yakin ingin keluar dari aplikasi EduLearn?"
+    message="Apakah kamu yakin ingin keluar dari aplikasi Eduvan?"
     [buttons]="logoutAlertButtons"
     class="eduvan-alert-logout"
     (didDismiss)="isLogoutAlertOpen = false"
@@ -142,13 +157,7 @@
       <ion-header class="ion-no-border" style="background: #ffffff">
         <ion-toolbar style="--background: #ffffff; padding: 12px 16px 0 16px">
           <ion-title
-            style="
-              font-weight: 800;
-              color: #093c5d;
-              font-size: 16px;
-              text-align: left;
-              padding-start: 0;
-            "
+            style="font-weight: 800; color: #093c5d; font-size: 16px; text-align: left; padding-start: 0;"
           >
             Syarat & Ketentuan
           </ion-title>
@@ -164,117 +173,118 @@
       </ion-header>
 
       <ion-content style="--background: #ffffff; color: #334155">
-        <div
-          style="
-            padding: 12px 20px 32px 20px;
-            line-height: 1.6;
-            font-size: 14px;
-            text-align: justify;
-          "
-        >
+        <div style="padding: 12px 20px 32px 20px; line-height: 1.6; font-size: 14px; text-align: justify;">
           <p style="margin: 0 0 16px 0; color: #64748b; font-weight: 500">
-            Selamat datang di aplikasi EduLearn: SMP Pintar. Dengan menggunakan platform
-            belajar digital ini, kamu menyatakan telah membaca, memahami, dan menyetujui
-            seluruh ketentuan tata tertib layanan di bawah ini:
+            Selamat datang di aplikasi Eduvan. Dengan mengunduh, mendaftarkan
+            akun, dan menggunakan seluruh layanan kami, Anda menyatakan telah
+            membaca, memahami, dan menyetujui seluruh ketentuan layanan di bawah
+            ini:
           </p>
 
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
+          <h2 style="font-size: 15px; font-weight: 800; color: #093c5d; margin: 20px 0 8px 0;">
             1. Ketentuan Akun Belajar Siswa
           </h2>
           <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Setiap siswa wajib menggunakan data profil yang valid dan terdaftar resmi di sekolah,
-            termasuk penulisan nama lengkap serta email aktif untuk kebutuhan rekapitulasi nilai.
+            * Setiap pengguna yang ingin mengakses layanan Eduvan diwajibkan
+            untuk melakukan registrasi akun secara mandiri dengan memberikan
+            data identitas yang valid, akurat, dan terbaru, termasuk nama
+            lengkap dan alamat email aktif.
           </p>
           <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Keamanan akun, kata sandi, dan perangkat aplikasi yang digunakan menjadi tanggung jawab 
-            penuh dari masing-masing siswa dan orang tua/wali murid.
+            * Seluruh kerahasiaan data kredensial akun, seperti kata sandi
+            (password) dan akses log masuk aplikasi, sepenuhnya menjadi tanggung
+            jawab pribadi pengguna (Student).
           </p>
           <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Siswa dilarang keras membagikan hak akses akun, menyalin materi, atau memindahtangankan 
-            akun belajar EduLearn miliknya kepada orang lain.
+            * Eduvan tidak bertanggung jawab atas kerugian atau penyalahgunaan
+            akun yang disebabkan oleh kelalaian pengguna dalam menjaga
+            kerahasiaan data akses tersebut.
+          </p>
+          <p style="margin: 0 0 16px 0; color: #4b5563">
+            * Pengguna dilarang keras memindahtangankan, membagikan hak akses,
+            atau memperjualbelikan akun Student miliknya kepada pihak lain
+            dengan alasan apa pun.
           </p>
 
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
+          <h2 style="font-size: 15px; font-weight: 800; color: #093c5d; margin: 20px 0 8px 0;">
             2. Ketentuan Mengikuti Pelajaran dan Progres Belajar
           </h2>
           <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Akses modul, materi, video, serta tugas sekolah disesuaikan berdasarkan jenjang tingkatan 
-            kelas (Kelas 7, Kelas 8, atau Kelas 9) yang dipilih siswa saat masuk aplikasi.
+            * Seluruh transaksi pembelian kursus atau kelas digital di dalam
+            platform Eduvan dilakukan secara resmi menggunakan metode transfer
+            bank ke nomor rekening yang telah ditentukan di dalam aplikasi.
           </p>
           <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Target pemenuhan kompetensi materi serta persentase keaktifan belajar terekam otomatis di sistem
-            untuk menjadi tolok ukur rapor perkembangan siswa.
+            * Nominal pembayaran wajib disesuaikan secara presisi hingga digit
+            terakhir sesuai dengan tagihan invoice yang tertera pada sistem saat
+            melakukan checkout.
           </p>
           <p style="margin: 0 0 16px 0; color: #4b5563">
-            * Pihak sekolah dan EduLearn berhak melakukan pembaruan kurikulum, mengganti jenis latihan soal,
-            atau memindahkan ruang materi pelajaran demi kenyamanan belajar siswa.
+            * Eduvan berhak mengubah harga sewaktu-waktu, memberlakukan tarif
+            promo, atau menghentikan penjualan suatu paket kursus tanpa perlu
+            memberikan pemberitahuan terlebih dahulu kepada pengguna.
           </p>
 
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
+          <h2 style="font-size: 15px; font-weight: 800; color: #093c5d; margin: 20px 0 8px 0;">
             3. Tata Tertib Evaluasi dan Kelayakan Sertifikat
           </h2>
           <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Penerbitan piagam atau sertifikat belajar di dalam aplikasi hanya akan diberikan kepada siswa
-            yang berhasil menuntaskan seluruh progres materi $\ge$ 100% serta menyelesaikan ujian akhir bab.
+            * Proses aktivasi materi pembelajaran tidak berjalan secara
+            instan/otomatis, melainkan melalui tahap pemeriksaan berkas dokumen
+            bukti transfer yang dilakukan secara manual oleh pihak Admin melalui
+            sistem dashboard website khusus.
           </p>
           <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Siswa wajib menjunjung tinggi nilai kejujuran akademik. Segala bentuk kecurangan atau duplikasi 
-            tugas yang ditemukan akan ditindak dengan pembatalan nilai dan pembekuan sertifikat terkait.
+            * Pengguna wajib mengunggah file bukti transfer resmi (bisa diambil
+            secara langsung melalui fitur kamera internal handphone ataupun
+            memilih berkas gambar dari galeri perangkat) dengan kualitas gambar
+            yang tajam, jelas, dan tidak terpotong.
+          </p>
+          <p style="margin: 0 0 16px 0; color: #4b5563">
+            * Tim Admin Eduvan memiliki hak mutlak untuk menolak pengajuan
+            transaksi, membatalkan pesanan, serta mengubah status menjadi
+            'pembayaran tidak valid' apabila ditemukan indikasi manipulasi data,
+            bukti transfer buram/tidak terbaca, atau ketidaksesuaian dana pada
+            mutasi rekening bank kami.
           </p>
 
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
+          <h2 style="font-size: 15px; font-weight: 800; color: #093c5d; margin: 20px 0 8px 0;">
             4. Hak Cipta Modul Pembelajaran Digital
           </h2>
           <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Seluruh materi pembelajaran—termasuk namun tidak terbatas pada rangkuman buku digital, ilustrasi, 
-            video animasi, bank soal, dan kode pemrograman latihan—adalah milik sah dari platform EduLearn.
+            * Seluruh materi pembelajaran yang tersedia di platform
+            Eduvan—termasuk namun tidak terbatas pada video penjelasan, modul
+            bacaan, source code latihan, desain antarmuka, dokumen panduan, dan
+            aset digital lainnya—merupakan hak milik intelektual sah dari
+            Eduvan.
           </p>
           <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Siswa hanya diizinkan membuka materi demi kepentingan akademik pribadi di dalam aplikasi dan 
-            dilarang mendistribusikan ulang, merekam layar secara ilegal, atau menyebarkannya ke luar platform.
+            * Pengguna hanya diberikan hak personal untuk mempelajari materi
+            secara mandiri melalui aplikasi mobile dan dilarang keras untuk
+            merekam layar (screen recording), mengunduh secara ilegal,
+            menggandakan, menyebarluaskan, atau mengomersialkan kembali aset
+            materi tersebut.
+          </p>
+          <p style="margin: 0 0 16px 0; color: #4b5563">
+            * Pelanggaran terhadap hak kekayaan intelektual ini dapat berakibat
+            pada pemblokiran akun secara permanen tanpa adanya pengembalian dana
+            (refund), serta tuntutan hukum sesuai dengan peraturan
+            perundang-undangan yang berlaku.
           </p>
 
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
+          <h2 style="font-size: 15px; font-weight: 800; color: #093c5d; margin: 20px 0 8px 0;">
             5. Batasan Operasional Aplikasi
           </h2>
           <p style="margin: 0 0 8px 0; color: #4b5563">
-            * EduLearn berkomitmen menjaga kestabilan aplikasi agar proses belajar mengajar tidak terganggu, 
-            namun tidak menutup kemungkinan dilakukannya perbaikan *server* berkala pada jam luar sekolah.
+            * Eduvan selalu berupaya untuk menjaga performa aplikasi. Namun,
+            Eduvan tidak menjamin aplikasi akan selalu bebas dari gangguan
+            teknis, bug, atau pemeliharaan server berkala (maintenance).
+          </p>
+          <p style="margin: 0 0 8px 0; color: #4b5563">
+            * Eduvan tidak bertanggung jawab atas kegagalan proses unggah
+            dokumen atau keterlambatan verifikasi yang disebabkan oleh gangguan
+            jaringan internet pada perangkat pengguna atau sistem perbankan
+            pihak ketiga.
           </p>
         </div>
       </ion-content>
@@ -294,13 +304,7 @@
       <ion-header class="ion-no-border" style="background: #ffffff">
         <ion-toolbar style="--background: #ffffff; padding: 12px 16px 0 16px">
           <ion-title
-            style="
-              font-weight: 800;
-              color: #093c5d;
-              font-size: 16px;
-              text-align: left;
-              padding-start: 0;
-            "
+            style="font-weight: 800; color: #093c5d; font-size: 16px; text-align: left; padding-start: 0;"
           >
             Kebijakan Privasi
           </ion-title>
@@ -316,110 +320,74 @@
       </ion-header>
 
       <ion-content style="--background: #ffffff; color: #334155">
-        <div
-          style="
-            padding: 12px 20px 32px 20px;
-            line-height: 1.6;
-            font-size: 14px;
-            text-align: justify;
-          "
-        >
+        <div style="padding: 12px 20px 32px 20px; line-height: 1.6; font-size: 14px; text-align: justify;">
           <p style="margin: 0 0 16px 0; color: #64748b; font-weight: 500">
-            Aplikasi EduLearn: SMP Pintar dikembangkan sebagai platform pembelajaran digital sekolah 
-            secara mandiri. Layanan edukasi ini bertujuan memberikan akses belajar yang aman dan terukur.
+            Eduvan Marketplace membangun aplikasi ini sebagai aplikasi
+            Komersial. LAYANAN ini disediakan oleh Eduvan Marketplace dan
+            dimaksudkan untuk digunakan apa adanya.
           </p>
 
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
+          <h2 style="font-size: 15px; font-weight: 800; color: #093c5d; margin: 20px 0 8px 0;">
             1. Jenis Data yang Dikumpulkan
           </h2>
           <p style="margin: 0 0 16px 0; color: #4b5563">
-            Untuk mengoptimalkan sistem rekap belajar mandiri siswa, kami mengumpulkan identitas pribadi terbatas 
-            berupa Nama Lengkap, Alamat Email Sekolah, Foto Profil Siswa, serta Riwayat Progres Belajar. Seluruh 
-            data ini digunakan semata-mata untuk memantau nilai akademik dan pembuatan sertifikat capaian belajar.
+            Untuk pengalaman yang lebih baik saat menggunakan Layanan kami, kami
+            mungkin meminta Anda untuk memberikan informasi identitas pribadi
+            tertentu, termasuk namun tidak terbatas pada Nama, Email, dan
+            Progres Belajar. Informasi yang kami minta akan kami simpan dan
+            digunakan seperti yang dijelaskan dalam kebijakan privasi ini.
+            Aplikasi ini menggunakan layanan pihak ketiga yang dapat
+            mengumpulkan informasi yang digunakan untuk mengidentifikasi Anda.
           </p>
 
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
+          <h2 style="font-size: 15px; font-weight: 800; color: #093c5d; margin: 20px 0 8px 0;">
             2. Pencatatan Sistem (Data Log)
           </h2>
           <p style="margin: 0 0 16px 0; color: #4b5563">
-            Apabila terjadi gangguan teknis atau *error* saat pengerjaan kuis/modul di dalam perangkat, 
-            sistem kami secara otomatis akan mencatat Data Log perangkat untuk mempercepat perbaikan bugs oleh tim teknis.
+            Kami ingin menginformasikan kepada Anda bahwa setiap kali Anda
+            menggunakan Layanan kami, jika terjadi kesalahan (error) di dalam
+            aplikasi, kami mengumpulkan data dan informasi pada ponsel Anda
+            (melalui produk pihak ketiga) yang disebut Data Log.
           </p>
 
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
+          <h2 style="font-size: 15px; font-weight: 800; color: #093c5d; margin: 20px 0 8px 0;">
             3. Penggunaan Cookies Digital
           </h2>
           <p style="margin: 0 0 16px 0; color: #4b5563">
-            Cookies digunakan secara aman dengan volume kecil sebagai pengenal unik anonim agar siswa tidak perlu 
-            melakukan login ulang setiap kali membuka aplikasi di ponsel yang sama.
+            Cookies adalah berkas dengan sejumlah kecil data yang biasanya
+            digunakan sebagai pengidentifikasi unik anonim.
           </p>
 
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
+          <h2 style="font-size: 15px; font-weight: 800; color: #093c5d; margin: 20px 0 8px 0;">
             4. Keamanan Informasi Siswa
           </h2>
           <p style="margin: 0 0 16px 0; color: #4b5563">
-            Kami mengimplementasikan enkripsi standar enkripsi database untuk melindungi kebocoran privasi identitas 
-            anak sekolah. Harap dipahami bahwa tidak ada transmisi via internet yang dijamin aman 100%, namun kami 
-            berkomitmen penuh melindunginya secara berkala.
+            Kami menghargai kepercayaan Anda dalam memberikan Informasi Pribadi
+            Anda kepada kami, oleh karena itu kami berupaya menggunakan cara
+            yang dapat diterima secara komersial untuk melindunginya. Namun
+            perlu diingat bahwa tidak ada metode transmisi melalui internet,
+            atau metode penyimpanan elektronik yang 100% aman dan andal.
           </p>
 
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
+          <h2 style="font-size: 15px; font-weight: 800; color: #093c5d; margin: 20px 0 8px 0;">
             5. Hak Penghapusan Akun Belajar Siswa
           </h2>
           <p style="margin: 0 0 16px 0; color: #4b5563">
-            Siswa atau orang tua/wali murid berhak mengajukan penghapusan akun serta riwayat rapor belajarnya dari 
-            sistem EduLearn kapan saja. Proses pembersihan data induk dilakukan maksimal dalam jangka waktu 30 hari 
-            hari kerja setelah pengajuan resmi dikirimkan.
+            Pengguna Eduvan Marketplace dapat mengajukan permintaan penghapusan
+            akun beserta data terkait kapan saja. Untuk meminta penghapusan
+            akun, silakan hubungi kami melalui email di Eduvan@gmail.com
+            menggunakan alamat email Anda yang terdaftar. Setelah menerima
+            permintaan Anda, Nama, Alamat Email, dan Kredensial Akun Anda akan
+            dihapus secara permanen dari database utama kami dalam waktu 30
+            hari.
           </p>
 
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
-            6. Kontak Pengaduan
+          <h2 style="font-size: 15px; font-weight: 800; color: #093c5d; margin: 20px 0 8px 0;">
+            Hubungi Kami
           </h2>
           <p style="margin: 0 0 16px 0; color: #4b5563">
-            Apabila terdapat pertanyaan lebih lanjut terkait perlindungan data atau kendala teknis aplikasi, 
-            silakan hubungi tim Admin IT Sekolah melalui alamat surel resmi di: edulearn.smp@gmail.com.
+            Jika Anda memiliki pertanyaan atau saran mengenai Kebijakan Privasi
+            kami, jangan ragu untuk menghubungi kami di Eduvan@gmail.com.
           </p>
         </div>
       </ion-content>

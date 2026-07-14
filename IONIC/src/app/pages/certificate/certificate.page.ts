@@ -27,7 +27,6 @@ export class CertificatePage implements OnInit {
     this.muatDaftarSertifikat();
   }
 
-  // Dipanggil setiap kali halaman dibuka biar datanya ter-update live setelah di-ACC admin
   ionViewWillEnter() {
     this.muatDaftarSertifikat();
   }
@@ -36,7 +35,7 @@ export class CertificatePage implements OnInit {
     this.isLoading = true;
     this.courseService.getMyCertificates().subscribe({
       next: (res: any) => {
-        // Menangkap response JSON {'success': true, 'data': [...] } dari cPanel kamu
+
         this.listSertifikat = res.data || [];
         this.isLoading = false;
         console.log('Sertifikat kamu sukses dimuat:', this.listSertifikat);
@@ -48,14 +47,10 @@ export class CertificatePage implements OnInit {
     });
   }
 
-  // Fungsi untuk mengunduh berkas PDF sertifikat langsung dari server cPanel
-  // 🟢 Ubah menjadi 'async' agar bisa mengontrol animasi loading Ionic
   async downloadPdf(idSertifikat: number, namaKursus: string) {
-    // Kunci tombol agar tidak di-spam klik
     this.isDownloading = true;
     this.activeCertId = idSertifikat;
 
-    // 1. TAMPILKAN LOADING MEMUTAR DI TENGAH LAYAR
     const loadingSertifikat = await this.loadingCtrl.create({
       message: 'Sedang memproses sertifikat...',
       spinner: 'crescent',
@@ -63,7 +58,6 @@ export class CertificatePage implements OnInit {
     });
     await loadingSertifikat.present();
 
-    // 2. Ambil token bearer milik student dari local storage lewat fungsi pembantu Ivan
     let tokenUser = localStorage.getItem('token');
     if (tokenUser) {
       tokenUser = String(tokenUser).replace(/"/g, '').trim();
@@ -73,19 +67,15 @@ export class CertificatePage implements OnInit {
       Authorization: `Bearer ${tokenUser}`,
     });
 
-    // 3. Tembak rute API download asli kalian (Pakai S)
     const urlApiDownload = `https://eduvan.rehalivan.com/api/certificates/${idSertifikat}/download`;
 
-    // 4. Tarik data file PDF sebagai Blob dengan Header tetap terjaga aman (Gak bakal nyasar ke Web Admin)
+
     this.http.get(urlApiDownload, { headers, responseType: 'blob' }).subscribe({
       next: async (blobData: Blob) => {
-        // 5. 🔑 TRICK KHUSUS APK: Menggunakan FileReader untuk membaca Blob menjadi Data URL lokal
         const pembacaFile = new FileReader();
         pembacaFile.readAsDataURL(blobData);
         pembacaFile.onloadend = () => {
           const base64Data = pembacaFile.result as string;
-
-          // Buat trigger download lokal yang diizinkan oleh WebView Android APK
           const linkLokal = document.createElement('a');
           linkLokal.href = base64Data;
           linkLokal.download = `Sertifikat-${namaKursus.replace(/\s+/g, '_')}.pdf`;
@@ -96,21 +86,15 @@ export class CertificatePage implements OnInit {
         };
 
         console.log('Sertifikat resmi berhasil terunduh');
-
-        // Matikan animasi loading
         await loadingSertifikat.dismiss();
         this.isDownloading = false;
         this.activeCertId = null;
       },
       error: async (err) => {
         console.error('Gagal memproses unduhan sertifikat via API:', err);
-
-        // Matikan animasi loading jika gagal
         await loadingSertifikat.dismiss();
         this.isDownloading = false;
         this.activeCertId = null;
-
-        // Tampilkan pesan error toast premium
         const toast = await this.toastCtrl.create({
           message: 'Gagal mendownload sertifikat, pastikan jaringan aman.',
           duration: 3000,
@@ -123,20 +107,13 @@ export class CertificatePage implements OnInit {
 
   async downloadPdfViaBrowser(idSertifikat: number) {
     if (!idSertifikat) return;
-
-    // Ambil token bearer murni dari local storage
     let tokenUser = localStorage.getItem('token') || '';
-
-    // KUNCI UTAMA: Hapus semua tanda kutip dua dan spasi gaib agar dibaca valid oleh Laravel Sanctum
     if (tokenUser) {
       tokenUser = String(tokenUser).replace(/"/g, '').trim();
     }
-
-    // Buat URL direct download dengan token yang sudah bersih total
     const urlDirectDownload = `https://eduvan.rehalivan.com/api/certificates/${idSertifikat}/download?token=${tokenUser}`;
 
     try {
-      // Melempar proses download ke engine browser eksternal bawaan perangkat
       await Browser.open({ url: urlDirectDownload });
       console.log(
         'Membuka browser eksternal dengan token bersih:',

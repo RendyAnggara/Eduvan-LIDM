@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { ProfilePage } from './profil.page'; // Perbaikan di sini
+import { ProfilePage } from './profil.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: ProfilePage // Perbaikan di sini
+    component: ProfilePage 
   }
 ];
 

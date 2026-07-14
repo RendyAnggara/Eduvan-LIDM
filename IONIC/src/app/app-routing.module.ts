@@ -4,27 +4,23 @@ import { AuthGuard } from './guards/auth-guard';
 import { WelcomeGuard } from './guards/welcome.guard';
 
 const routes: Routes = [
-  // 🟢 1. RUTE AWAL: Paksa murni langsung lempar ke splash tanpa ada gembok Guard apa pun!
   {
     path: '',
     pathMatch: 'full',
     redirectTo: 'splash',
   },
-
-  // 🟢 2. HALAMAN SPLASH CUSTOM (Pintu gerbang tunggal aplikasi)
   {
     path: 'splash',
     loadChildren: () =>
       import('./pages/splash/splash.module').then((m) => m.SplashPageModule),
-    data: { preload: false }, // Matikan preloading biar gak nyolong start render
+    data: { preload: false },
   },
 
-  // 🟢 3. RUTE WELCOME & LOGIN: Biarkan Guard dipasang di halamannya masing-masing, bukan di rute awal aplikasi
   {
     path: 'welcome',
     loadChildren: () =>
       import('./pages/welcome/welcome.module').then((m) => m.WelcomePageModule),
-    canActivate: [WelcomeGuard], // 🔒 Gembok WelcomeGuard aman di sini
+    canActivate: [WelcomeGuard],
   },
 
   {
@@ -32,14 +28,6 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/login/login.module').then((m) => m.LoginPageModule),
     data: { preload: false },
-  },
-
-  {
-    path: 'register',
-    loadChildren: () =>
-      import('./pages/register/register.module').then(
-        (m) => m.RegisterPageModule
-      ),
   },
 
   {
@@ -66,7 +54,6 @@ const routes: Routes = [
       ),
   },
 
-  // 4. Rute Utama & Fitur Aplikasi: Kunci dengan AuthGuard (TIDAK ADA YANG DIUBAH)
   {
     path: 'tabs',
     loadChildren: () =>
@@ -74,7 +61,6 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
 
-  // 5. Rute Detail Dalam Aplikasi: Kunci dengan AuthGuard (TIDAK ADA YANG DIUBAH)
   {
     path: 'course-player/:id',
     loadChildren: () =>
@@ -136,13 +122,11 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
 
-  // 🟢 6. Rute fallback otomatis: WAJIB PALING BAWAH DAN DILEMPAR KE SPLASH!
   { path: '**', redirectTo: 'splash' },
 ];
 
 @NgModule({
   imports: [
-    // Menggunakan strategi preloading bawaan kalian, namun sudah kita jinakkan lewat 'data' config
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules }),
   ],
   exports: [RouterModule],

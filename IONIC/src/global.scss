@@ -1,52 +1,33 @@
-/* Impor font dari Google Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
-
 @import "@ionic/angular/css/core.css";
 
 :root {
-  /* Palette Premium Eduvan */
   --edu-accent: #1565c0;
   --edu-bg: #f4f7fa;
   --edu-white: #ffffff;
   --edu-text-main: #1a202c;
   --edu-text-muted: #718096;
-
-  /* Shadow & Border */
-  --premium-shadow: 0 20px 40px rgba(9, 60, 93, 0.08),
-    0 5px 15px rgba(0, 0, 0, 0.03);
+  --premium-shadow: 0 20px 40px rgba(9, 60, 93, 0.08), 0 5px 15px rgba(0, 0, 0, 0.03);
   --glass-shadow: 0 8px 32px 0 rgba(9, 60, 93, 0.1);
   --soft-border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
-/* Terapkan ke seluruh aplikasi */
 body {
   font-family: var(--ion-font-family);
   color: var(--edu-text-main);
   background-color: var(--edu-bg);
 }
 
-/* Judul agar konsisten */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--ion-font-family);
   font-weight: 700;
   color: var(--ion-color-primary);
 }
 
-/* Reset elemen form agar mengikuti font */
-ion-button,
-ion-input,
-ion-textarea,
-ion-item,
-ion-label {
+ion-button, ion-input, ion-textarea, ion-item, ion-label {
   font-family: var(--ion-font-family);
 }
 
-/* Komponen Eduvan Premium */
 .edu-card {
   background: var(--edu-white);
   border-radius: 28px;
@@ -69,8 +50,6 @@ ion-button {
 
 .premium-avatar-sheet {
   --background: transparent;
-
-  /* Posisi di tengah dan efek melayang */
   .action-sheet-wrapper {
     max-width: 320px;
     margin: auto;
@@ -80,20 +59,14 @@ ion-button {
     overflow: hidden;
     padding: 8px;
   }
-
-  /* Style tombol di dalam sheet */
   .action-sheet-button {
     font-family: var(--ion-font-family);
     font-weight: 600;
     color: var(--edu-text-main);
     border-radius: 16px;
     margin: 4px 8px;
-
-    &:hover {
-      background: #f8fafc;
-    }
+    &:hover { background: #f8fafc; }
   }
-
   .action-sheet-cancel {
     color: #ef4444;
     font-weight: 700;
@@ -101,77 +74,21 @@ ion-button {
   }
 }
 
-// =========================================================================
-// PREMIUM CUSTOM OVERLAY ALERT FOR EDUVAN (MINIMALIST & CLEAN VERSION)
-// =========================================================================
-
-// 🟢 1. Tema Alert Sukses (Minimalist Deep Slate & Soft Green)
 .eduvan-alert-success {
-  --background: #1e293b !important; 
-  --box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --border-radius: 24px; 
-
-  .alert-head {
-    text-align: center;
-    padding: 32px 24px 12px 24px;
-
-    h2.alert-title {
-      color: #22986c;
-      font-size: 19px;
-      font-weight: 600; 
-      letter-spacing: -0.3px;
-    }
-  }
-
-  .alert-message {
-    color: #94a3b8; 
-    text-align: center;
-    font-size: 13.5px;
-    line-height: 1.6;
-    padding: 0 28px 28px 28px;
-  }
-  
-  .alert-button-group {
-    padding: 0 24px 24px 24px;
-
-    button.alert-button {
-      background: #22986c; 
-      color: #ffffff !important;
-      width: 100%;
-      margin: 0;
-      border-radius: 14px;
-      font-weight: 600;
-      font-size: 14px;
-      height: 44px;
-      box-shadow: none; 
-
-      .alert-button-inner {
-        justify-content: center;
-      }
-    }
-  }
-}
-
-// 🔴 2. Tema Alert Gagal (Minimalist Deep Slate & Soft Red)
-.eduvan-alert-error {
   --background: #1e293b !important;
-  --box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
   --border-radius: 24px;
 
   .alert-head {
     text-align: center;
     padding: 32px 24px 12px 24px;
-
     h2.alert-title {
-      color: #f87171; 
+      color: #22986c;
       font-size: 19px;
       font-weight: 600;
       letter-spacing: -0.3px;
     }
   }
-
   .alert-message {
     color: #94a3b8;
     text-align: center;
@@ -179,124 +96,96 @@ ion-button {
     line-height: 1.6;
     padding: 0 28px 28px 28px;
   }
-
   .alert-button-group {
     padding: 0 24px 24px 24px;
-
     button.alert-button {
-      background: #ef4444; 
+      background: #22986c;
       color: #ffffff !important;
       width: 100%;
-      margin: 0;
       border-radius: 14px;
       font-weight: 600;
       font-size: 14px;
       height: 44px;
-      box-shadow: none;
-
-      .alert-button-inner {
-        justify-content: center;
-      }
     }
   }
 }
 
-// 🟡 3. Tema Alert Keluar (Sudah Diperbarui Kalem & Tidak Alay)
-.eduvan-alert-logout {
-  --background: #1e293b !important; // Abu-abu gelap kebiruan (Slate) premium yang adem
+.eduvan-alert-error {
+  --background: #1e293b !important;
   --box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --border-radius: 20px; // Sudut melengkung halus serasi dengan desain menu baru
+  --border-radius: 24px;
 
   .alert-head {
     text-align: center;
     padding: 32px 24px 12px 24px;
-
     h2.alert-title {
-      color: #ffffff; // Putih bersih minimalis
-      font-size: 18px;
-      font-weight: 700;
-      letter-spacing: -0.3px;
+      color: #f87171;
+      font-size: 19px;
+      font-weight: 600;
     }
   }
-
   .alert-message {
-    color: #94a3b8; // Teks abu-abu informatif yang tenang
+    color: #94a3b8;
     text-align: center;
     font-size: 13.5px;
-    line-height: 1.6;
+    padding: 0 28px 28px 28px;
+  }
+  .alert-button-group {
+    padding: 0 24px 24px 24px;
+    button.alert-button {
+      background: #ef4444;
+      color: #ffffff !important;
+      width: 100%;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 14px;
+      height: 44px;
+    }
+  }
+}
+
+.eduvan-alert-logout {
+  --background: #0c162e !important;
+  --box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  --border-radius: 24px;
+
+  .alert-head {
+    text-align: center;
+    padding: 32px 24px 12px 24px;
+    h2.alert-title {
+      color: #f8fafc;
+      font-size: 19px;
+      font-weight: 600;
+    }
+  }
+  .alert-message {
+    color: #94a3b8;
+    text-align: center;
+    font-size: 13.5px;
     padding: 0 24px 24px 24px;
   }
-
   .alert-button-group {
     display: flex !important;
     flex-direction: row !important;
     justify-content: space-between !important;
     padding: 0 20px 20px 20px !important;
     gap: 12px;
-
     button.alert-button {
       flex: 1 !important;
       width: 50% !important;
-      margin: 0 !important;
-      height: 44px; 
-      border-radius: 14px; 
+      height: 46px;
+      border-radius: 16px;
       font-size: 14px;
-      font-weight: 700;
-      text-transform: none; 
-
-      .alert-button-inner {
-        justify-content: center;
-      }
+      font-weight: 600;
     }
-
-    // Tombol Batal: Semi transparan murni, teks biru tenang
     button.alert-btn-batal {
-      background: rgba(255, 255, 255, 0.05) !important;
-      color: #38bdf8 !important; 
-
-      &:active {
-        background: rgba(255, 255, 255, 0.1) !important;
-      }
+      background: rgba(255, 255, 255, 0.04) !important;
+      color: #38bdf8 !important;
     }
-
-    // Tombol Keluar: Merah mawar gelap, tegas tapi elegan untuk siswa
     button.alert-btn-keluar {
-      background: #e11d48 !important; 
+      background: #f43f5e !important;
       color: #ffffff !important;
-      box-shadow: 0 4px 12px rgba(225, 29, 72, 0.2); 
-
-      &:active {
-        background: #be123c !important;
-      }
+      box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
     }
   }
-}
-
-/* Tambahan Konfigurasi Pembantu */
-ion-refresher {
-  --ion-color-primary: #ffca28; 
-
-  ion-refresher-content {
-    color: #093c5d !important; 
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: 0.3px;
-
-    .refresher-pulling-icon {
-      color: #093c5d;
-      font-size: 26px;
-      transition: transform 0.2s ease-in-out;
-    }
-
-    ion-spinner {
-      width: 28px;
-      height: 28px;
-      margin-bottom: 4px;
-    }
-  }
-}
-
-ion-app {
-  --background: #f4f7fa !important;
-  background-color: #f4f7fa !important;
 }

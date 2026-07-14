@@ -1,5 +1,4 @@
 <ion-header mode="ios" class="ion-no-border">
-  <!-- 🌊 SPANDUK BIRU GRADASI ATAS MODERN -->
   <div class="header-navy-cert">
     <div class="header-flex-row">
       <div class="back-action-box">
@@ -16,7 +15,6 @@
 </ion-header>
 
 <ion-content>
-  <!-- INDIKATOR LOADING -->
   <div *ngIf="isLoading" class="loading-state-box">
     <ion-spinner name="crescent"></ion-spinner>
     <p>Memeriksa Transkip Nilai resmi kamu...</p>
@@ -30,7 +28,7 @@
     <div class="cert-summary">
       <p>
         Selamat! 🎉 Berikut adalah daftar Transkip Nilai resmi kamu yang sudah
-        diverifikasi oleh <span>Admin EduVan</span>:
+        diverifikasi oleh <span>Admin EduLearn</span>:
       </p>
     </div>
 
@@ -71,7 +69,6 @@
     </div>
   </div>
 
-  <!-- KONDISI KETIKA BELUM ADA DATA SERTIFIKAT -->
   <div *ngIf="!isLoading && listSertifikat.length === 0" class="empty-cert-box">
     <div class="empty-icon-circle">
       <ion-icon name="shield-checkmark-outline"></ion-icon>

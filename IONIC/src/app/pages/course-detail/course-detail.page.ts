@@ -17,7 +17,6 @@ export class CourseDetailPage implements OnInit {
   isWishlist: boolean = false;
   loadingBeli: boolean = false;
 
-  // Variabel Kontrol Modal Rating Premium Kustom
   isModalRatingOpen: boolean = false;
   ratingInput: number = 5;
   isModalTransferOpen: boolean = false;
@@ -26,12 +25,10 @@ export class CourseDetailPage implements OnInit {
   loadingUpload: boolean = false;
   imagePreviewUrl: string | undefined = undefined;
 
-  // 🟢 VARIABEL BARU UNTUK KONTROL OVERLAY ION-ALERT PREMIUM KUSTOM
   isSuccessAlertOpen: boolean = false;
   isErrorAlertOpen: boolean = false;
   alertMessageCustom: string = '';
 
-  // 🟢 KONFIGURASI HANDLER TOMBOL ALERT AGAR TIDAK ERROR DI HTML PARSER ANGULAR
   alertSuccessButtons = [
     {
       text: 'Selesai',
@@ -73,11 +70,10 @@ export class CourseDetailPage implements OnInit {
     }
   }
 
-  // 🟢 DIUBAH TOTAL: Memisahkan jalur data Kursus & Enrollments agar data kelas TIDAK HILANG
+
   getDetail(id: string) {
     const targetCourseId = Number(id);
 
-    // Jalur Pipa 1: Ambil data detail kursus utama dari API (Gembok detail aman)
     this.courseService.getCourseById(id).subscribe({
       next: (res: any) => {
         if (res.success) {
@@ -94,7 +90,6 @@ export class CourseDetailPage implements OnInit {
       },
     });
 
-    // Jalur Pipa 2: Cek status pendaftaran student (Independent pipeline)
     this.courseService.getMyEnrollments().subscribe({
       next: (enrollRes: any) => {
         if (enrollRes.success && enrollRes.data) {
@@ -103,7 +98,6 @@ export class CourseDetailPage implements OnInit {
           );
 
           if (riwayatBeli) {
-            // Mengambil status string asli database cPanel ('pending' atau 'success')
             this.paymentStatus = String(riwayatBeli.status)
               .trim()
               .toLowerCase();
@@ -123,31 +117,25 @@ export class CourseDetailPage implements OnInit {
     });
   }
 
-  // =========================================================================
-  // 🟢 LOGIKA BARU: SEKERANJANG FUNGSI TRANSFER MULTIPART MANUAL (NON-XENDIT)
-  // =========================================================================
   bukaModalUploadTransfer() {
     this.isModalTransferOpen = true;
     this.fileGambarBukti = null;
     this.namaFileTerpilih = '';
-    this.imagePreviewUrl = undefined; // Reset preview pas modal dibuka
+    this.imagePreviewUrl = undefined;
     this.cdr.detectChanges();
   }
   handleRefresh(event: CustomEvent) {
     console.log('User melakukan refresh halaman...');
 
-    // Jalankan fungsi load data bawaan halaman Anda
     this.ngOnInit();
 
-    // 🟢 EFEK TRANSISI HALUS: Beri jeda sedikit sebelum menutup spinner
     setTimeout(() => {
       if (event && event.target) {
         (event.target as any).complete();
       }
-    }, 800); // Roda berputar akan selesai dengan transisi fade-out yang rapi
+    }, 800);
   }
 
-  // 🔥 ROMBAK TOTAL: Ganti input file lama jadi pemicu dialog Kamera/Galeri native Android
   async pilihFileBuktiTransfer() {
     try {
       const image = await Camera.getPhoto({
@@ -161,9 +149,8 @@ export class CourseDetailPage implements OnInit {
       });
       this.imagePreviewUrl = image.webPath;
       this.namaFileTerpilih = `bukti_transfer_${Date.now()}.jpg`;
-      // Proses konversi aman terkendali:
       const response = await fetch(image.webPath!);
-      const blob = await response.blob(); // Sudah diperbaiki
+      const blob = await response.blob();
       this.fileGambarBukti = new File([blob], this.namaFileTerpilih, {
         type: 'image/jpeg',
       });
@@ -183,24 +170,21 @@ export class CourseDetailPage implements OnInit {
     }
     this.loadingUpload = true;
     this.cdr.detectChanges();
-    // Membungkus parameter ke objek FormData biner
 
     const formData = new FormData();
     formData.append('course_id', String(this.course.id));
-    // 🟢 FIX SAKTI: Ubah key dari 'payment_proof' menjadi 'proof_of_payment' biar match sama Laravel Ivan
     formData.append('proof_of_payment', this.fileGambarBukti);
     this.courseService.buyCourseManual(formData).subscribe({
       next: (res: any) => {
         this.loadingUpload = false;
         this.isModalTransferOpen = false;
 
-        // Memasukkan response teks kustom asli backend ke overlay kustom baru
         this.alertMessageCustom =
           res.message ||
           'Bukti transfer sukses dikirim! Mohon tunggu konfirmasi Admin.';
         this.isSuccessAlertOpen = true;
 
-        this.paymentStatus = 'pending'; // Tombol otomatis berubah jadi "Menunggu Verifikasi Admin"
+        this.paymentStatus = 'pending';
         this.getDetail(String(this.course.id));
         this.cdr.detectChanges();
       },
@@ -208,8 +192,6 @@ export class CourseDetailPage implements OnInit {
       error: (err) => {
         this.loadingUpload = false;
         console.error('Gagal upload bukti:', err);
-
-        // Memasukkan response pesan error validasi asli backend ke overlay kustom
         this.alertMessageCustom =
           err.error?.message ||
           'Gagal mengirim bukti pembayaran, periksa format file Anda.';
@@ -219,14 +201,12 @@ export class CourseDetailPage implements OnInit {
     });
   }
 
-  // 🟢 FUNGSI DISMISS OVERLAY ALERT UNTUK RESET STATE KUSTOM
   tutupAlertKustom() {
     this.isSuccessAlertOpen = false;
     this.isErrorAlertOpen = false;
     this.cdr.detectChanges();
   }
 
-  // LOGIKA FITUR ULASAN & RATING KUSTOM
   setRatingBintang(bintang: number) {
     this.ratingInput = bintang;
     this.cdr.detectChanges();
@@ -272,7 +252,6 @@ export class CourseDetailPage implements OnInit {
     );
   }
 
-  // 🟢 FIX TOTAL: Diarahkan langsung masuk ke halaman nonton course-player bawa ID video
   klikMateri(contentId: number) {
     if (this.paymentStatus !== 'success') {
       this.alertMessageCustom =
@@ -288,7 +267,6 @@ export class CourseDetailPage implements OnInit {
   masukKelas(courseId: any) {
     if (this.contents && this.contents.length > 0) {
       console.log('Navigasi masukKelas bawa ID Kursus:', this.course.id);
-      // 🔥 FIX: Kirim ID Kursus ke URL player agar data header & video tidak tertukar
       this.router.navigate(['/course-player', this.course.id]);
     } else {
       this.alertMessageCustom =

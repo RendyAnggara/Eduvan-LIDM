@@ -49,7 +49,10 @@
     </div>
 
     <div class="category-list">
+<<<<<<< HEAD
       <!-- 🟢 KATEGORI 1: Mata Pelajaran Wajib -->
+=======
+>>>>>>> main
       <div
         class="category-item"
         (click)="selectCategory('Computer Science')"
@@ -60,7 +63,10 @@
         </div>
         <p>Mata Pelajaran Wajib</p>
       </div>
+<<<<<<< HEAD
       <!-- 🟢 KATEGORI 1: Mata Pelajaran Wajib -->
+=======
+>>>>>>> main
       <div
         class="category-item"
         (click)="selectCategory('Microsoft Office')"
@@ -80,14 +86,15 @@
           Menghubungkan ke server EduLearn...
         </p>
       </div>
+<<<<<<< HEAD
 
       <!-- 🖥️ 1. RAK Mata Pelajaran Wajib -->
+=======
+>>>>>>> main
       <div *ngIf="!selectedCategory || selectedCategory === 'Computer Science'">
         <div class="section-title-box">
           <h4>Mata Pelajaran Wajib</h4>
         </div>
-
-        <!-- 🟢 GANTI CLASS DI SINI JADI GRID -->
         <div class="course-grid-wrapper">
           <ng-container *ngFor="let kursus of kursusTersaring">
             <div
@@ -96,7 +103,6 @@
               (click)="goToDetail(kursus.id)"
               style="cursor: pointer"
             >
-              <!-- Isi layout item kursus lu tetep sama -->
               <div class="course-thumb-box">
                 <img
                   [src]="kursus.image ? kursus.image : getDefaultImage(kursus.category)"
@@ -120,8 +126,11 @@
           </ng-container>
         </div>
       </div>
+<<<<<<< HEAD
 
       <!-- 📊 2. RAK Mata Pelajaran Pilihan -->
+=======
+>>>>>>> main
       <div
         *ngIf="!selectedCategory || selectedCategory === 'Microsoft Office'"
         style="margin-top: 24px"
@@ -129,8 +138,6 @@
         <div class="section-title-box">
           <h4>Mata Pelajaran Pilihan</h4>
         </div>
-
-        <!-- 🟢 GANTI CLASS DI SINI JADI GRID -->
         <div class="course-grid-wrapper">
           <ng-container *ngFor="let kursus of kursusTersaring">
             <div
@@ -139,7 +146,6 @@
               (click)="goToDetail(kursus.id)"
               style="cursor: pointer"
             >
-              <!-- Isi layout item kursus lu tetep sama -->
               <div class="course-thumb-box">
                 <img
                   [src]="kursus.image ? kursus.image : getDefaultImage(kursus.category)"
@@ -167,7 +173,11 @@
   </div>
   <div class="insight-section">
     <div class="insight-card-baru">
+<<<<<<< HEAD
       <div class="insight-badge">Tips Hari Ini ✨</div>
+=======
+      <div class="insight-badge">Tip Hari Ini ✨</div>
+>>>>>>> main
       <h3>Yuk, Tetap Semangat!</h3>
       <p>
         "Setiap ahli dulunya juga seorang pemula yang gak berhenti mencoba.

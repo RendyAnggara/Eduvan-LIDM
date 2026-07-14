@@ -92,7 +92,7 @@ ion-content {
       position: absolute;
       bottom: 2px;
       right: 2px;
-      background: #ffb300; // Menggunakan aksen kuning emas agar lebih kontras menonjol
+      background: #ffb300; // Menggunakan aksen kuning emas
       color: #093C5D;
       width: 34px;
       height: 34px;
@@ -167,7 +167,7 @@ ion-content {
       font-weight: 700;
       
       &.primary {
-        color: #0055ff; // Aksen teks sertifikat biru terang interaktif
+        color: #0055ff; // Aksen teks sertifikat biru terang
       }
     }
   }
@@ -176,14 +176,13 @@ ion-content {
 }
 
 /* ==========================================================================
-   3. MENU SYSTEM LIST BAWAH (MOTIF KOTAK SERAGAM & MANDIRI)
+   3. MENU SYSTEM LIST BAWAH
    ========================================================================== */
 .menu-container {
   padding: 16px 24px 32px 24px;
-  height: auto;        // Memastikan container memanjang alami
-  overflow: visible;   // Mencegah pemotongan elemen konten bawah
+  height: auto;
+  overflow: visible;
 
-  // Model Kotak Mandiri Bersih - Jarak Rapat Semuanya Sama Semeter
   .menu-item {
     --background: #ffffff;
     --border-radius: 20px; 
@@ -202,7 +201,6 @@ ion-content {
       transform: scale(0.98);
     }
 
-    // Penyelarasan Ikon Bulat Kotak di Dalam Menu
     .icon-wrapper {
       width: 40px;
       height: 40px;

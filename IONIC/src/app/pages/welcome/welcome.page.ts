@@ -15,34 +15,27 @@ export class WelcomePage {
   setujuTerms: boolean = false;
   setujuPrivasi: boolean = false;
 
-  // 🟢 State Pengunci: bernilai true jika user sukses men-scroll text box sampai ujung bawah
   sudahScrollTerms: boolean = false;
   sudahScrollPrivasi: boolean = false;
 
   constructor(private router: Router, private toastCtrl: ToastController) {}
 
   ionViewWillEnter() {
-    this.cekStatusPengguna(); // 🟢 Hidupkan lagi biar dia nge-cek LocalStorage!
+    this.cekStatusPengguna();
   }
 
   cekStatusPengguna() {
     const statusLama = localStorage.getItem('eduvan_user_registered');
     if (statusLama === 'true') {
       this.isPenggunaBaru = false;
-      this.router.navigate(['/login'], { replaceUrl: true }); // 🟢 Jika sudah terdaftar, langsung lempar ke login!
+      this.router.navigate(['/login'], { replaceUrl: true });
     } else {
       this.isPenggunaBaru = true;
     }
   }
 
-  /**
-   * 🟢 FUNGSI UTAMA: Menghitung posisi scroll box text secara realtime
-   */
   cekPosisiScroll(event: any) {
     const targetEl = event.target;
-
-    // Perhitungan matematika: Posisi Scroll Saat Ini + Tinggi Kotak Box >= Total Tinggi Konten Dokumen
-    // Angka -5 diberikan sebagai batas toleransi padding bawah piksel HP
     if (
       targetEl.scrollTop + targetEl.clientHeight >=
       targetEl.scrollHeight - 5
@@ -61,9 +54,6 @@ export class WelcomePage {
     return '';
   }
 
-  /**
-   * 🟢 TOMBOL LANJUT MATI JIKA: Belum di-scroll ATAU kotak ceklis belum dicentang
-   */
   tombolIsDisabled(): boolean {
     if (this.currentStep === 1) return false;
     if (this.currentStep === 2)
@@ -82,7 +72,6 @@ export class WelcomePage {
   langkahKembali() {
     if (this.currentStep > 1) {
       this.currentStep--;
-      // Reset state ketika user balik arah biar adil wajib baca ulang
       if (this.currentStep === 2) {
         this.sudahScrollPrivasi = false;
         this.setujuPrivasi = false;

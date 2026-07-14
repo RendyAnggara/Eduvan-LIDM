@@ -16,10 +16,9 @@ ion-content {
   padding: 16px 24px;
   display: flex;
   flex-direction: column;
-  gap: 24px; /* Memberi jarak aman antara form dan tombol */
+  gap: 24px;
 }
 
-/* Kotak Putih Pembungkus Form */
 .form-container {
   background: #ffffff;
   border-radius: 20px;
@@ -43,7 +42,6 @@ ion-content {
       margin-left: 4px;
     }
 
-    /* Style Field Input Abu-Abu Lembut */
     .custom-input-item {
       --background: #f1f5f9;
       --border-radius: 12px;
@@ -62,14 +60,12 @@ ion-content {
   }
 }
 
-/* Area Tombol Simpan di Bawah Form */
 .action-container {
   margin-bottom: 16px;
 
   .btn-simpan {
-    // 🟢 WARNA BIRU UTAMA EDUVAN KAMU
     --background: #093C5D; 
-    --background-activated: #06283F; /* Biru agak gelap pas ditekan */
+    --background-activated: #06283F;
     --border-radius: 14px;
     --box-shadow: 0 6px 16px rgba(9, 60, 93, 0.25);
     font-size: 14px;

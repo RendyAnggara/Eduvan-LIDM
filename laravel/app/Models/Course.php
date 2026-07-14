@@ -15,16 +15,19 @@ class Course extends Model
         'price',
         'image',
         'rating',
+        'course_type',
+        'grade_level'
     ];
     public function contents(): HasMany
     {
-        // Mengurutkan materi berdasarkan kolom 'order' secara otomatis
         return $this->hasMany(Content::class)->orderBy('order', 'asc');
     }
+
     public function quizzes()
     {
         return $this->hasMany(Quiz::class);
     }
+
     public function enrollments(): HasMany
     {
         return $this->hasMany(Enrollment::class);
@@ -32,13 +35,21 @@ class Course extends Model
 
     public function users()
     {
-        // Ini akan mengambil user melalui tabel enrollments
         return $this->hasManyThrough(User::class, Enrollment::class, 'course_id', 'id', 'id', 'user_id');
     }
 
     public function progress()
     {
-        // Course punya banyak data progress (hasMany)
         return $this->hasMany(Progress::class);
+    }
+
+    public function chapters()
+    {
+        return $this->hasMany(\App\Models\Chapter::class, 'course_id');
+    }
+
+    public function teachers()
+    {
+        return $this->belongsToMany(User::class, 'course_user', 'course_id', 'user_id');
     }
 }

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 import { CourseService } from '../../services/course.service';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'; // WAJIB IMPORT INI
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-course-player',
@@ -18,12 +18,10 @@ export class CoursePlayerPage implements OnInit {
   contents: any[] = [];
   videoAktifUrl: string = '';
 
-  //TAMBAHAN: Variabel khusus untuk menampung URL YouTube yang sudah lolos sensor security Angular
   safeVideoUrl: SafeResourceUrl | null = null;
   loading: boolean = false;
 
-  //TAMBAHAN BARU: Untuk melacak ID materi mana yang sedang diputar/aktif oleh student
-  activeContentId: number | null = null;
+  activeContentId: number | null = null; // Digunakan sebagai acuan materi aktif di HTML
 
   constructor(
     private route: ActivatedRoute,
@@ -55,8 +53,6 @@ export class CoursePlayerPage implements OnInit {
         this.loading = false;
         if (res.success) {
           this.contents = res.data || [];
-
-          // Auto-play video pertama kalau ada isinya
           if (this.contents.length > 0) {
             this.putarMateri(this.contents[0]);
           }
@@ -69,25 +65,16 @@ export class CoursePlayerPage implements OnInit {
     );
   }
 
-  // 🟢 LOGIKA UTAMA SAKTI UNTUK YOUTUBE:
   putarMateri(materi: any) {
     console.log('--- DEBUG MATERI YANG DIKLIK ---');
     console.log(materi);
-
-    // 🟢 SAKTI: Ambil ID materi yang aktif dan cocokkan status is_completed dari backend Laravel (1 = Selesai, 0 = Belum)
     this.activeContentId = materi.id;
     this.isCompleted = materi.is_completed === 1;
-
-    // 🟢 FIX: Tambahin materi.content_url di sini biar kebaca sama Angular
     this.videoAktifUrl =
       materi.content_url || materi.video_url || materi.video || '';
-
     console.log('Link video yang dideteksi:', this.videoAktifUrl);
-
     if (this.videoAktifUrl) {
       let embedUrl = this.videoAktifUrl;
-
-      // Parsing link YouTube biar jadi format embed
       if (this.videoAktifUrl.includes('watch?v=')) {
         const videoId = this.videoAktifUrl.split('watch?v=')[1].split('&')[0];
         embedUrl = `https://www.youtube.com/embed/${videoId}`;
@@ -106,26 +93,19 @@ export class CoursePlayerPage implements OnInit {
     }
   }
 
-  // 🟢 SINKRONISASI LIVE DATABASE: Mengirim data progress asli ke Laravel
   async markAsComplete() {
     if (!this.courseId || !this.activeContentId) {
       console.warn('ID Kursus atau ID Materi kosong!');
       return;
     }
-
-    // 🟢 TENTUKAN AKSI DINAMIS: Jika aslinya true (sudah selesai), kita kirim nilai status 0 (artinya mau dicancel)
-    // Jika aslinya false (belum selesai), kita kirim nilai status 1 (artinya mau ditandai selesai)
     const statusKirim = this.isCompleted ? 0 : 1;
 
     this.courseService
-      .saveProgress(Number(this.courseId), this.activeContentId, statusKirim) // 🟢 FIX: Sekarang mengirim 3 argumen sempurna!
+      .saveProgress(Number(this.courseId), this.activeContentId, statusKirim)
       .subscribe(
         async (res: any) => {
           if (res.success) {
-            // Balik status variabel lokal di frontend biar tombolnya langsung berubah warna/teks
             this.isCompleted = statusKirim === 1;
-
-            // Tembakkan sinyal ke BehaviorSubject biar halaman My Learning ikut nambah/berkurang persentasenya secara live
             this.courseService.progressChanged$.next(true);
 
             const toast = await this.toastCtrl.create({
@@ -134,11 +114,9 @@ export class CoursePlayerPage implements OnInit {
                   ? 'Materi berhasil diselesaikan!'
                   : 'Selesai materi dibatalkan!',
               duration: 2000,
-              color: statusKirim === 1 ? 'success' : 'warning', // Kalau cancel warnanya kuning/oranye manis
+              color: statusKirim === 1 ? 'success' : 'warning',
             });
             await toast.present();
-
-            // AUTOMATIS REFRESH: Memuat ulang kurikulum biar list centang hijau langsung sinkron
             this.muatDataKelasAsli(this.courseId!);
           }
         },

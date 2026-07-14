@@ -135,8 +135,6 @@ export class AuthService {
           const profileData = res.user || res.data || res;
           if (profileData) {
             const currentUser = this.currentUserSubject.value || {};
-
-            // 🔒 AMANKAN AVATAR LOKAL: Jika dari API berupa link Google (http) sedangkan di lokal ada avatar karakter, abaikan link Google!
             if (
               profileData.avatar &&
               profileData.avatar.startsWith('http') &&
@@ -147,8 +145,6 @@ export class AuthService {
             } else if (!profileData.avatar && currentUser.avatar) {
               profileData.avatar = currentUser.avatar;
             }
-
-            // Kawinkan data server dengan data statistik lokal yang sudah ada biar tidak hilang
             const mergedData = { ...currentUser, ...profileData };
             this.updateCurrentUserState(mergedData);
           }
@@ -167,15 +163,11 @@ export class AuthService {
         if (res) {
           const currentUser = this.currentUserSubject.value || {};
           const backendUser = res.user || res.data || {};
-
-          // 🟢 PERBAIKAN UTAMA: Gabungkan secara presisi agar field enrollments_count tidak tergilas
           const updatedUser = {
             ...currentUser,
             ...backendUser,
             ...data,
           };
-
-          // 🔒 AMANKAN AVATAR SAAT UPDATE: Pastikan path avatar baru tidak hilang tergilas objek kosong backend
           if (data.avatar) {
             updatedUser.avatar = data.avatar;
           }
