@@ -1,5 +1,10 @@
-<ion-content>
+<ion-content [fullscreen]="true">
+  <!-- Bagian Spanduk Biru Atas -->
   <div class="auth-top-banner">
+    <!-- Gelembung Dekoratif -->
+    <div class="banner-bubble bubble-1"></div>
+    <div class="banner-bubble bubble-2"></div>
+
     <div class="header-text-group">
       <div class="title-row">
         <h1>Masuk</h1>
@@ -14,7 +19,9 @@
     </div>
   </div>
 
+  <!-- Bagian Form Input Utama -->
   <div class="auth-form-body" [formGroup]="loginForm">
+    <!-- Input Alamat Email -->
     <span class="input-label-flat">Alamat Email Siswa</span>
     <ion-item lines="none" class="auth-input-flat">
       <ion-icon name="mail-outline" slot="start"></ion-icon>
@@ -30,24 +37,16 @@
         *ngIf="loginForm.get('email')?.value && !loginForm.get('email')?.errors?.['email']"
       ></ion-icon>
     </ion-item>
-
-    <div
-      class="quick-tags-smp"
-      *ngIf="loginForm.get('email')?.value && !loginForm.get('email')?.value.includes('@')"
-    >
-      <span
-        (click)="loginForm.get('email')?.setValue(loginForm.get('email')?.value + '@gmail.com')"
-        >+ @gmail.com</span
-      >
+    
+    <div class="quick-tags-smp" *ngIf="loginForm.get('email')?.value && !loginForm.get('email')?.value.includes('@')">
+      <span (click)="loginForm.get('email')?.setValue(loginForm.get('email')?.value + '@gmail.com')">+ @gmail.com</span>
     </div>
 
-    <p
-      class="error-text-santai"
-      *ngIf="loginForm.get('email')?.value && loginForm.get('email')?.errors?.['email']"
-    >
+    <p class="error-text-santai" *ngIf="loginForm.get('email')?.value && loginForm.get('email')?.errors?.['email']">
       Oops! Format email kamu belum benar nih, cek lagi ya ✍️
     </p>
 
+    <!-- Input Kata Sandi -->
     <span class="input-label-flat">Kata Sandi</span>
     <ion-item lines="none" class="auth-input-flat">
       <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
@@ -64,37 +63,24 @@
       ></ion-icon>
     </ion-item>
 
-    <p
-      class="error-text-santai"
-      *ngIf="loginForm.get('password')?.value && loginForm.get('password')?.value.length < 6"
-    >
-      Kata sandi minimal 6 karakter ya, yuk dilengkapin! 🔑
+    <!-- Pesan Validasi Password (Disederhanakan) -->
+    <p class="error-text-santai" *ngIf="loginForm.get('password')?.value && loginForm.get('password')?.value.length < 8">
+      Kata sandi minimal 8 karakter ya, yuk dilengkapin! 🔑
     </p>
 
+    <!-- Opsi Remember Me dan Lupa Password -->
     <div class="form-options-row">
-      <ion-checkbox mode="md" justify="start" class="remember-chk"
-        >Ingat saya</ion-checkbox
-      >
-      <span class="forgot-btn" (click)="goToForgotPassword()"
-        >Lupa kata sandi?</span
-      >
+      <ion-checkbox mode="md" justify="start" class="remember-chk">Ingat saya</ion-checkbox>
+      <span class="forgot-btn" (click)="goToForgotPassword()">Lupa kata sandi?</span>
     </div>
 
-    <ion-button
-      expand="block"
-      class="auth-btn-blue"
-      (click)="onLogin()"
-      [disabled]="isLoading"
-    >
-      <ion-spinner
-        name="crescent"
-        *ngIf="isLoading"
-        style="--color: #ffffff; width: 22px; height: 22px"
-      ></ion-spinner>
-      <span *ngIf="!isLoading"
-        >Mulai Belajar
-        <ion-icon name="arrow-forward-outline" class="btn-arrow"></ion-icon
-      ></span>
+    <!-- Tombol Utama -->
+    <ion-button expand="block" class="auth-btn-blue" (click)="onLogin()" [disabled]="isLoading">
+      <ion-spinner name="crescent" *ngIf="isLoading" style="--color: #ffffff; width: 22px; height: 22px"></ion-spinner>
+      <span *ngIf="!isLoading">
+        Mulai Belajar
+        <ion-icon name="arrow-forward-outline" class="btn-arrow"></ion-icon>
+      </span>
     </ion-button>
   </div>
 </ion-content>

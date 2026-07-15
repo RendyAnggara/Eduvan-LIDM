@@ -20,6 +20,7 @@
     <p>Memeriksa Transkip Nilai resmi kamu...</p>
   </div>
 
+  <!-- KONTEN UTAMA SERTIFIKAT -->
   <div
     *ngIf="!isLoading && listSertifikat.length > 0"
     class="certificate-container"
@@ -27,10 +28,11 @@
     <div class="cert-summary">
       <p>
         Selamat! 🎉 Berikut adalah daftar Transkip Nilai resmi kamu yang sudah
-        diverifikasi oleh <span>Admin EduVan</span>:
+        diverifikasi oleh <span>Admin EduLearn</span>:
       </p>
     </div>
 
+    <!-- KARTU SERTIFIKAT BULAT LEMBUT -->
     <div class="certificate-card" *ngFor="let cert of listSertifikat">
       <div class="cert-badge">
         <ion-icon name="ribbon"></ion-icon>
@@ -45,6 +47,7 @@
         </p>
       </div>
 
+      <!-- TOMBOL UNDUH KONSISTEN BENTUK CHUBBY -->
       <div class="cert-action">
         <button
           class="btn-download"

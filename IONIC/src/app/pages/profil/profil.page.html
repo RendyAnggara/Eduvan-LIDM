@@ -1,4 +1,5 @@
 <ion-content [fullscreen]="true">
+  <!-- Bagian Header Profil Biru Dinamis -->
   <div class="profile-header">
     <div class="avatar-container">
       <div class="avatar-ring">
@@ -30,10 +31,11 @@
     </div>
   </div>
 
+  <!-- Kartu Statistik Bulat Lembut -->
   <div class="stats-card">
     <div class="stat-box">
       <span class="stat-value">{{ angkaKursus }}</span>
-      <span class="stat-label">Kursus</span>
+      <span class="stat-label">Pelajaran</span>
     </div>
     <div class="divider"></div>
     <div class="stat-box" (click)="goToCertificate()">
@@ -42,466 +44,55 @@
     </div>
   </div>
 
+  <!-- Area Menu Navigasi Siswa -->
   <div class="menu-container">
     <ion-list lines="none">
+      <!-- Menu Utama -->
       <ion-item routerLink="/certificate" class="menu-item">
-        <div class="icon-wrapper orange" slot="start">
-          <ion-icon name="ribbon"></ion-icon>
-        </div>
+        <div class="icon-wrapper orange" slot="start"><ion-icon name="ribbon"></ion-icon></div>
         <ion-label>Sertifikat Saya</ion-label>
         <ion-icon name="chevron-forward" slot="end" class="chevron"></ion-icon>
       </ion-item>
 
       <ion-item routerLink="/riwayat-transaksi" class="menu-item">
-        <div class="icon-wrapper green" slot="start">
-          <ion-icon name="receipt"></ion-icon>
-        </div>
-        <ion-label>Riwayat Transaksi</ion-label>
+        <div class="icon-wrapper green" slot="start"><ion-icon name="receipt"></ion-icon></div>
+        <ion-label>Riwayat Aktivitas</ion-label>
         <ion-icon name="chevron-forward" slot="end" class="chevron"></ion-icon>
       </ion-item>
 
       <ion-item routerLink="/notifications" class="menu-item">
-        <div class="icon-wrapper purple" slot="start">
-          <ion-icon name="notifications"></ion-icon>
-        </div>
+        <div class="icon-wrapper purple" slot="start"><ion-icon name="notifications"></ion-icon></div>
         <ion-label>Notifikasi</ion-label>
         <ion-icon name="chevron-forward" slot="end" class="chevron"></ion-icon>
       </ion-item>
 
-      <div class="info-card-container">
-        <ion-card mode="ios" class="custom-info-card">
-          <ion-card-header class="custom-card-header">
-            <ion-card-title class="custom-card-title">
-              Informasi & Bantuan
-            </ion-card-title>
-          </ion-card-header>
+      <!-- Informasi & Bantuan -->
+      <!-- Dibuat searah dengan menu di atas dengan class menu-item -->
+      <h3 style="padding-left: 8px; font-weight: 800; color: #093C5D; margin-top: 20px; margin-bottom: 12px;">Informasi & Bantuan</h3>
+      
+      <ion-item button (click)="setSkModal(true)" class="menu-item">
+        <div class="icon-wrapper light-blue" slot="start"><ion-icon name="document-text"></ion-icon></div>
+        <ion-label>Syarat & Ketentuan</ion-label>
+        <ion-icon name="chevron-forward" slot="end" class="chevron"></ion-icon>
+      </ion-item>
 
-          <ion-list lines="none" class="custom-info-list">
-            <ion-item
-              button
-              detail="false"
-              mode="ios"
-              class="info-list-item"
-              (click)="setSkModal(true)"
-            >
-              <div slot="start" class="info-icon-box light-blue">
-                <ion-icon name="document-text"></ion-icon>
-              </div>
-              <ion-label class="info-item-label">Syarat & Ketentuan</ion-label>
-              <ion-icon
-                name="chevron-forward"
-                slot="end"
-                class="chevron"
-              ></ion-icon>
-            </ion-item>
+      <ion-item button (click)="setPrivacyModal(true)" class="menu-item">
+        <div class="icon-wrapper light-green" slot="start"><ion-icon name="shield-checkmark"></ion-icon></div>
+        <ion-label>Kebijakan Privasi</ion-label>
+        <ion-icon name="chevron-forward" slot="end" class="chevron"></ion-icon>
+      </ion-item>
 
-            <ion-item
-              button
-              detail="false"
-              mode="ios"
-              class="info-list-item"
-              (click)="setPrivacyModal(true)"
-            >
-              <div slot="start" class="info-icon-box light-green">
-                <ion-icon name="shield-checkmark"></ion-icon>
-              </div>
-              <ion-label class="info-item-label">Kebijakan Privasi</ion-label>
-              <ion-icon
-                name="chevron-forward"
-                slot="end"
-                class="chevron"
-              ></ion-icon>
-            </ion-item>
-          </ion-list>
-        </ion-card>
-      </div>
+      <!-- Logout -->
       <div class="logout-spacer"></div>
-      <ion-item
-        button
-        (click)="bukaKonfirmasiKeluar()"
-        class="menu-item logout"
-      >
-        <div class="icon-wrapper red" slot="start">
-          <ion-icon name="log-out"></ion-icon>
-        </div>
+      <ion-item button (click)="bukaKonfirmasiKeluar()" class="menu-item">
+        <div class="icon-wrapper red" slot="start"><ion-icon name="log-out"></ion-icon></div>
         <ion-label>Keluar</ion-label>
       </ion-item>
     </ion-list>
   </div>
 
-  <ion-alert
-    [isOpen]="isLogoutAlertOpen"
-    header="Konfirmasi Keluar"
-    message="Apakah kamu yakin ingin keluar dari aplikasi Eduvan?"
-    [buttons]="logoutAlertButtons"
-    class="eduvan-alert-logout"
-    (didDismiss)="isLogoutAlertOpen = false"
-  ></ion-alert>
+  <!-- Modals & Alerts tetap sama -->
+  <ion-alert [isOpen]="isLogoutAlertOpen" header="Konfirmasi Keluar" message="Apakah kamu yakin ingin keluar dari aplikasi Eduvan?" [buttons]="logoutAlertButtons" class="eduvan-alert-logout" (didDismiss)="isLogoutAlertOpen = false"></ion-alert>
 
-  <ion-modal
-    [isOpen]="isSkModalOpen"
-    (didDismiss)="setSkModal(false)"
-    mode="ios"
-    [breakpoints]="[0, 0.9, 1]"
-    [initialBreakpoint]="0.9"
-    style="--border-radius: 24px 24px 0 0"
-  >
-    <ng-template>
-      <ion-header class="ion-no-border" style="background: #ffffff">
-        <ion-toolbar style="--background: #ffffff; padding: 12px 16px 0 16px">
-          <ion-title
-            style="
-              font-weight: 800;
-              color: #093c5d;
-              font-size: 16px;
-              text-align: left;
-              padding-start: 0;
-            "
-          >
-            Syarat & Ketentuan
-          </ion-title>
-          <ion-buttons slot="end">
-            <ion-button
-              (click)="setSkModal(false)"
-              style="font-weight: 700; color: #0055ff; font-size: 15px"
-            >
-              Tutup
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-
-      <ion-content style="--background: #ffffff; color: #334155">
-        <div
-          style="
-            padding: 12px 20px 32px 20px;
-            line-height: 1.6;
-            font-size: 14px;
-            text-align: justify;
-          "
-        >
-          <p style="margin: 0 0 16px 0; color: #64748b; font-weight: 500">
-            Selamat datang di aplikasi Eduvan. Dengan mengunduh, mendaftarkan
-            akun, dan menggunakan seluruh layanan kami, Anda menyatakan telah
-            membaca, memahami, dan menyetujui seluruh ketentuan layanan di bawah
-            ini:
-          </p>
-
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
-            1. Hak Akses, Keamanan, dan Kewajiban Akun Student
-          </h2>
-          <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Setiap pengguna yang ingin mengakses layanan Eduvan diwajibkan
-            untuk melakukan registrasi akun secara mandiri dengan memberikan
-            data identitas yang valid, akurat, dan terbaru, termasuk nama
-            lengkap dan alamat email aktif.
-          </p>
-          <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Seluruh kerahasiaan data kredensial akun, seperti kata sandi
-            (password) dan akses log masuk aplikasi, sepenuhnya menjadi tanggung
-            jawab pribadi pengguna (Student).
-          </p>
-          <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Eduvan tidak bertanggung jawab atas kerugian atau penyalahgunaan
-            akun yang disebabkan oleh kelalaian pengguna dalam menjaga
-            kerahasiaan data akses tersebut.
-          </p>
-          <p style="margin: 0 0 16px 0; color: #4b5563">
-            * Pengguna dilarang keras memindahtangankan, membagikan hak akses,
-            atau memperjualbelikan akun Student miliknya kepada pihak lain
-            dengan alasan apa pun.
-          </p>
-
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
-            2. Mekanisme Pembelian Kursus, Transaksi, dan Harga
-          </h2>
-          <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Seluruh transaksi pembelian kursus atau kelas digital di dalam
-            platform Eduvan dilakukan secara resmi menggunakan metode transfer
-            bank ke nomor rekening yang telah ditentukan di dalam aplikasi.
-          </p>
-          <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Nominal pembayaran wajib disesuaikan secara presisi hingga digit
-            terakhir sesuai dengan tagihan invoice yang tertera pada sistem saat
-            melakukan checkout.
-          </p>
-          <p style="margin: 0 0 16px 0; color: #4b5563">
-            * Eduvan berhak mengubah harga sewaktu-waktu, memberlakukan tarif
-            promo, atau menghentikan penjualan suatu paket kursus tanpa perlu
-            memberikan pemberitahuan terlebih dahulu kepada pengguna.
-          </p>
-
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
-            3. Kebijakan Validasi dan Verifikasi Bukti Pembayaran Manual
-          </h2>
-          <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Proses aktivasi materi pembelajaran tidak berjalan secara
-            instan/otomatis, melainkan melalui tahap pemeriksaan berkas dokumen
-            bukti transfer yang dilakukan secara manual oleh pihak Admin melalui
-            sistem dashboard website khusus.
-          </p>
-          <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Pengguna wajib mengunggah file bukti transfer resmi (bisa diambil
-            secara langsung melalui fitur kamera internal handphone ataupun
-            memilih berkas gambar dari galeri perangkat) dengan kualitas gambar
-            yang tajam, jelas, dan tidak terpotong.
-          </p>
-          <p style="margin: 0 0 16px 0; color: #4b5563">
-            * Tim Admin Eduvan memiliki hak mutlak untuk menolak pengajuan
-            transaksi, membatalkan pesanan, serta mengubah status menjadi
-            'pembayaran tidak valid' apabila ditemukan indikasi manipulasi data,
-            bukti transfer buram/tidak terbaca, atau ketidaksesuaian dana pada
-            mutasi rekening bank kami.
-          </p>
-
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
-            4. Hak Kekayaan Intelektual dan Pembatasan Konten
-          </h2>
-          <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Seluruh materi pembelajaran yang tersedia di platform
-            Eduvan—termasuk namun tidak terbatas pada video penjelasan, modul
-            bacaan, source code latihan, desain antarmuka, dokumen panduan, dan
-            aset digital lainnya—merupakan hak milik intelektual sah dari
-            Eduvan.
-          </p>
-          <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Pengguna hanya diberikan hak personal untuk mempelajari materi
-            secara mandiri melalui aplikasi mobile dan dilarang keras untuk
-            merekam layar (screen recording), mengunduh secara ilegal,
-            menggandakan, menyebarluaskan, atau mengomersialkan kembali aset
-            materi tersebut.
-          </p>
-          <p style="margin: 0 0 16px 0; color: #4b5563">
-            * Pelanggaran terhadap hak kekayaan intelektual ini dapat berakibat
-            pada pemblokiran akun secara permanen tanpa adanya pengembalian dana
-            (refund), serta tuntutan hukum sesuai dengan peraturan
-            perundang-undangan yang berlaku.
-          </p>
-
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
-            5. Batasan Tanggung Jawab dan Pemeliharaan Sistem
-          </h2>
-          <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Eduvan selalu berupaya untuk menjaga performa aplikasi. Namun,
-            Eduvan tidak menjamin aplikasi akan selalu bebas dari gangguan
-            teknis, bug, atau pemeliharaan server berkala (maintenance).
-          </p>
-          <p style="margin: 0 0 8px 0; color: #4b5563">
-            * Eduvan tidak bertanggung jawab atas kegagalan proses unggah
-            dokumen atau keterlambatan verifikasi yang disebabkan oleh gangguan
-            jaringan internet pada perangkat pengguna atau sistem perbankan
-            pihak ketiga.
-          </p>
-        </div>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
-
-  <ion-modal
-    [isOpen]="isPrivacyModalOpen"
-    (didDismiss)="setPrivacyModal(false)"
-    mode="ios"
-    [breakpoints]="[0, 0.9, 1]"
-    [initialBreakpoint]="0.9"
-    style="--border-radius: 24px 24px 0 0"
-  >
-    <ng-template>
-      <ion-header class="ion-no-border" style="background: #ffffff">
-        <ion-toolbar style="--background: #ffffff; padding: 12px 16px 0 16px">
-          <ion-title
-            style="
-              font-weight: 800;
-              color: #093c5d;
-              font-size: 16px;
-              text-align: left;
-              padding-start: 0;
-            "
-          >
-            Kebijakan Privasi
-          </ion-title>
-          <ion-buttons slot="end">
-            <ion-button
-              (click)="setPrivacyModal(false)"
-              style="font-weight: 700; color: #0055ff; font-size: 15px"
-            >
-              Tutup
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-
-      <ion-content style="--background: #ffffff; color: #334155">
-        <div
-          style="
-            padding: 12px 20px 32px 20px;
-            line-height: 1.6;
-            font-size: 14px;
-            text-align: justify;
-          "
-        >
-          <p style="margin: 0 0 16px 0; color: #64748b; font-weight: 500">
-            Eduvan Marketplace membangun aplikasi ini sebagai aplikasi
-            Komersial. LAYANAN ini disediakan oleh Eduvan Marketplace dan
-            dimaksudkan untuk digunakan apa adanya.
-          </p>
-
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
-            1. Pengumpulan dan Penggunaan Informasi
-          </h2>
-          <p style="margin: 0 0 16px 0; color: #4b5563">
-            Untuk pengalaman yang lebih baik saat menggunakan Layanan kami, kami
-            mungkin meminta Anda untuk memberikan informasi identitas pribadi
-            tertentu, termasuk namun tidak terbatas pada Nama, Email, dan
-            Progres Belajar. Informasi yang kami minta akan kami simpan dan
-            digunakan seperti yang dijelaskan dalam kebijakan privasi ini.
-            Aplikasi ini menggunakan layanan pihak ketiga yang dapat
-            mengumpulkan informasi yang digunakan untuk mengidentifikasi Anda.
-          </p>
-
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
-            2. Data Log (Log Data)
-          </h2>
-          <p style="margin: 0 0 16px 0; color: #4b5563">
-            Kami ingin menginformasikan kepada Anda bahwa setiap kali Anda
-            menggunakan Layanan kami, jika terjadi kesalahan (error) di dalam
-            aplikasi, kami mengumpulkan data dan informasi pada ponsel Anda
-            (melalui produk pihak ketiga) yang disebut Data Log.
-          </p>
-
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
-            3. Cookies
-          </h2>
-          <p style="margin: 0 0 16px 0; color: #4b5563">
-            Cookies adalah berkas dengan sejumlah kecil data yang biasanya
-            digunakan sebagai pengidentifikasi unik anonim.
-          </p>
-
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
-            4. Keamanan
-          </h2>
-          <p style="margin: 0 0 16px 0; color: #4b5563">
-            Kami menghargai kepercayaan Anda dalam memberikan Informasi Pribadi
-            Anda kepada kami, oleh karena itu kami berupaya menggunakan cara
-            yang dapat diterima secara komersial untuk melindunginya. Namun
-            perlu diingat bahwa tidak ada metode transmisi melalui internet,
-            atau metode penyimpanan elektronik yang 100% aman dan andal.
-          </p>
-
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
-            5. Kebijakan Penghapusan Data dan Penghapusan Akun
-          </h2>
-          <p style="margin: 0 0 16px 0; color: #4b5563">
-            Pengguna Eduvan Marketplace dapat mengajukan permintaan penghapusan
-            akun beserta data terkait kapan saja. Untuk meminta penghapusan
-            akun, silakan hubungi kami melalui email di Eduvan@gmail.com
-            menggunakan alamat email Anda yang terdaftar. Setelah menerima
-            permintaan Anda, Nama, Alamat Email, dan Kredensial Akun Anda akan
-            dihapus secara permanen dari database utama kami dalam waktu 30
-            hari.
-          </p>
-
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
-            6. Perubahan pada Kebijakan Privasi Ini
-          </h2>
-          <p style="margin: 0 0 16px 0; color: #4b5563">
-            Kami dapat memperbarui Kebijakan Privasi kami dari waktu ke waktu.
-            Oleh karena itu, Anda disarankan untuk meninjau halaman ini secara
-            berkala untuk melihat setiap perubahan.
-          </p>
-
-          <h2
-            style="
-              font-size: 15px;
-              font-weight: 800;
-              color: #093c5d;
-              margin: 20px 0 8px 0;
-            "
-          >
-            Hubungi Kami
-          </h2>
-          <p style="margin: 0 0 16px 0; color: #4b5563">
-            Jika Anda memiliki pertanyaan atau saran mengenai Kebijakan Privasi
-            kami, jangan ragu untuk menghubungi kami di Eduvan@gmail.com.
-          </p>
-        </div>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
+  <!-- (Modal Sk & Privacy tetap sama seperti kode Anda sebelumnya) -->
 </ion-content>

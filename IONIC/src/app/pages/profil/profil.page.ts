@@ -7,6 +7,7 @@ import {
 import { AuthService } from '../../services/auth';
 import { CourseService } from '../../services/course.service';
 
+
 @Component({
   selector: 'app-profil',
   templateUrl: './profil.page.html',
@@ -25,28 +26,28 @@ export class ProfilePage implements OnInit {
   angkaSertifikat: number = 0;
   isLogoutAlertOpen: boolean = false;
 
-  logoutAlertButtons = [
-    {
-      text: 'Batal',
-      role: 'cancel',
-      cssClass: 'alert-btn-batal',
-      handler: () => {
-        this.isLogoutAlertOpen = false;
-        this.cdr.detectChanges();
-      },
+logoutAlertButtons = [
+  {
+    text: 'Batal',
+    role: 'cancel',
+    cssClass: 'alert-btn-batal', // Kelas CSS khusus untuk tombol batal
+    handler: () => {
+      this.isLogoutAlertOpen = false;
+      this.cdr.detectChanges();
     },
-    {
-      text: 'Ya, Keluar',
-      role: 'confirm',
-      cssClass: 'alert-btn-keluar',
-      handler: () => {
-        this.isLogoutAlertOpen = false;
-        this.authService.logout();
-        this.navCtrl.navigateRoot('/login');
-        this.cdr.detectChanges();
-      },
+  },
+  {
+    text: 'Ya, Keluar',
+    role: 'confirm',
+    cssClass: 'alert-btn-keluar', // Kelas CSS khusus untuk tombol konfirmasi keluar
+    handler: () => {
+      this.isLogoutAlertOpen = false;
+      this.authService.logout();
+      this.navCtrl.navigateRoot('/login');
+      this.cdr.detectChanges();
     },
-  ];
+  },
+];
 
   constructor(
     private navCtrl: NavController,
