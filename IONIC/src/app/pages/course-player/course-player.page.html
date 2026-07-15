@@ -15,6 +15,7 @@
 </ion-header>
 
 <ion-content>
+  <!-- Area Video -->
   <div class="video-container">
     <iframe
       *ngIf="safeVideoUrl"
@@ -31,6 +32,7 @@
     </div>
   </div>
 
+  <!-- Detail Kursus -->
   <div class="content-wrapper">
     <h2>{{ courseDetail?.title || 'Memuat Nama Kursus...' }}</h2>
     <p class="instructor">
@@ -51,6 +53,7 @@
       <ion-list lines="none" *ngIf="!loading && contents.length > 0">
         <ion-item
           button
+          detail="false"
           *ngFor="let materi of contents; let i = index"
           (click)="putarMateri(materi)"
           [class.item-active]="activeContentId === materi.id"
@@ -75,6 +78,7 @@
       </ion-list>
     </div>
 
+    <!-- Tombol Aksi -->
     <ion-button
       expand="block"
       [class.btn-action-cancel]="isCompleted"

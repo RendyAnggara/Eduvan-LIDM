@@ -208,7 +208,7 @@ ion-content {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: 14px;
+      margin-right: 14px; 
       font-size: 1.2rem;
 
       &.orange { background: #fff7ed; color: #ea580c; }
@@ -236,8 +236,77 @@ ion-content {
   height: 0px; 
 }
 
+// ... (kode sebelumnya tetap sama) ...
+
 ion-list {
   background: transparent;
   margin: 0 !important;
   padding: 0 !important;
+} // Tutup kurung ini untuk mengakhiri ion-list
+
+/* ==========================================================================
+   4. INFORMASI & BANTUAN CARD
+   ========================================================================== */
+.info-section {
+  padding: 0 24px 20px 24px;
+
+.info-card {
+    background: #ffffff; // Pastikan sama dengan menu di atas
+    border-radius: 20px;  // Ubah dari 24px ke 20px agar sama dengan menu item
+    border: 1.5px solid #e2e8f0; // Border yang sama
+    box-shadow: 0 8px 16px rgba(9, 60, 93, 0.02); // Sesuaikan shadow agar tidak terlalu tebal
+    padding: 16px; // Sesuaikan padding
+    margin-bottom: 12px; // Tambahkan margin bawah agar konsisten dengan jarak antar menu
+
+    h3 {
+      font-size: 14.5px; // Samakan ukuran font dengan label menu
+      font-weight: 700;
+      color: #093C5D;
+      margin: 0 0 12px 0;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: none; // Hapus garis pembatas jika ingin tampilan bersih seperti menu item
+      
+      // Tambahkan efek hover/active agar sama dengan menu di atas
+      &:active {
+        opacity: 0.7;
+      }
+
+      ion-icon { 
+        font-size: 1.2rem; // Samakan ukuran ikon
+        color: #093C5D; 
+        margin-right: 14px; 
+      }
+      
+      span { 
+        font-weight: 700; // Samakan font-weight
+        color: #093C5D; 
+        flex: 1; 
+        font-size: 14.5px; // Samakan ukuran teks
+      }
+      
+      .chevron { 
+        color: #94a3b8; 
+        font-size: 0.95rem; 
+      }
+    }
+  }
+}
+
+.logout-card {
+  padding: 0 24px 30px 24px;
+  
+  ion-button {
+    --background: #fff5f5;
+    --color: #b91c1c;
+    --border-radius: 20px;
+    height: 54px;
+    font-weight: 700;
+    box-shadow: none;
+    text-transform: none;
+  }
 }

@@ -1,9 +1,5 @@
 $navy-color: #093c5d;
-<<<<<<< HEAD
-$navy-light-surface: #f0f7ff; // Warna biru pastel lembut untuk wadah ikon
-=======
 $navy-light-surface: #f0f7ff;
->>>>>>> main
 $navy-border-tint: #e2e8f0;
 
 * {
@@ -12,18 +8,12 @@ $navy-border-tint: #e2e8f0;
 
 ion-content {
   // Menggunakan gradasi latar belakang super lembut agar konsisten dengan beranda
-  --background: linear-gradient(180deg, #F4F7FA 0%, #E9EFF5 100%);
+  --background: linear-gradient(180deg, #f4f7fa 0%, #e9eff5 100%);
 }
 
-// 🌊 SPANDUK BIRU GRADASI ATAS MODERN (SELARAS DENGAN BANNER LOGIN & BERANDA)
-  --background: linear-gradient(180deg, #F4F7FA 0%, #E9EFF5 100%);
-}
-
-
->>>>>>> main
 .header-navy {
-  background: linear-gradient(180deg, #0022cc 0%, #0055ff 100%) !important; 
-  height: auto !important; 
+  background: linear-gradient(180deg, #0022cc 0%, #0055ff 100%) !important;
+  height: auto !important;
   padding: calc(40px + env(safe-area-inset-top, 0px)) 20px 24px 20px !important;
   border-bottom-left-radius: 36px;
   border-bottom-right-radius: 36px;
@@ -37,10 +27,6 @@ ion-content {
   position: relative;
   overflow: hidden;
 
-<<<<<<< HEAD
-  // Efek dekorasi lengkungan transparan tipis di background spanduk
-=======
->>>>>>> main
   &::before {
     content: '';
     position: absolute;
@@ -56,7 +42,7 @@ ion-content {
   ion-title {
     color: #ffffff;
     font-weight: 900;
-    font-size: 1.4rem; 
+    font-size: 1.4rem;
     letter-spacing: 0.3px;
     padding: 0;
     display: flex !important;
@@ -64,35 +50,23 @@ ion-content {
     align-items: center !important;
     text-align: center !important;
     width: 100% !important;
-    margin: 0 !important; 
+    margin: 0 !important;
     z-index: 5;
   }
 }
 
-<<<<<<< HEAD
-// KUSTOMISASI KONTROL SEGMEN (BULAT LEMBUT)
-=======
->>>>>>> main
 .segment-container {
   padding: 24px 20px 12px 20px;
 
   ion-segment {
     background: #e2e8f0;
-<<<<<<< HEAD
-    border-radius: 16px; // Mengubah sudut segmen dari 12px menjadi 16px membulat kasual
-=======
-    border-radius: 16px; 
->>>>>>> main
+    border-radius: 16px;
     padding: 4px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
 
     ion-segment-button {
       --background-checked: #ffffff;
-<<<<<<< HEAD
-      --color-checked: #0055ff; // Warna teks aktif diubah menjadi biru terang cerah
-=======
       --color-checked: #0055ff;
->>>>>>> main
       --color: #64748b;
       font-weight: 800;
       font-size: 13.5px;
@@ -110,19 +84,10 @@ ion-content {
   gap: 16px;
 }
 
-<<<<<<< HEAD
-// KARTU PREMIUM MODERN (BULAT TEBAL KASUAL)
-.premium-course-card {
-  background: #ffffff;
-  border: 1.5px solid $navy-border-tint;
-  border-radius: 24px; // Mengubah sudut kartu dari 20px menjadi 24px tebal lembut
-=======
-
 .premium-course-card {
   background: #ffffff;
   border: 1.5px solid $navy-border-tint;
   border-radius: 24px;
->>>>>>> main
   padding: 16px;
   box-shadow: 0 12px 24px rgba(9, 60, 93, 0.03);
   display: flex;
@@ -142,21 +107,12 @@ ion-content {
     gap: 14px;
     width: 100%;
 
-<<<<<<< HEAD
-    // Kotak Gambar Thumbnail Kelas
-=======
-
->>>>>>> main
     .img-category-box {
       width: 72px;
       height: 72px;
       background: $navy-light-surface;
       border: 1.5px solid #d0e3ff;
-<<<<<<< HEAD
-      border-radius: 18px; // Membulat tebal serasi
-=======
-      border-radius: 18px; 
->>>>>>> main
+      border-radius: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -166,11 +122,7 @@ ion-content {
       img {
         width: 100%;
         height: 100%;
-<<<<<<< HEAD
-        object-fit: cover; // Mengubah 'contain' menjadi 'cover' agar gambar penuh estetik
-=======
-        object-fit: cover; 
->>>>>>> main
+        object-fit: cover;
       }
     }
 
@@ -182,11 +134,7 @@ ion-content {
         font-size: 10px;
         font-weight: 800;
         text-transform: uppercase;
-<<<<<<< HEAD
-        color: #0055ff; // Warna label diubah menjadi biru terang
-=======
-        color: #0055ff; 
->>>>>>> main
+        color: #0055ff;
         letter-spacing: 0.6px;
         display: inline-block;
         margin-bottom: 4px;
@@ -202,10 +150,6 @@ ion-content {
     }
   }
 
-<<<<<<< HEAD
-  // Komponen Indikator Kemajuan Belajar
-=======
->>>>>>> main
   .card-progress-zone {
     display: flex;
     flex-direction: column;
@@ -222,23 +166,13 @@ ion-content {
     }
 
     .custom-progress {
-<<<<<<< HEAD
-      height: 8px; // Dipertebal sedikit agar mudah dipantau siswa
-      border-radius: 6px;
-      --progress-background: #0055ff; // Menggunakan warna progress bar biru terang
-=======
       height: 8px;
       border-radius: 6px;
-      --progress-background: #0055ff; 
->>>>>>> main
+      --progress-background: #0055ff;
       --background: #e2edf5;
     }
   }
 
-<<<<<<< HEAD
-  // Tombol Aksi Kaki Kartu
-=======
->>>>>>> main
   .card-action-footer {
     width: 100%;
     margin-top: 2px;
@@ -251,24 +185,13 @@ ion-content {
 
       ion-button {
         margin: 0;
-<<<<<<< HEAD
-        height: 44px; // Ditinggikan menjadi 44px agar lebih nyaman ditekan di ponsel
+        height: 44px;
         font-size: 13.5px;
         font-weight: 800;
-        --border-radius: 14px; // Sudut kelengkungan disamakan
+        --border-radius: 14px;
         --box-shadow: none;
       }
 
-      // Tombol Lanjut Belajar Bergradasi Biru
-=======
-        height: 44px; 
-        font-size: 13.5px;
-        font-weight: 800;
-        --border-radius: 14px; 
-        --box-shadow: none;
-      }
-
->>>>>>> main
       .btn-action-main {
         flex: 1.3;
         --background: linear-gradient(135deg, #0055ff 0%, #0033cc 100%);
@@ -277,10 +200,6 @@ ion-content {
         ion-icon { font-size: 16px; margin-left: 4px; }
       }
 
-<<<<<<< HEAD
-      // Tombol Kuis (Kondisional Gaya Warna)
-=======
->>>>>>> main
       .btn-action-sub {
         flex: 0.9;
         --border-width: 1.5px;
@@ -296,31 +215,19 @@ ion-content {
           --color: #ea580c;
           --background: #fff7ed;
         }
-
-        ion-icon { font-size: 15px; }
       }
 
-<<<<<<< HEAD
-      // Tombol Sertifikat Kelulusan
-=======
->>>>>>> main
       .btn-action-success {
         width: 100%;
         --border-width: 1.5px;
         --border-color: #16a34a;
         --color: #16a34a;
         --background: #f0fdf4;
-
-        ion-icon { font-size: 16px; margin-right: 4px; }
       }
     }
   }
 }
 
-<<<<<<< HEAD
-// WADAH KONDISI KOSONG / MEMUAT DATA
-=======
->>>>>>> main
 .empty-state-box {
   padding: 80px 24px;
   text-align: center;
