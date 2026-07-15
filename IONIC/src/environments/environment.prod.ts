@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://eduvan.rehalivan.com/api',
+  apiUrl: 'https://cement-drainpipe-dropbox.ngrok-free.dev/api',
 };

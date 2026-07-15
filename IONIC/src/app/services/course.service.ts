@@ -9,8 +9,11 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class CourseService {
-  private apiUrl = 'https://eduvan.rehalivan.com/api/courses';
-  private baseApiUrl = 'https://eduvan.rehalivan.com/api';
+  private apiUrl =
+    'https://cement-drainpipe-dropbox.ngrok-free.dev/api/courses';
+  private baseApiUrl = 'https://cement-drainpipe-dropbox.ngrok-free.dev/api';
+  // https://eduvan.rehalivan.com/api/courses
+  // https://eduvan.rehalivan.com/api
 
   public wishlistChanged$ = new BehaviorSubject<boolean>(false);
   public progressChanged$ = new BehaviorSubject<boolean>(false);
@@ -18,18 +21,9 @@ export class CourseService {
 
   constructor(private http: HttpClient) {}
   private dapatkanHeaderAutentikasi() {
+    // 🟢 PASTIKAN 'token' DISINI SAMA DENGAN NAMA KEY YANG DISIMPAN PAS LOGIN!
     let tokenUser = localStorage.getItem('token');
-    if (!tokenUser) {
-      const userDataRaw = localStorage.getItem('userData');
-      if (userDataRaw) {
-        try {
-          const parsedData = JSON.parse(userDataRaw);
-          tokenUser = parsedData.token || parsedData.access_token || null;
-        } catch (e) {
-          tokenUser = userDataRaw;
-        }
-      }
-    }
+
     if (tokenUser) {
       tokenUser = String(tokenUser).replace(/"/g, '').trim();
     }
@@ -38,11 +32,14 @@ export class CourseService {
       Authorization: `Bearer ${tokenUser}`,
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      'ngrok-skip-browser-warning': 'true', // 🟢 WAJIB ADA BIAR TIDAK CORS ERROR
     });
   }
 
   getCourses(): Observable<any> {
-    return this.http.get(this.apiUrl);
+    return this.http.get(this.apiUrl, {
+      headers: this.dapatkanHeaderAutentikasi(),
+    });
   }
 
   getCourseById(id: string): Observable<any> {
@@ -71,7 +68,7 @@ export class CourseService {
   saveProgress(
     courseId: number,
     contentId: number,
-    isCompleted?: number,
+    isCompleted?: number
   ): Observable<any> {
     const payload = {
       course_id: courseId,
@@ -83,7 +80,7 @@ export class CourseService {
       payload,
       {
         headers: this.dapatkanHeaderAutentikasi(),
-      },
+      }
     );
   }
 
@@ -152,7 +149,7 @@ export class CourseService {
       payload,
       {
         headers: this.dapatkanHeaderAutentikasi(),
-      },
+      }
     );
   }
   buyCourseManual(formData: FormData): Observable<any> {
@@ -192,14 +189,14 @@ export class CourseService {
         {},
         {
           headers: this.dapatkanHeaderAutentikasi(),
-        },
+        }
       )
       .pipe(
         tap((res: any) => {
           if (res && res.status === 'success') {
             this.notifChanged$.next(true);
           }
-        }),
+        })
       );
   }
 }

@@ -52,8 +52,8 @@
       <!-- 🟢 KATEGORI 1: Mata Pelajaran Wajib -->
       <div
         class="category-item"
-        (click)="selectCategory('Computer Science')"
-        [class.active]="selectedCategory === 'Computer Science'"
+        (click)="selectCategory('school')"
+        [class.active]="selectedCategory === 'Mata Pelajaran Wajib'"
       >
         <div class="cat-icon blue">
           <ion-icon name="book"></ion-icon>
@@ -62,8 +62,8 @@
       </div>
       <div
         class="category-item"
-        (click)="selectCategory('Microsoft Office')"
-        [class.active]="selectedCategory === 'Microsoft Office'"
+        (click)="selectCategory('premium')"
+        [class.active]="selectedCategory === 'Mata Pelajaran Pilihan'"
       >
         <div class="cat-icon green">
           <ion-icon name="medal"></ion-icon>
@@ -79,8 +79,7 @@
           Menghubungkan ke server EduLearn...
         </p>
       </div>
-
-      <div *ngIf="!selectedCategory || selectedCategory === 'Computer Science'">
+      <div *ngIf="!selectedCategory || selectedCategory === 'school'">
         <div class="section-title-box">
           <h4>Mata Pelajaran Wajib</h4>
         </div>
@@ -88,7 +87,7 @@
           <ng-container *ngFor="let kursus of kursusTersaring">
             <div
               class="premium-course-card-horizontal"
-              *ngIf="kursus.category === 'Computer Science'"
+              *ngIf="kursus.course_type === 'school'"
               (click)="goToDetail(kursus.id)"
               style="cursor: pointer"
             >
@@ -117,7 +116,7 @@
       </div>
 
       <div
-        *ngIf="!selectedCategory || selectedCategory === 'Microsoft Office'"
+        *ngIf="!selectedCategory || selectedCategory === 'premium'"
         style="margin-top: 24px"
       >
         <div class="section-title-box">
@@ -127,7 +126,7 @@
           <ng-container *ngFor="let kursus of kursusTersaring">
             <div
               class="premium-course-card-horizontal"
-              *ngIf="kursus.category === 'Microsoft Office'"
+              *ngIf="kursus.course_type === 'premium'"
               (click)="goToDetail(kursus.id)"
               style="cursor: pointer"
             >
