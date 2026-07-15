@@ -1,22 +1,26 @@
 <ion-header mode="ios" class="ion-no-border">
+  <!-- 🌊 SPANDUK BIRU GRADASI ATAS MODERN -->
   <div class="header-navy">
-    <ion-title>Kursus Saya</ion-title>
+    <ion-title>Pelajaranku</ion-title>
   </div>
 </ion-header>
 
 <ion-content>
+  <!-- KONTROL TAB SEGMEN DENGAN SUDUT BULAT -->
   <div class="segment-container">
     <ion-segment [(ngModel)]="activeTab" (ionChange)="filterData()" mode="ios">
-      <ion-segment-button value="ongoing">Kursus Saya</ion-segment-button>
+      <ion-segment-button value="ongoing">Pelajaranku</ion-segment-button>
       <ion-segment-button value="completed">Selesai</ion-segment-button>
     </ion-segment>
   </div>
 
+  <!-- STATE LOADING -->
   <div *ngIf="loading" class="empty-state-box">
     <ion-spinner name="crescent"></ion-spinner>
     <p>Memuat kelas kamu...</p>
   </div>
 
+  <!-- STATE KOSONG -->
   <div
     *ngIf="!loading && filteredEnrollments.length === 0"
     class="empty-state-box"
@@ -24,15 +28,17 @@
     <div class="empty-icon-circle">
       <ion-icon name="book-outline"></ion-icon>
     </div>
-    <p>Tidak ada kursus yang ditemukan di tab ini.</p>
+    <p>Tidak ada pelajaran yang ditemukan di tab ini.</p>
   </div>
 
+  <!-- WADAH UTAMA KARTU KURSUS -->
   <div
     class="course-container"
     *ngIf="!loading && filteredEnrollments.length > 0"
   >
     <div *ngFor="let item of filteredEnrollments" class="premium-course-card">
       <div class="card-main-body">
+        <!-- LOGO KATEGORI BULAT LEMBUT -->
         <div class="img-category-box">
           <img
             [src]="item.course?.image ? item.course.image : getCategoryLogo(item.course?.category)"
@@ -50,6 +56,7 @@
         </div>
       </div>
 
+      <!-- INDIKATOR PROGRESS BELAJAR PASTEL -->
       <div class="card-progress-zone">
         <div class="progress-meta-row">
           <span class="lbl-prog">Progress Belajar</span>
@@ -61,8 +68,10 @@
         ></ion-progress-bar>
       </div>
 
+      <!-- GRID TOMBOL AKSI DENGAN WARNA DINAMIS -->
       <div class="card-action-footer">
         <div class="action-grid-buttons" *ngIf="activeTab === 'ongoing'">
+          <!-- TOMBOL LANJUT BELAJAR -->
           <ion-button
             class="btn-action-main"
             expand="block"
@@ -93,6 +102,7 @@
           </ion-button>
         </div>
 
+        <!-- TOMBOL TAB SELESAI -->
         <div class="action-grid-buttons" *ngIf="activeTab === 'completed'">
           <ion-button
             class="btn-action-success"

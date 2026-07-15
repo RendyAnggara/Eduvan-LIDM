@@ -13,20 +13,15 @@
     </div>
   </div>
 </ion-header>
+
 <ion-content>
+  <!-- Area Video -->
   <div class="video-container">
     <iframe
       *ngIf="safeVideoUrl"
       [src]="safeVideoUrl"
       frameborder="0"
-      allow="
-        accelerometer;
-        autoplay;
-        clipboard-write;
-        encrypted-media;
-        gyroscope;
-        picture-in-picture;
-      "
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       allowfullscreen
     >
     </iframe>
@@ -37,11 +32,13 @@
     </div>
   </div>
 
+  <!-- Detail Kursus -->
   <div class="content-wrapper">
     <h2>{{ courseDetail?.title || 'Memuat Nama Kursus...' }}</h2>
     <p class="instructor">
       Oleh: {{ courseDetail?.instructor || 'EduVan Instructor' }}
     </p>
+
     <div class="curriculum-section">
       <h3>Kurikulum</h3>
 
@@ -49,42 +46,39 @@
         <ion-spinner name="crescent"></ion-spinner>
       </div>
 
-      <p
-        *ngIf="!loading && contents.length === 0"
-        class="empty-curriculum-text"
-      >
+      <p *ngIf="!loading && contents.length === 0" class="empty-curriculum-text">
         Belum ada materi video yang diunggah untuk kelas ini.
       </p>
 
       <ion-list lines="none" *ngIf="!loading && contents.length > 0">
-        <div #aktif style="display: contents">
-          <ion-item
-            button
-            *ngFor="let materi of contents; let i = index"
-            (click)="putarMateri(materi); aktif.className = i.toString()"
-            [class.item-active]="aktif.className === i.toString()"
+        <ion-item
+          button
+          detail="false"
+          *ngFor="let materi of contents; let i = index"
+          (click)="putarMateri(materi)"
+          [class.item-active]="activeContentId === materi.id"
+        >
+          <ion-icon
+            slot="start"
+            [name]="materi.is_completed === 1 ? 'checkmark-circle' : 'play-circle'"
+            [class.completed-icon]="materi.is_completed === 1"
+            [class.uncompleted-icon]="materi.is_completed !== 1"
           >
-            <ion-icon
-              slot="start"
-              [name]="materi.is_completed === 1 ? 'checkmark-circle' : 'play-circle'"
-              [class.completed-icon]="materi.is_completed === 1"
-              [class.uncompleted-icon]="materi.is_completed !== 1"
-            >
-            </ion-icon>
+          </ion-icon>
 
-            <ion-label>
-              <h2
-                [style.color]="materi.is_completed === 1 ? '#16a34a' : '#093c5d'"
-                [style.font-weight]="materi.is_completed === 1 || aktif.className === i.toString() ? '800' : '600'"
-              >
-                {{ i + 1 }}. {{ materi.title }}
-              </h2>
-            </ion-label>
-          </ion-item>
-        </div>
+          <ion-label>
+            <h2
+              [style.color]="materi.is_completed === 1 ? '#16a34a' : '#093c5d'"
+              [style.font-weight]="materi.is_completed === 1 || activeContentId === materi.id ? '800' : '600'"
+            >
+              {{ i + 1 }}. {{ materi.title }}
+            </h2>
+          </ion-label>
+        </ion-item>
       </ion-list>
     </div>
 
+    <!-- Tombol Aksi -->
     <ion-button
       expand="block"
       [class.btn-action-cancel]="isCompleted"
@@ -92,11 +86,7 @@
       (click)="markAsComplete()"
     >
       {{ isCompleted ? 'Batalkan Selesai 🔄' : 'Tandai Selesai' }}
-      <ion-icon
-        name="checkmark-done-outline"
-        slot="end"
-        *ngIf="!isCompleted"
-      ></ion-icon>
+      <ion-icon name="checkmark-done-outline" slot="end" *ngIf="!isCompleted"></ion-icon>
     </ion-button>
   </div>
 </ion-content>

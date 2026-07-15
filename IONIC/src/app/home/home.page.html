@@ -43,12 +43,13 @@
       <div class="welcome-card-inner">
         <div class="text-group">
           <h2>Selamat Datang, {{ namaUser }}!</h2>
-          <p>Mau belajar skill apa hari ini?</p>
+          <p>Mau belajar pelajaran apa hari ini?</p>
         </div>
       </div>
     </div>
 
     <div class="category-list">
+      <!-- 🟢 KATEGORI 1: Mata Pelajaran Wajib -->
       <div
         class="category-item"
         (click)="selectCategory('Computer Science')"
@@ -75,9 +76,10 @@
       <div *ngIf="isLoading" style="text-align: center; padding: 30px">
         <ion-spinner name="crescent" color="primary"></ion-spinner>
         <p style="color: #94a3b8; font-size: 13px; margin-top: 8px">
-          Menghubungkan ke server EduVan...
+          Menghubungkan ke server EduLearn...
         </p>
       </div>
+
       <div *ngIf="!selectedCategory || selectedCategory === 'Computer Science'">
         <div class="section-title-box">
           <h4>Mata Pelajaran Wajib</h4>
@@ -113,6 +115,7 @@
           </ng-container>
         </div>
       </div>
+
       <div
         *ngIf="!selectedCategory || selectedCategory === 'Microsoft Office'"
         style="margin-top: 24px"
@@ -155,7 +158,7 @@
   </div>
   <div class="insight-section">
     <div class="insight-card-baru">
-      <div class="insight-badge">Tip Hari Ini ✨</div>
+      <div class="insight-badge">Tips Hari Ini ✨</div>
       <h3>Yuk, Tetap Semangat!</h3>
       <p>
         "Setiap ahli dulunya juga seorang pemula yang gak berhenti mencoba.

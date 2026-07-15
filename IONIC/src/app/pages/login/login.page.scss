@@ -1,149 +1,150 @@
 ion-content {
-  --background: #ffffff; 
+  --background: linear-gradient(180deg, #f8fafc 0%, #edf4f9 100%); 
+  font-family: 'Poppins', sans-serif !important;
 }
 
+/* 1. Spanduk Atas */
 .auth-top-banner {
-  background: linear-gradient(180deg, #0022cc 0%, #0055ff 100%); 
-  padding: 30px 24px 10px 24px;
-  border-bottom-left-radius: 40px;
-  border-bottom-right-radius: 40px;
+  background: linear-gradient(135deg, #0022cc 0%, #0055ff 100%); 
+  padding: calc(44px + env(safe-area-inset-top, 12px)) 24px 65px 24px; 
+  border-bottom-left-radius: 50% 30px; 
+  border-bottom-right-radius: 50% 30px;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 51, 204, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  &::before {
-    content: '';
+  .banner-bubble {
     position: absolute;
-    bottom: -20px;
-    left: -10%;
-    width: 120%;
-    height: 90px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.09);
     border-radius: 50%;
-    transform: rotate(-5deg);
+    
+    &.bubble-1 { width: 160px; height: 160px; top: -50px; right: -30px; }
+    &.bubble-2 { width: 100px; height: 100px; bottom: -10px; left: -20px; }
   }
 
   .header-text-group {
-    margin-top: 10px;
     position: relative;
     z-index: 5;
+    width: 100%;
+    text-align: center;
 
     .title-row {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
+      width: 100%;
 
       h1 {
         color: #ffffff;
         font-size: 38px;
-        font-weight: 800;
+        font-weight: 700;
         margin: 0;
-      }
-
-      .back-circle-btn {
-        background: #ffffff;
-        color: #0022cc;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        font-family: 'Poppins', sans-serif !important;
       }
     }
 
     .subtitle-text {
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 13px;
-      margin: 8px 0 0 0;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      margin: 10px 0 0 0; 
       font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: 0.2px;
+      font-family: 'Poppins', sans-serif !important;
     }
   }
 
-.illustration-box {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 25px;
-  position: relative;
-  z-index: 5;
+  .illustration-box {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    position: relative;
+    z-index: 5;
 
-  img {
-    max-height: 160px;
-    object-fit: contain;
-    filter: drop-shadow(0 8px 25px rgba(255, 255, 255, 0.8)); 
+    img {
+      max-height: 140px;
+      object-fit: contain;
+      border-radius: 50%;
+      background: #ffffff;
+      padding: 4px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+      border: 4px solid rgba(255, 255, 255, 0.3);
     }
   }
 }
 
+/* 2. Form Input */
 .auth-form-body {
-  padding: 24px;
-  background: #ffffff;
+  padding: 30px 24px;
+  background: transparent;
 
   .input-label-flat {
-    color: #1e5e8a;
-    font-size: 12px;
-    font-weight: 800;
-    margin-bottom: 8px;
+    color: #093C5D; 
+    font-size: 13.5px;
+    font-weight: 700; 
+    margin-bottom: 10px;
     display: block;
-    margin-top: 16px;
-    letter-spacing: 0.5px;
+    margin-top: 20px;
+    letter-spacing: 0.3px;
+    font-family: 'Poppins', sans-serif !important;
   }
 
   .auth-input-flat {
-    --background: #f0f7ff;
-    --border-radius: 16px;
-    --padding-start: 16px;
-    border: 1.5px solid #d0e3ff;
+    --background: #ffffff;
+    --border-radius: 20px; 
+    --padding-start: 18px;
+    border: 1.5px solid #e2e8f0; 
     margin-bottom: 4px;
-    transition: all 0.3s ease;
+    box-shadow: 0 6px 15px rgba(9, 60, 93, 0.04), inset 0 2px 4px rgba(0, 0, 0, 0.01);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Poppins', sans-serif !important;
 
     &:focus-within {
       border-color: #0055ff;
-      --background: #ffffff;
-      box-shadow: 0 0 0 4px rgba(0, 85, 255, 0.15);
-    }
-    ion-icon {
-      color: #1e5e8a;
-      font-size: 22px;
-      margin-right: 6px;
+      transform: translateY(-3px); 
+      box-shadow: 0 12px 24px rgba(0, 85, 255, 0.12);
     }
 
-    .eye-toggle {
-      color: #94a3b8;
-      cursor: pointer;
-    }
+    ion-icon { color: #475569; font-size: 20px; margin-right: 10px; }
+    
+    .eye-toggle { color: #94a3b8; font-size: 22px; cursor: pointer; }
 
     ion-input {
-      --padding-top: 14px;
-      --padding-bottom: 14px;
-      font-size: 14px;
+      --padding-top: 16px;
+      --padding-bottom: 16px;
+      font-size: 14.5px;
       color: #093C5D;
-      font-weight: 600;
+      font-weight: 500;
+      font-family: 'Poppins', sans-serif !important;
     }
   }
 }
 
 .quick-tags-smp {
-  margin-top: 6px;
-  margin-bottom: 8px;
+  margin-top: 8px;
+  margin-left: 4px;
   display: flex;
   gap: 8px;
 
   span {
-    background: #eff6ff;
-    color: #2563eb;
+    background: #ffffff;
+    color: #0055ff;
     font-size: 11px;
     font-weight: 700;
-    padding: 6px 10px;
-    border-radius: 8px;
+    padding: 6px 14px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
     cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+    font-family: 'Poppins', sans-serif !important;
 
-    &:active {
-      background: #0055ff;
-      color: white;
-    }
+    &:active { background: #0055ff; color: #ffffff; }
   }
 }
 
@@ -175,12 +176,11 @@ ion-content {
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
-    
-    &:hover {
-      text-decoration: underline;
-    }
+    &:hover { text-decoration: underline; }
   }
 }
+
+/* 3. Tombol Utama */
 ion-button.auth-btn-blue {
   --background: linear-gradient(135deg, #0055ff 0%, #0033cc 100%);
   --background-activated: #ffb300;
@@ -192,11 +192,13 @@ ion-button.auth-btn-blue {
   height: 54px;
   box-shadow: 0 8px 20px rgba(0, 85, 255, 0.25);
   text-transform: none;
+  transition: all 0.2s ease;
+  font-family: 'Poppins', sans-serif !important;
 
-  .btn-arrow {
-    font-size: 18px;
-    margin-left: 6px;
-    display: inline-block;
-    vertical-align: middle;
+  &:active {
+    transform: scale(0.97);
+    box-shadow: 0 4px 12px rgba(0, 85, 255, 0.2);
   }
+
+  .btn-arrow { font-size: 20px; margin-left: 8px; }
 }

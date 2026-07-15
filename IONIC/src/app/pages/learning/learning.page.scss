@@ -7,13 +7,13 @@ $navy-border-tint: #e2e8f0;
 }
 
 ion-content {
-  --background: linear-gradient(180deg, #F4F7FA 0%, #E9EFF5 100%);
+  // Menggunakan gradasi latar belakang super lembut agar konsisten dengan beranda
+  --background: linear-gradient(180deg, #f4f7fa 0%, #e9eff5 100%);
 }
 
-
 .header-navy {
-  background: linear-gradient(180deg, #0022cc 0%, #0055ff 100%) !important; 
-  height: auto !important; 
+  background: linear-gradient(180deg, #0022cc 0%, #0055ff 100%) !important;
+  height: auto !important;
   padding: calc(40px + env(safe-area-inset-top, 0px)) 20px 24px 20px !important;
   border-bottom-left-radius: 36px;
   border-bottom-right-radius: 36px;
@@ -42,7 +42,7 @@ ion-content {
   ion-title {
     color: #ffffff;
     font-weight: 900;
-    font-size: 1.4rem; 
+    font-size: 1.4rem;
     letter-spacing: 0.3px;
     padding: 0;
     display: flex !important;
@@ -50,7 +50,7 @@ ion-content {
     align-items: center !important;
     text-align: center !important;
     width: 100% !important;
-    margin: 0 !important; 
+    margin: 0 !important;
     z-index: 5;
   }
 }
@@ -60,7 +60,7 @@ ion-content {
 
   ion-segment {
     background: #e2e8f0;
-    border-radius: 16px; 
+    border-radius: 16px;
     padding: 4px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
 
@@ -83,7 +83,6 @@ ion-content {
   flex-direction: column;
   gap: 16px;
 }
-
 
 .premium-course-card {
   background: #ffffff;
@@ -108,13 +107,12 @@ ion-content {
     gap: 14px;
     width: 100%;
 
-
     .img-category-box {
       width: 72px;
       height: 72px;
       background: $navy-light-surface;
       border: 1.5px solid #d0e3ff;
-      border-radius: 18px; 
+      border-radius: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -124,7 +122,7 @@ ion-content {
       img {
         width: 100%;
         height: 100%;
-        object-fit: cover; 
+        object-fit: cover;
       }
     }
 
@@ -136,7 +134,7 @@ ion-content {
         font-size: 10px;
         font-weight: 800;
         text-transform: uppercase;
-        color: #0055ff; 
+        color: #0055ff;
         letter-spacing: 0.6px;
         display: inline-block;
         margin-bottom: 4px;
@@ -170,7 +168,7 @@ ion-content {
     .custom-progress {
       height: 8px;
       border-radius: 6px;
-      --progress-background: #0055ff; 
+      --progress-background: #0055ff;
       --background: #e2edf5;
     }
   }
@@ -187,10 +185,10 @@ ion-content {
 
       ion-button {
         margin: 0;
-        height: 44px; 
+        height: 44px;
         font-size: 13.5px;
         font-weight: 800;
-        --border-radius: 14px; 
+        --border-radius: 14px;
         --box-shadow: none;
       }
 
@@ -217,8 +215,6 @@ ion-content {
           --color: #ea580c;
           --background: #fff7ed;
         }
-
-        ion-icon { font-size: 15px; }
       }
 
       .btn-action-success {
@@ -227,8 +223,6 @@ ion-content {
         --border-color: #16a34a;
         --color: #16a34a;
         --background: #f0fdf4;
-
-        ion-icon { font-size: 16px; margin-right: 4px; }
       }
     }
   }

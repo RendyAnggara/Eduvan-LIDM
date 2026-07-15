@@ -21,7 +21,7 @@ export class CoursePlayerPage implements OnInit {
   safeVideoUrl: SafeResourceUrl | null = null;
   loading: boolean = false;
 
-  activeContentId: number | null = null;
+  activeContentId: number | null = null; // Digunakan sebagai acuan materi aktif di HTML
 
   constructor(
     private route: ActivatedRoute,
