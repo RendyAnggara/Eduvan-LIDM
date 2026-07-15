@@ -18,6 +18,8 @@ export class HomePage implements OnInit {
   unreadCount: number = 0;
   selectedCategory: string | null = null;
   courses: any[] = [];
+  coursesWajib: any[] = [];
+  coursesPilihan: any[] = [];
 
   constructor(
     private router: Router,
@@ -39,22 +41,24 @@ export class HomePage implements OnInit {
     });
   }
 
-  selectCategory(categoryName: string) {
-    if (this.selectedCategory === categoryName) {
+  selectCategory(kategori: string) {
+    if (this.selectedCategory === kategori) {
       this.selectedCategory = null;
       this.kursusTersaring = this.courses;
     } else {
-      this.selectedCategory = categoryName;
+      this.selectedCategory = kategori;
+      // Memfilter array berdasarkan course_type dari backend
       this.kursusTersaring = this.courses.filter(
-        (kursus) => kursus.category === categoryName
+        (k: any) => k.course_type === kategori
       );
     }
+    this.cdr.detectChanges();
   }
 
   loadCourses() {
     this.courseService.getCourses().subscribe({
       next: (res: any) => {
-        this.courses = res.data; 
+        this.courses = res.data;
         this.kursusTersaring = res.data;
       },
     });
@@ -83,39 +87,30 @@ export class HomePage implements OnInit {
       this.isLoading = true;
     }
 
-    this.authService.getCoursesFromServer().subscribe({
+    this.courseService.getCourses().subscribe({
       next: (res: any) => {
-        const dataMentah = res.data || [];
-        this.kursusTersaring = dataMentah
-          .filter((k: any) => Number(k.rating || 0) > 0)
-          .sort(
-            (a: any, b: any) => Number(b.rating || 0) - Number(a.rating || 0)
-          )
-          .slice(0, 10);
+        // Simpan respons data polosan tanpa manipulasi map string aneh-aneh
+        const dataAsli = res.data || [];
+        this.courses = dataAsli;
+
+        // Kembalikan filter sesuai status tombol yang sedang aktif
+        if (this.selectedCategory) {
+          this.kursusTersaring = dataAsli.filter(
+            (k: any) => k.course_type === this.selectedCategory
+          );
+        } else {
+          this.kursusTersaring = dataAsli;
+        }
       },
       error: (err) => {
-        console.error('Gagal memuat kursus dari cPanel:', err);
+        console.error('Gagal memuat dari Ngrok:', err);
       },
       complete: () => {
         this.isLoading = false;
-
-        this.courseService.getNotificationsCount().subscribe({
-          next: (res: any) => {
-            if (res && res.status === 'success') {
-              this.unreadCount = res.unread_count;
-            }
-          },
-          error: (err: any) => {
-            console.error('Gagal memuat jumlah notifikasi:', err);
-          },
-          complete: () => {
-            if (refresherEvent) {
-              (refresherEvent.target as any).complete();
-              console.log('Penyegaran data halaman Beranda EduVan Selesai!');
-            }
-            this.cdr.detectChanges();
-          },
-        });
+        if (refresherEvent) {
+          (refresherEvent.target as any).complete();
+        }
+        this.cdr.detectChanges();
       },
     });
   }
