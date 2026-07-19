@@ -11,11 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware)
-    {
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->prepend(\App\Http\Middleware\ForceBypassNgrok::class);
+        $middleware->trustProxies(at: '*');
         // 1. Beritahu Laravel ke mana harus melempar user jika BELUM login
-        $middleware->redirectTo(function ($request)
-        {
+        $middleware->redirectTo(function ($request) {
             return 'admin/login';
         });
 
@@ -29,7 +29,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/xendit/callback',
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions): void
-    {
+    ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

@@ -38,6 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user/update', [AuthController::class, 'updateProfile']); // Hanya untuk update password di Controller baru
     Route::get('/notifications', [NotificationApiController::class, 'getNotifUser']);
     Route::post('/notifications/read/{id}', [NotificationApiController::class, 'markAsRead']);
+    Route::get('/courses', [CourseController::class, 'index']);
 
     Route::middleware('role:student')->group(function () {
         Route::post('/enrollments', [EnrollmentController::class, 'store']);
