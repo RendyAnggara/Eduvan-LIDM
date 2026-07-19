@@ -1,0 +1,264 @@
+.absolute-header {
+  position: absolute;
+  box-shadow: none !important; // Menghilangkan bayangan bawaan Ionic
+  border-bottom: none !important; // Memastikan tidak ada border fisik bawah
+
+  ion-toolbar {
+    --background: transparent;
+    --color: #ffffff;
+    --border-style: none !important; 
+    box-shadow: none !important;
+  }
+}
+
+ion-content {
+  --background: #F4F7FA; 
+}
+
+.header-navy-cert {
+  background: linear-gradient(180deg, #0022cc 0%, #0055ff 100%) !important; 
+  padding: calc(40px + env(safe-area-inset-top, 0px)) 16px 24px 16px !important;
+  border-bottom-left-radius: 36px;
+  border-bottom-right-radius: 36px;
+  box-shadow: 0 10px 25px rgba(0, 34, 204, 0.15);
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: -10%;
+    width: 120%;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    transform: rotate(-3deg);
+    z-index: 1;
+  }
+
+  .header-flex-row {
+    display: flex;
+    align-items: center; 
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+    z-index: 5;
+  }
+
+  .back-action-box {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    
+    ion-back-button {
+      margin: 0;
+      --color: #ffffff;
+      font-size: 16px;
+    }
+  }
+
+  ion-title {
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 1.35rem; 
+    letter-spacing: 0.3px;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+  }
+
+  .right-spacer-passive {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.loading-state {
+  text-align: center;
+  padding-top: 50px;
+
+  p {
+    color: #64748b;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+}
+
+// CONTAINER TRANSAKSI
+.transaksi-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// KARTU STRUK INVOICE
+.trx-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.02);
+
+  .trx-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px dashed #edf2f7;
+    padding-bottom: 10px;
+
+    .invoice-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .lbl-invoice {
+        font-size: 10px;
+        font-weight: 700;
+        color: #a0aec0;
+        letter-spacing: 0.5px;
+      }
+
+      .val-invoice {
+        font-size: 12px;
+        color: #4a5568;
+      }
+
+      .val-date {
+        font-size: 11px;
+        color: #718096;
+        font-weight: 500;
+        margin-top: 4px;
+
+        ion-icon {
+          font-size: 12px;
+          vertical-align: middle;
+          margin-right: 4px;
+        }
+      }
+    }
+
+    // Default status pending (Orange)
+    .status-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      background: rgba(249, 115, 22, 0.1);
+      color: #f97316;
+      
+      // Kelas modifikator status lunas (Hijau)
+      &.status-lunas {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10B981;
+      }
+    }
+  }
+
+  .trx-card-middle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .icon-book-wrapper {
+      width: 44px;
+      height: 44px;
+      background: #093C5D;
+      color: #ffffff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      ion-icon {
+        font-size: 22px;
+      }
+    }
+
+    .title-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      h3 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 700;
+        color: #093C5D;
+      }
+
+      p {
+        margin: 0;
+        font-size: 11px;
+        color: #718096;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .trx-card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+    padding: 10px 12px;
+    border-radius: 12px;
+    margin-top: 2px;
+
+    .lbl-total {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .val-total {
+      font-size: 14px;
+      color: #1a202c;
+      font-weight: 700;
+    }
+  }
+}
+
+// EMPTY STATE KETIKA TIDAK ADA RIWAYAT
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  padding: 32px;
+  text-align: center;
+
+  ion-icon {
+    font-size: 80px;
+    color: #94a3b8;
+    opacity: 0.5;
+    margin-bottom: 16px;
+  }
+
+  h4 {
+    color: #64748b;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  p {
+    color: #94a3b8;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 8px;
+    max-width: 250px;
+  }
+}

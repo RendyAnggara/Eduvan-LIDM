@@ -19,8 +19,6 @@
     <ion-spinner name="crescent"></ion-spinner>
     <p>Memeriksa Transkip Nilai resmi kamu...</p>
   </div>
-
-  <!-- KONTEN UTAMA SERTIFIKAT -->
   <div
     *ngIf="!isLoading && listSertifikat.length > 0"
     class="certificate-container"
@@ -31,8 +29,6 @@
         diverifikasi oleh <span>Admin EduLearn</span>:
       </p>
     </div>
-
-    <!-- KARTU SERTIFIKAT BULAT LEMBUT -->
     <div class="certificate-card" *ngFor="let cert of listSertifikat">
       <div class="cert-badge">
         <ion-icon name="ribbon"></ion-icon>
@@ -46,8 +42,6 @@
           MMM yyyy' }}
         </p>
       </div>
-
-      <!-- TOMBOL UNDUH KONSISTEN BENTUK CHUBBY -->
       <div class="cert-action">
         <button
           class="btn-download"
@@ -73,10 +67,6 @@
     <div class="empty-icon-circle">
       <ion-icon name="shield-checkmark-outline"></ion-icon>
     </div>
-    <h3>Belum Ada Sertifikat Tersedia</h3>
-    <p>
-      Sertifikat akan muncul di sini setelah kamu menyelesaikan seluruh materi
-      kelas, lulus kuis, dan disetujui oleh Admin EduVan.
-    </p>
+    <h3>Belum Ada Transkip Nilai yang Tersedia</h3>
   </div>
 </ion-content>
