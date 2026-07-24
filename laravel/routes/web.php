@@ -12,11 +12,12 @@ use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\SchoolController;
+use App\Http\Controllers\Admin\TeacherManagementController;
 use App\Http\Controllers\Web\Teacher\TeacherController;
 use App\Http\Controllers\Web\Teacher\TeacherAuthController;
 use App\Http\Controllers\Web\Teacher\MaterialController;
 use App\Http\Controllers\Web\Teacher\QuizController;
-
 
 Route::get('/', function () {
     return redirect()->route('landing.page');
@@ -26,12 +27,10 @@ Route::get('/landing', function () {
     return view('landing');
 })->name('landing.page');
 
-// Admin Auth
 Route::get('admin/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
 Route::post('admin/login', [AdminAuthController::class, 'login']);
 Route::post('admin/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
 
-// Teacher Auth
 Route::get('teacher/login', [TeacherAuthController::class, 'showLoginForm'])->name('teacher.login');
 Route::post('teacher/login', [TeacherAuthController::class, 'login']);
 Route::post('teacher/logout', [TeacherAuthController::class, 'logout'])->name('teacher.logout');
@@ -56,10 +55,23 @@ Route::get('uploads/proofs/{filename}', function ($filename) {
     return $response;
 })->where('filename', '.*');
 
+
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/schools', [SchoolController::class, 'index'])->name('admin.schools.index');
+    Route::post('/schools', [SchoolController::class, 'store'])->name('admin.schools.store');
+    Route::put('/schools/{id}', [SchoolController::class, 'update'])->name('admin.schools.update');
+    Route::delete('/schools/{id}', [SchoolController::class, 'destroy'])->name('admin.schools.destroy');
 
-    // Manajemen Courses
+    // MANAGEMENT ROUTE: KELOLA GURU
+    Route::get('/teachers', [TeacherManagementController::class, 'index'])->name('admin.teachers.index');
+    Route::post('/teachers', [TeacherManagementController::class, 'store'])->name('admin.teachers.store');
+    Route::put('/teachers/{id}', [TeacherManagementController::class, 'update'])->name('admin.teachers.update');
+    Route::delete('/teachers/{id}', [TeacherManagementController::class, 'destroy'])->name('admin.teachers.destroy');
+    // 🆕 ROUTE BARU: FITUR MASAL GURU VIA EXCEL
+    Route::post('/teachers/import-excel', [TeacherManagementController::class, 'importExcel'])->name('admin.teachers.import_excel');
+    Route::get('/teachers/download-template', [TeacherManagementController::class, 'downloadTemplate'])->name('admin.teachers.download_template');
+
     Route::get('/courses', [CourseController::class, 'index'])->name('admin.courses.index');
     Route::get('/courses/create', [CourseController::class, 'create'])->name('admin.courses.create');
     Route::post('/courses', [CourseController::class, 'store'])->name('admin.courses.store');
@@ -70,21 +82,18 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::delete('/courses/{id}', [CourseController::class, 'destroy'])->name('admin.courses.destroy');
     Route::delete('/courses/content/{content_id}', [CourseController::class, 'destroyContent'])->name('admin.courses.destroyContent');
 
-    // Manajemen Students
     Route::get('/students', [StudentController::class, 'index'])->name('admin.students.index');
     Route::get('/students/{id}', [StudentController::class, 'show'])->name('admin.students.show');
     Route::get('/api/students/{id}', [StudentController::class, 'apiShow'])->name('students.apiShow');
     Route::delete('/students/{id}', [StudentController::class, 'destroy'])->name('admin.students.destroy');
     Route::post('/students', [StudentController::class, 'store'])->name('admin.students.store');
 
-    // Manajemen Pembelian / Transaksi
     Route::get('/pembelian', [TransactionController::class, 'index'])->name('admin.pembelian.index');
     Route::get('/pembelian/download/{id}', [TransactionController::class, 'downloadReport'])->name('admin.pembelian.download');
     Route::get('/pembelian/course-pdf/{id}', [TransactionController::class, 'downloadCourseReport'])->name('admin.pembelian.course_pdf');
     Route::get('/pembelian/pdf', [TransactionController::class, 'exportPdf'])->name('admin.pembelian.pdf');
     Route::put('/pembelian/{id}/update-status', [TransactionController::class, 'updateStatus'])->name('admin.pembelian.updateStatus');
 
-    // Manajemen Quiz & Progress
     Route::get('/quiz-progress', [QuizProgressController::class, 'index'])->name('admin.quiz.index');
     Route::get('/quiz-progress/{id}', [QuizProgressController::class, 'show'])->name('admin.quiz.show');
     Route::get('/quiz-progress/{course}/manage', [QuizProgressController::class, 'manage'])->name('admin.quiz.manage');
@@ -93,22 +102,19 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/quiz/{quiz}', [QuizProgressController::class, 'updateQuiz'])->name('admin.quiz.update');
     Route::delete('/quiz/{quiz}', [QuizProgressController::class, 'destroyQuiz'])->name('admin.quiz.destroy');
 
-    // Manajemen Sertifikat dan Pembayaran
     Route::get('/certificates', [CertificateController::class, 'index'])->name('admin.certificates.index');
     Route::post('/certificates/issue/{userId}/{courseId}', [CertificateController::class, 'issue'])->name('admin.certificates.issue');
     Route::get('/certificates/preview/{id}', [CertificateController::class, 'preview'])->name('admin.certificates.preview');
     Route::get('/certificates/download/{id}', [CertificateController::class, 'download'])->name('admin.certificates.download');
 
-    // Notifikasi
     Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
     Route::post('/notifications/send', [NotificationController::class, 'store'])->name('admin.notifications.send');
 });
 
+
 Route::middleware(['auth', 'role:teacher,admin'])->prefix('teacher')->group(function () {
-    // Dashboard Guru
     Route::get('/dashboard', [TeacherController::class, 'indexDashboard'])->name('teacher.dashboard');
 
-    // Manajemen Siswa
     Route::get('/students', [TeacherController::class, 'indexStudents'])->name('teacher.students.index');
     Route::post('/students/store', [TeacherController::class, 'storeStudentByTeacher'])->name('teacher.students.store');
     Route::post('/student/store-massal', [TeacherController::class, 'storeStudent'])->name('teacher.student.store');
@@ -123,10 +129,8 @@ Route::middleware(['auth', 'role:teacher,admin'])->prefix('teacher')->group(func
     Route::get('/students/download-template', [TeacherController::class, 'downloadExcelTemplate'])->name('teacher.students.download_template');
     Route::post('/students/import-excel', [TeacherController::class, 'importStudentsExcel'])->name('teacher.students.import_excel');
 
-    // Simulasi Pembelian
     Route::post('/checkout-simulated', [OrderController::class, 'checkoutSimulated'])->name('teacher.checkout.simulated');
 
-    // materi
     Route::get('/material', [MaterialController::class, 'index'])->name('teacher.material.index');
     Route::post('/material/chapter', [MaterialController::class, 'storeChapter'])->name('teacher.material.store_chapter');
     Route::post('/material/course', [MaterialController::class, 'storeCourse'])->name('teacher.material.store_course');
@@ -138,7 +142,6 @@ Route::middleware(['auth', 'role:teacher,admin'])->prefix('teacher')->group(func
     Route::delete('/material/lesson/{id}', [MaterialController::class, 'destroyLesson'])->name('teacher.material.destroy_lesson');
     Route::put('/material/course/{id}', [MaterialController::class, 'updateCourse'])->name('teacher.material.update_course');
 
-    //Quiz
     Route::get('/quiz', [QuizController::class, 'index'])->name('teacher.quiz.index');
     Route::post('/quiz', [QuizController::class, 'store'])->name('teacher.quiz.store');
     Route::delete('/quiz/{id}', [QuizController::class, 'destroy'])->name('teacher.quiz.destroy');

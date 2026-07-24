@@ -57,13 +57,14 @@ class AuthController extends Controller
             'user' => $userArray
         ], 200);
     }
+
     public function createStudentByTeacher(Request $request)
     {
         $teacher = Auth::user();
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:50',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:users,email',
             'nisn_or_nip' => 'nullable|string|max:20',
             'class' => 'required|in:Kelas 7,Kelas 8,Kelas 9'
         ]);
