@@ -12,12 +12,12 @@ class MaterialController extends Controller
 {
     public function index(Request $request)
     {
-        $userId = Auth::id();
+        $schoolId = Auth::user()->school_id;
         $selectedClass = $request->input('class_level');
 
         $coursesQuery = Course::where('course_type', 'school')
-            ->whereHas('teachers', function ($query) use ($userId) {
-                $query->where('course_user.user_id', $userId);
+            ->whereHas('teachers', function ($query) use ($schoolId) {
+                $query->where('users.school_id', $schoolId);
             });
 
         if (!empty($selectedClass)) {
@@ -30,8 +30,8 @@ class MaterialController extends Controller
             ->groupBy('grade_level');
 
         $allSelectCourses = Course::where('course_type', 'school')
-            ->whereHas('teachers', function ($query) use ($userId) {
-                $query->where('course_user.user_id', $userId);
+            ->whereHas('teachers', function ($query) use ($schoolId) {
+                $query->where('users.school_id', $schoolId);
             })
             ->latest()
             ->get();
@@ -58,12 +58,13 @@ class MaterialController extends Controller
             'image' => ''
         ]);
 
+        // Hubungkan guru pembuat ke pivot
         $course->teachers()->attach(Auth::id());
 
         return redirect()->back()->with('success', 'Mata Pelajaran baru berhasil didaftarkan!');
     }
 
- public function storeChapter(Request $request)
+    public function storeChapter(Request $request)
     {
         $request->validate([
             'course_id' => 'required|exists:courses,id',
@@ -72,7 +73,7 @@ class MaterialController extends Controller
 
         $course = Course::where('id', $request->course_id)
             ->whereHas('teachers', function ($query) {
-                $query->where('course_user.user_id', Auth::id());
+                $query->where('users.school_id', Auth::user()->school_id);
             })
             ->firstOrFail();
 
@@ -84,11 +85,11 @@ class MaterialController extends Controller
         return redirect()->back()->with('success', 'Bab baru berhasil ditambahkan ke dalam kurikulum!');
     }
 
-   public function manage($id)
+    public function manage($id)
     {
         $course = Course::where('course_type', 'school')
             ->whereHas('teachers', function ($query) {
-                $query->where('course_user.user_id', Auth::id());
+                $query->where('users.school_id', Auth::user()->school_id);
             })
             ->with(['chapters.lessons'])
             ->findOrFail($id);
@@ -99,7 +100,7 @@ class MaterialController extends Controller
     public function destroyChapter($id)
     {
         $chapter = Chapter::whereHas('course.teachers', function ($query) {
-            $query->where('course_user.user_id', Auth::id());
+            $query->where('users.school_id', Auth::user()->school_id);
         })->findOrFail($id);
 
         $chapter->delete();
@@ -110,7 +111,7 @@ class MaterialController extends Controller
     public function destroyLesson($id)
     {
         $lesson = \App\Models\Lesson::whereHas('chapter.course.teachers', function ($query) {
-            $query->where('course_user.user_id', Auth::id());
+            $query->where('users.school_id', Auth::user()->school_id);
         })->findOrFail($id);
 
         $lesson->delete();
@@ -124,8 +125,9 @@ class MaterialController extends Controller
             'chapter_id' => 'required|exists:chapters,id',
             'title' => 'required|string|max:255',
         ]);
+
         $chapter = Chapter::whereHas('course.teachers', function ($query) {
-            $query->where('course_user.user_id', Auth::id());
+            $query->where('users.school_id', Auth::user()->school_id);
         })->findOrFail($request->chapter_id);
 
         $lesson = \App\Models\Lesson::create([
@@ -142,7 +144,7 @@ class MaterialController extends Controller
     public function editContent($id)
     {
         $lesson = \App\Models\Lesson::whereHas('chapter.course.teachers', function ($query) {
-            $query->where('course_user.user_id', Auth::id());
+            $query->where('users.school_id', Auth::user()->school_id);
         })->with(['chapter.course'])->findOrFail($id);
 
         return view('teacher.material.edit_content', compact('lesson'));
@@ -156,7 +158,7 @@ class MaterialController extends Controller
         ]);
 
         $lesson = \App\Models\Lesson::whereHas('chapter.course.teachers', function ($query) {
-            $query->where('course_user.user_id', Auth::id());
+            $query->where('users.school_id', Auth::user()->school_id);
         })->findOrFail($id);
 
         $lesson->update([
@@ -177,8 +179,8 @@ class MaterialController extends Controller
         ]);
 
         $course = Course::where('course_type', 'school')
-            ->whereHas('users', function ($query) {
-                $query->where('users.id', Auth::id());
+            ->whereHas('teachers', function ($query) {
+                $query->where('users.school_id', Auth::user()->school_id);
             })
             ->findOrFail($id);
 

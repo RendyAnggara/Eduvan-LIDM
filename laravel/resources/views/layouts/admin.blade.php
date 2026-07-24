@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Eduvan</title>
+    <title>Admin Dashboard - EduLearn</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,7 +22,7 @@
         }
 
         ::-webkit-scrollbar-track {
-            bg: transparent;
+            background: transparent;
         }
 
         ::-webkit-scrollbar-thumb {
@@ -50,7 +50,6 @@
             </div>
 
             <div class="p-6 border-b border-slate-700 flex flex-col items-center text-center gap-4 bg-slate-900/20">
-
                 <div
                     class="w-28 h-28 flex items-center justify-center transition-transform duration-300 hover:scale-105">
                     <img src="{{ asset('assets/images/eduvan.png') }}" alt="Logo EduVan"
@@ -58,9 +57,9 @@
                 </div>
 
                 <div class="space-y-0.5">
-                    <h1 class="text-2xl font-black text-white tracking-tighter">Eduvan Admin</h1>
+                    <h1 class="text-2xl font-black text-white tracking-tighter">EduLearn Admin</h1>
                     <p class="text-[10px] text-slate-400 font-medium tracking-wide uppercase leading-none">Powered by
-                        EduVan Team</p>
+                        EduLearn Team</p>
                 </div>
             </div>
 
@@ -70,6 +69,22 @@
                     <i
                         class="fas fa-home text-sm {{ request()->is('admin/dashboard') ? '' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
                     <span class="font-semibold text-sm">Dashboard</span>
+                </a>
+
+                <!-- MASTER DATA: Kelola Sekolah (BARU) -->
+                <a href="{{ route('admin.schools.index') }}"
+                    class="group flex items-center gap-3 p-3 rounded-xl transition {{ request()->is('admin/schools*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
+                    <i
+                        class="fas fa-school text-sm {{ request()->is('admin/schools*') ? '' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
+                    <span class="font-semibold text-sm">Kelola Sekolah</span>
+                </a>
+
+                <!-- MASTER DATA: Kelola Akun Guru (BARU) -->
+                <a href="{{ route('admin.teachers.index') }}"
+                    class="group flex items-center gap-3 p-3 rounded-xl transition {{ request()->is('admin/teachers*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
+                    <i
+                        class="fas fa-chalkboard-teacher text-sm {{ request()->is('admin/teachers*') ? '' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
+                    <span class="font-semibold text-sm">Kelola Guru</span>
                 </a>
 
                 <a href="{{ route('admin.courses.index') }}"
@@ -108,12 +123,14 @@
                 </a>
             </nav>
 
-            <a href="{{ route('admin.notifications.index') }}"
-                class="group flex items-center gap-3 p-3 rounded-xl transition {{ request()->is('admin/notifications*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
-                <i
-                    class="fas fa-bell text-sm {{ request()->is('admin/notifications*') ? '' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
-                <span class="font-semibold text-sm">Kelola Notifikasi</span>
-            </a>
+            <div class="px-4 py-2">
+                <a href="{{ route('admin.notifications.index') }}"
+                    class="group flex items-center gap-3 p-3 rounded-xl transition {{ request()->is('admin/notifications*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
+                    <i
+                        class="fas fa-bell text-sm {{ request()->is('admin/notifications*') ? '' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
+                    <span class="font-semibold text-sm">Kelola Notifikasi</span>
+                </a>
+            </div>
 
             <div class="p-4 border-t border-slate-700 bg-slate-900/20">
                 <button type="button" onclick="openLogoutModal()"
@@ -129,20 +146,21 @@
 
         <main class="flex-1 overflow-y-auto w-full">
             <header
-                class="bg-white shadow-sm p-4 px-6 flex justify-between items-center sticky top-0 z-30 border-b border-gray-100">
-                <div class="flex items-center space-x-3">
+                class="bg-white shadow-sm p-4 px-6 flex flex-col sm:flex-row gap-3 sm:gap-4 justify-between items-start sm:items-center sticky top-0 z-30 border-b border-gray-100">
+                <div class="flex items-center space-x-3 w-full sm:w-auto">
                     <button onclick="toggleSidebarAdmin()"
-                        class="w-9 h-9 flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-600 focus:outline-none md:hidden rounded-xl text-lg transition focus:ring-2 focus:ring-indigo-500/20">
+                        class="w-9 h-9 flex-shrink-0 flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-600 focus:outline-none md:hidden rounded-xl text-lg transition focus:ring-2 focus:ring-indigo-500/20">
                         <i class="fas fa-bars"></i>
                     </button>
                     <h2 class="text-base md:text-xl font-black text-gray-900 tracking-tight truncate">Dashboard
                         Monitoring</h2>
                 </div>
-                <div class="flex items-center space-x-2 md:space-x-4">
-                    <div class="flex items-center gap-4">
-                        <div class="flex flex-col text-right">
-                            <span class="text-sm font-black text-gray-800">Admin EduVan</span>
-                        </div>
+                <div class="flex items-center w-full sm:w-auto justify-start sm:justify-end pl-12 sm:pl-0">
+                    <div class="flex flex-col text-left sm:text-right">
+                        <span
+                            class="text-xs sm:text-sm font-black text-gray-800 bg-gray-50 sm:bg-transparent px-2.5 py-1 sm:p-0 rounded-lg border border-gray-100 sm:border-none">
+                            <i class="fas fa-user-shield text-[10px] mr-1 sm:hidden text-gray-500"></i>Admin EduLearn
+                        </span>
                     </div>
                 </div>
             </header>
@@ -153,13 +171,13 @@
         </main>
     </div>
 
+    <!-- Modal Logout Bawaan Lu -->
     <div id="logoutModal"
         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm transition-all duration-300 hidden opacity-0">
         <div class="fixed inset-0 bg-transparent" onclick="closeLogoutModal()"></div>
 
         <div
             class="relative bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl border border-slate-800 p-6 transform transition-all duration-300 scale-95 opacity-0 z-10 text-center">
-
             <div
                 class="w-14 h-14 bg-red-500/10 border border-red-500/20 text-red-400 rounded-full flex items-center justify-center text-xl mx-auto mb-4 shadow-lg shadow-red-500/5">
                 <i class="fas fa-exclamation-triangle"></i>
@@ -167,7 +185,7 @@
 
             <h3 class="text-lg font-bold text-slate-100 tracking-tight">Konfirmasi Keluar</h3>
             <p class="text-sm text-slate-400 mt-2 leading-relaxed">Apakah Anda yakin ingin mengakhiri sesi administrator
-                dan keluar dari sistem EduVan?</p>
+                dan keluar dari sistem EduLearn?</p>
 
             <div class="grid grid-cols-2 gap-3 mt-6">
                 <button type="button" onclick="closeLogoutModal()"
@@ -186,6 +204,7 @@
         </div>
     </div>
 
+    <!-- Script Bawaan Lu -->
     <script>
         function openLogoutModal() {
             const modal = document.getElementById('logoutModal');

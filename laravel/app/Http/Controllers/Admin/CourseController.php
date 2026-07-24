@@ -5,27 +5,50 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Content;
+use App\Models\School;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Ambil input dari search bar (jika ada)
         $search = $request->input('search');
+        $typeFilter = $request->input('course_type');
+        $gradeFilter = $request->input('grade_level');
 
-        // 2. Query ke database
-        // "when" akan menjalankan filter query HANYA jika variable $search ada isinya
-        $courses = Course::when($search, function ($query, $search)
-        {
-            return $query->where('title', 'like', "%{$search}%")
-                ->orWhere('description', 'like', "%{$search}%");
-        })
-            ->latest()
-            ->get();
+        $query = Course::query();
 
-        // 3. Kirim ke view
-        return view('admin.courses.index', compact('courses'));
+        // 1. Pencarian Teks Terintegrasi (Judul, Deskripsi, & Nama Sekolah via Guru)
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  // Ambil nama sekolah dari relasi guru pengampu
+                  ->orWhereHas('teachers.school', function ($ts) use ($search) {
+                      $ts->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // 2. Filter Tipe Kursus (premium / school)
+        if (!empty($typeFilter) && $typeFilter !== 'all') {
+            $query->where('course_type', $typeFilter);
+        }
+
+        // 3. Filter Tingkat Kelas SMP (7, 8, 9)
+        if (!empty($gradeFilter) && $gradeFilter !== 'all') {
+            $query->where('grade_level', $gradeFilter);
+        }
+
+        // Load relasi teachers.school tanpa memanggil relasi 'school' langsung
+        $courses = $query->with(['teachers.school'])->latest()->get();
+
+        return view('admin.courses.index', compact(
+            'courses',
+            'search',
+            'typeFilter',
+            'gradeFilter'
+        ));
     }
 
     public function create()
@@ -35,16 +58,14 @@ class CourseController extends Controller
 
     public function store(Request $request)
     {
-        // 1. Validasi input
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required',
             'price' => 'required|integer',
             'category' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048' // Maksimal 2MB
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        // 2. Olah upload gambar murni ke Base64 (Tanpa Folder Storage Link)
         $base64Image = null;
         if ($request->hasFile('image'))
         {
@@ -52,11 +73,9 @@ class CourseController extends Controller
             $imageData = base64_encode(file_get_contents($image));
             $imageMime = $image->getClientMimeType();
 
-            // Satukan jadi format data URL yang bisa langsung dibaca tag <img> HTML
             $base64Image = 'data:' . $imageMime . ';base64,' . $imageData;
         }
 
-        // 3. Simpan ke database
         Course::create([
             'title' => $request->title,
             'category' => $request->category,
@@ -64,107 +83,105 @@ class CourseController extends Controller
             'price' => $request->price,
             'rating' => 0,
             'image' => $base64Image,
+            'course_type' => 'premium'
         ]);
 
-        return redirect()->route('admin.courses.index')->with('success', 'Kursus berhasil ditambahkan dengan gambar Base64!');
+        return redirect()->route('admin.courses.index')->with('success', 'Kursus berhasil ditambahkan!');
     }
 
-    /**
-     * Menampilkan detail kursus beserta daftar materinya
-     */
     public function show($id)
     {
-        // Mengambil data kursus beserta semua materinya (relationship contents)
-        $course = Course::with('contents')->findOrFail($id);
+        $course = Course::with(['contents', 'school', 'teachers.school'])->findOrFail($id);
         return view('admin.courses.show', compact('course'));
     }
 
-    // 🟢 TAMBAHAN BARU: Fungsi untuk menampung data form simpan materi lo
     public function storeContent(Request $request, $course_id)
     {
-        // 1. Validasi input dari form admin lo
+        $course = Course::findOrFail($course_id);
+        if ($course->course_type === 'school') {
+            return redirect()->route('admin.courses.show', $course_id)
+                ->with('error', 'Akses ditolak! Materi kursus instansi sekolah dikelola langsung oleh Guru.');
+        }
+
         $request->validate([
             'title' => 'required|string|max:255',
-            'video_url' => 'required|string', // Menyesuaikan name="video_url" di form lo
-            'order' => 'required|integer'      // Menyesuaikan name="order" di form lo
+            'video_url' => 'required|string',
+            'order' => 'required|integer'
         ]);
 
-        // 2. Simpan data ke tabel 'contents' dan sesuaikan dengan struktur database baru
         Content::create([
             'course_id'   => $course_id,
             'title'       => $request->title,
-            'content_url' => $request->video_url, // Kita petakan video_url ke kolom content_url DB lo
-            'type'        => 'video',             // Auto set ke 'video' biar DB gak protes kosong/null
-            'order'       => $request->order,     // Menyimpan urutan materi
+            'content_url' => $request->video_url,
+            'type'        => 'video',
+            'order'       => $request->order,
         ]);
 
-        // 3. Kembalikan ke halaman detail kursus dengan pesan sukses
         return redirect()->route('admin.courses.show', $course_id)
             ->with('success', 'Materi pembelajaran berhasil ditambahkan, bre!');
     }
 
-    /**
-     * Menghapus materi dari dalam kursus
-     */
     public function destroyContent($content_id)
     {
-        // 1. Cari data materi berdasarkan ID-nya
         $content = Content::findOrFail($content_id);
+        $course = Course::findOrFail($content->course_id);
 
-        // Simpan course_id-nya dulu sebelum dihapus buat rute redirect balik
-        $course_id = $content->course_id;
+        if ($course->course_type === 'school') {
+            return redirect()->route('admin.courses.show', $course->id)
+                ->with('error', 'Akses ditolak! Materi kursus instansi sekolah dikelola langsung oleh Guru.');
+        }
 
-        // 2. Eksekusi hapus dari database
         $content->delete();
 
-        // 3. Kembalikan ke halaman detail kursus dengan pesan sukses
-        return redirect()->route('admin.courses.show', $course_id)
+        return redirect()->route('admin.courses.show', $course->id)
             ->with('success', 'Materi pembelajaran berhasil dihapus, bre!');
     }
-
-    /**
-     * Menyimpan materi video baru ke dalam kursus
-     */
 
     public function edit($id)
     {
         $course = Course::findOrFail($id);
+        if ($course->course_type === 'school') {
+            return redirect()->route('admin.courses.index')
+                ->with('error', 'Akses ditolak! Kursus instansi sekolah hanya dapat diubah oleh Guru pengampu.');
+        }
+
         return view('admin.courses.edit', compact('course'));
     }
 
     public function update(Request $request, $id)
     {
         $course = Course::findOrFail($id);
+        if ($course->course_type === 'school') {
+            return redirect()->route('admin.courses.index')
+                ->with('error', 'Akses ditolak! Kursus instansi sekolah hanya dapat diubah oleh Guru pengampu.');
+        }
 
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required',
             'price' => 'required|integer',
             'category' => 'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:10240' // 10MB
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:10240'
         ]);
 
         $data = [
             'title' => $request->title,
-            'category' => $request->category, 
+            'category' => $request->category,
             'description' => $request->description,
             'price' => $request->price,
         ];
 
-        // 🟢 DISAMAKAN: Olah upload gambar murni ke Base64 saat update biar gak crash di cPanel
-        if ($request->hasFile('image'))
-        {
+        if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageData = base64_encode(file_get_contents($image));
             $imageMime = $image->getClientMimeType();
 
-            // Satukan jadi format data URL Base64
             $data['image'] = 'data:' . $imageMime . ';base64,' . $imageData;
         }
 
         $course->update($data);
 
-        return redirect()->route('admin.courses.index')->with('success', 'Kursus berhasil diperbarui dengan gambar Base64!');
+        return redirect()->route('admin.courses.index')->with('success', 'Kursus berhasil diperbarui!');
     }
 
     public function destroy($id)
