@@ -70,6 +70,9 @@ export class CourseDetailPage implements OnInit {
     }
   }
 
+  isFreeCourse(): boolean {
+    return true; // 🔥 BYPASS: Paksa semua course dianggap gratis
+  }
 
   getDetail(id: string) {
     const targetCourseId = Number(id);
@@ -115,6 +118,8 @@ export class CourseDetailPage implements OnInit {
         }
       },
     });
+    this.paymentStatus = 'success'; // Paksa status jadi lunas/sukses
+    this.cdr.detectChanges();
   }
 
   bukaModalUploadTransfer() {
@@ -264,13 +269,22 @@ export class CourseDetailPage implements OnInit {
     }
   }
 
-  masukKelas(courseId: any) {
-    if (this.contents && this.contents.length > 0) {
-      console.log('Navigasi masukKelas bawa ID Kursus:', this.course.id);
-      this.router.navigate(['/course-player', this.course.id]);
+  masukKelas(courseId?: any) {
+    // 🔥 AMBIL ID DARI BEBERAPA ALTERNATIF SUMBER BIAR GAK KETEMU UNDEFINED
+    const idDariCourse = this.course?.id;
+    const idDariParam = courseId;
+    const idDariRoute = this.route.snapshot.paramMap.get('id');
+
+    const finalId = idDariCourse || idDariParam || idDariRoute;
+
+    console.log('Navigasi masukKelas membawa ID:', finalId);
+
+    if (finalId) {
+      // Pindah ke course player dengan ID yang valid
+      this.router.navigate(['/course-player', finalId]);
     } else {
-      this.alertMessageCustom =
-        'Kelas ini sudah aktif, namun admin belum mengunggah modul video untuk kelas ini.';
+      // Fallback kalau bener-bener ID tidak ketemu
+      this.alertMessageCustom = 'ID Kursus tidak ditemukan!';
       this.isErrorAlertOpen = true;
       this.cdr.detectChanges();
     }

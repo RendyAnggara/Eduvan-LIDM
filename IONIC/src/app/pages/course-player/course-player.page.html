@@ -1,92 +1,202 @@
 <ion-header mode="ios" class="ion-no-border">
-  <div class="header-navy-player">
-    <div class="header-flex-row">
-      <div class="back-action-box">
-        <ion-back-button
-          defaultHref="/tabs/learning"
-          text=""
-          color="light"
-        ></ion-back-button>
-      </div>
-      <ion-title>Belajar Sekarang</ion-title>
-      <div class="right-spacer-passive"></div>
-    </div>
-  </div>
+  <ion-toolbar style="--background: #093c5d; --color: #ffffff">
+    <ion-buttons slot="start">
+      <ion-back-button
+        defaultHref="/course"
+        color="light"
+        text=""
+      ></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ activeLesson?.title || 'Course Player' }}</ion-title>
+  </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <!-- Area Video -->
-  <div class="video-container">
-    <iframe
-      *ngIf="safeVideoUrl"
-      [src]="safeVideoUrl"
-      frameborder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen
-    >
-    </iframe>
-
-    <div class="video-placeholder" *ngIf="!safeVideoUrl">
-      <ion-icon name="play-circle-outline"></ion-icon>
-      <p>Pilih materi di bawah untuk memutar video</p>
-    </div>
+<ion-content style="--background: #f8fafc">
+  <!-- 1. LOADING INDIKATOR (Biar data nggak kedip/hilang sebentar) -->
+  <div
+    *ngIf="isLoading"
+    class="ion-text-center ion-padding"
+    style="margin-top: 40px"
+  >
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
+    <p style="color: #64748b; font-size: 14px; margin-top: 8px">
+      Memuat materi...
+    </p>
   </div>
 
-  <!-- Detail Kursus -->
-  <div class="content-wrapper">
-    <h2>{{ courseDetail?.title || 'Memuat Nama Kursus...' }}</h2>
-    <p class="instructor">
-      Oleh: {{ courseDetail?.instructor || 'EduVan Instructor' }}
-    </p>
-
-    <div class="curriculum-section">
-      <h3>Kurikulum</h3>
-
-      <div *ngIf="loading" class="ion-text-center ion-padding">
-        <ion-spinner name="crescent"></ion-spinner>
-      </div>
-
-      <p *ngIf="!loading && contents.length === 0" class="empty-curriculum-text">
-        Belum ada materi video yang diunggah untuk kelas ini.
-      </p>
-
-      <ion-list lines="none" *ngIf="!loading && contents.length > 0">
-        <ion-item
-          button
-          detail="false"
-          *ngFor="let materi of contents; let i = index"
-          (click)="putarMateri(materi)"
-          [class.item-active]="activeContentId === materi.id"
-        >
-          <ion-icon
-            slot="start"
-            [name]="materi.is_completed === 1 ? 'checkmark-circle' : 'play-circle'"
-            [class.completed-icon]="materi.is_completed === 1"
-            [class.uncompleted-icon]="materi.is_completed !== 1"
-          >
-          </ion-icon>
-
-          <ion-label>
-            <h2
-              [style.color]="materi.is_completed === 1 ? '#16a34a' : '#093c5d'"
-              [style.font-weight]="materi.is_completed === 1 || activeContentId === materi.id ? '800' : '600'"
-            >
-              {{ i + 1 }}. {{ materi.title }}
-            </h2>
-          </ion-label>
-        </ion-item>
-      </ion-list>
+  <!-- 2. KONTEN UTAMA (Baru muncul setelah isLoading = false) -->
+  <div *ngIf="!isLoading" style="padding: 16px">
+    <!-- IFRAME VIDEO (Jika Ada) -->
+    <div
+      *ngIf="activeLesson?.video_url"
+      style="
+        width: 100%;
+        height: 210px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #000;
+        margin-bottom: 16px;
+      "
+    >
+      <iframe
+        [src]="getSafeVideoUrl(activeLesson.video_url)"
+        style="width: 100%; height: 100%; border: none"
+        allowfullscreen
+      ></iframe>
     </div>
 
-    <!-- Tombol Aksi -->
-    <ion-button
-      expand="block"
-      [class.btn-action-cancel]="isCompleted"
-      [class.auth-btn-blue]="!isCompleted"
-      (click)="markAsComplete()"
+    <!-- BANNER TEKS BACAAN (Jika video_url NULL) -->
+    <div
+      *ngIf="activeLesson && !activeLesson?.video_url"
+      style="
+        background: #ffffff;
+        border: 1px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 16px;
+      "
     >
-      {{ isCompleted ? 'Batalkan Selesai 🔄' : 'Tandai Selesai' }}
-      <ion-icon name="checkmark-done-outline" slot="end" *ngIf="!isCompleted"></ion-icon>
-    </ion-button>
+      <ion-icon
+        name="document-text-outline"
+        style="font-size: 40px; color: #093c5d"
+      ></ion-icon>
+      <p
+        style="
+          margin: 6px 0 0 0;
+          font-size: 13px;
+          font-weight: 600;
+          color: #64748b;
+        "
+      >
+        Materi Berbasis Teks/Bacaan
+      </p>
+    </div>
+
+    <!-- JUDUL MATERI AKTIF -->
+    <h2
+      style="
+        font-size: 20px;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 12px 0 16px 0;
+      "
+    >
+      {{ activeLesson?.title || 'Pilih Materi' }}
+    </h2>
+
+    <!-- BOX TEKS KONTEN -->
+    <div
+      *ngIf="activeLesson"
+      style="
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 16px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 24px;
+      "
+    >
+      <h3
+        style="
+          font-size: 14px;
+          font-weight: 700;
+          color: #093c5d;
+          margin: 0 0 8px 0;
+        "
+      >
+        Materi Pembelajaran
+      </h3>
+      <div
+        style="
+          font-size: 14px;
+          color: #334155;
+          line-height: 1.6;
+          white-space: pre-line;
+        "
+      >
+        {{ activeLesson?.content_text || 'Belum ada isi materi.' }}
+      </div>
+    </div>
+
+    <!-- DAFTAR MATERI LESSONS (Menggunakan list rapi agar tidak menumpuk) -->
+    <div style="margin-top: 20px">
+      <h3
+        style="
+          font-size: 16px;
+          font-weight: 700;
+          color: #0f172a;
+          margin-bottom: 12px;
+        "
+      >
+        Daftar Materi
+      </h3>
+
+      <!-- JIKA DAFTAR MATERI ADA -->
+      <ion-list
+        *ngIf="lessons && lessons.length > 0"
+        lines="none"
+        style="background: transparent; padding: 0"
+      >
+        <ion-item
+          *ngFor="let item of lessons; let i = index"
+          (click)="selectLesson(item)"
+          [style.--background]="item.id === activeLesson?.id ? '#e0f2fe' : '#ffffff'"
+          style="
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            --padding-start: 12px;
+            --inner-padding-end: 12px;
+          "
+        >
+          <span
+            slot="start"
+            style="
+              font-weight: 700;
+              color: #093c5d;
+              font-size: 14px;
+              margin-right: 8px;
+            "
+          >
+            {{ i + 1 }}
+          </span>
+          <ion-label>
+            <h2
+              style="
+                font-size: 14px;
+                font-weight: 600;
+                color: #1e293b;
+                margin: 0;
+              "
+            >
+              {{ item.title }}
+            </h2>
+            <p style="font-size: 11px; color: #64748b; margin: 2px 0 0 0">
+              {{ item.video_url ? '📹 Video' : '📄 Teks Bacaan' }}
+            </p>
+          </ion-label>
+          <ion-icon
+            slot="end"
+            [name]="item.id === activeLesson?.id ? 'play-circle' : 'chevron-forward-outline'"
+            style="font-size: 20px; color: #093c5d"
+          ></ion-icon>
+        </ion-item>
+      </ion-list>
+
+      <!-- JIKA DAFTAR MATERI KOSONG -->
+      <div
+        *ngIf="!lessons || lessons.length === 0"
+        style="
+          text-align: center;
+          padding: 20px;
+          background: #fff;
+          border-radius: 12px;
+        "
+      >
+        <p style="color: #64748b; margin: 0">
+          Belum ada materi untuk kelas ini.
+        </p>
+      </div>
+    </div>
   </div>
 </ion-content>
