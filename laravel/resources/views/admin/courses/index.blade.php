@@ -3,7 +3,6 @@
 @section('content')
     <div class="px-2 sm:px-4 md:px-0 space-y-6">
 
-        <!-- HEADER UTAMA -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-black text-gray-900 tracking-tight">Daftar Kursus</h1>
@@ -18,7 +17,6 @@
             </div>
         </div>
 
-        <!-- FORM SEARCH & FILTER INTEGRASI (OPSI A: MINIMALIS & PROSISIONAL) -->
         <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
             <form action="{{ route('admin.courses.index') }}" method="GET"
                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
@@ -32,7 +30,6 @@
                     </div>
                 </div>
 
-                <!-- 2. Dropdown Jenis Kursus -->
                 <div class="w-full">
                     <select name="course_type" onchange="this.form.submit()"
                         class="w-full px-3 py-2.5 border border-gray-200 bg-gray-50/50 rounded-xl text-sm font-medium focus:border-indigo-500 focus:bg-white outline-none transition cursor-pointer">
@@ -45,7 +42,6 @@
                     </select>
                 </div>
 
-                <!-- 3. Dropdown Tingkat Kelas SMP (Kelas 7, 8, 9) -->
                 <div class="w-full flex gap-2">
                     <select name="grade_level" onchange="this.form.submit()"
                         class="w-full px-3 py-2.5 border border-gray-200 bg-gray-50/50 rounded-xl text-sm font-medium focus:border-indigo-500 focus:bg-white outline-none transition cursor-pointer">
@@ -69,7 +65,6 @@
             </form>
         </div>
 
-        <!-- 🖥️ DESKTOP VIEW: Tabel Tradisional -->
         <div class="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <table class="w-full text-left border-collapse">
                 <thead class="bg-gray-50 text-gray-400 text-xs uppercase font-bold tracking-wider">
@@ -194,7 +189,6 @@
             </table>
         </div>
 
-        <!-- 📱 MOBILE VIEW: List Card Responsif (EduVan) -->
         <div class="block md:hidden space-y-4">
             @forelse($courses as $course)
                 <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-4">

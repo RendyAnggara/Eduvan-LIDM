@@ -2,8 +2,6 @@
 
 @section('content')
     <div class="px-2 sm:px-4 md:px-0 space-y-6 w-full">
-
-        <!-- HEADER UTAMA: RATA POJOK KIRI SEJAJAR DENAH LAYOUT -->
         <div class="flex items-center gap-3">
             <a href="{{ route('admin.courses.index') }}"
                 class="w-10 h-10 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 flex items-center justify-center transition shadow-sm shrink-0 active:scale-95"
@@ -17,7 +15,6 @@
             </div>
         </div>
 
-        <!-- BANNER INFO (MEMANJANG PROPORSIONAL) -->
         <div class="p-4 bg-indigo-50/70 border border-indigo-100 rounded-2xl flex items-start gap-3 text-indigo-900 text-xs">
             <div
                 class="w-7 h-7 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm shadow-indigo-200">
@@ -33,13 +30,11 @@
             </div>
         </div>
 
-        <!-- FORM TUNGGAL RESPONSIF -->
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 md:p-8">
             <form action="{{ route('admin.courses.store') }}" method="POST" enctype="multipart/form-data"
                 class="space-y-6">
                 @csrf
 
-                <!-- JUDUL KURSUS -->
                 <div>
                     <label class="block text-xs font-bold text-gray-800 uppercase tracking-wider mb-2">Judul Kursus <span
                             class="text-rose-500">*</span></label>
@@ -48,7 +43,6 @@
                         placeholder="Contoh: Pemrograman Web Lanjutan dengan Laravel & Tailwind">
                 </div>
 
-                <!-- GRID KATEGORI & HARGA -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <!-- KATEGORI -->
                     <div>
@@ -82,7 +76,7 @@
                     </div>
                 </div>
 
-                <!-- DESKRIPSI KURSUS -->
+                <!-- DESKRIPSI -->
                 <div>
                     <label class="block text-xs font-bold text-gray-800 uppercase tracking-wider mb-2">Deskripsi Lengkap
                         <span class="text-rose-500">*</span></label>
@@ -91,7 +85,6 @@
                         placeholder="Jelaskan secara ringkas materi apa saja yang akan dipelajari student dalam kursus ini...">{{ old('description') }}</textarea>
                 </div>
 
-                <!-- UPLOAD COVER KURSUS INTERAKTIF -->
                 <div>
                     <label class="block text-xs font-bold text-gray-800 uppercase tracking-wider mb-2">Cover Sampul Kursus
                         (Opsional)</label>
@@ -114,7 +107,6 @@
                             </div>
                         </div>
 
-                        <!-- CONTAINER PREVIEW GAMBAR -->
                         <div id="imagePreviewContainer" class="hidden flex-col items-center justify-center gap-3">
                             <img id="imagePreview" src="#" alt="Preview Cover"
                                 class="max-h-40 rounded-xl border border-gray-200 shadow-md object-cover">
@@ -125,7 +117,6 @@
                     </div>
                 </div>
 
-                <!-- TOMBOL AKSI RESPONSIF -->
                 <div class="pt-4 border-t border-gray-100 flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
                     <a href="{{ route('admin.courses.index') }}"
                         class="w-full sm:w-auto px-6 py-3 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold text-center transition">
