@@ -5,7 +5,6 @@
         <h2 class="text-2xl font-bold text-gray-800">Edit Kursus: {{ $course->title }}</h2>
     </div>
 
-    {{-- 🟢 TAMBAHAN: Alert Box untuk menampilkan pesan eror validasi jika gambar ditolak --}}
     @if ($errors->any())
         <div class="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-sm">
             <p class="font-bold mb-1"><i class="fas fa-exclamation-triangle"></i> Terjadi kesalahan input:</p>
@@ -57,7 +56,6 @@
                         <input type="file" name="image" class="mt-1 block w-full text-sm text-gray-500">
                         @if ($course->image)
                             <div class="mt-3 flex items-center gap-3">
-                                {{-- 🟢 TAMBAHAN: Preview gambar saat ini biar kelihatan --}}
                                 <img src="{{ $course->image }}" class="w-20 h-12 object-cover rounded-lg border">
                                 <p class="text-xs text-gray-400">Gambar saat ini yang tersimpan di database.</p>
                             </div>

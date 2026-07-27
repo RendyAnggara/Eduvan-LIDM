@@ -3,7 +3,6 @@
 @section('content')
     <div class="px-2 sm:px-4 md:px-0 space-y-6 w-full">
 
-        <!-- HEADER UTAMA DENGAN TOMBOL BACK RATA POJOK KIRI -->
         <div class="flex items-center gap-3">
             <a href="{{ route('admin.courses.index') }}"
                 class="w-10 h-10 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 flex items-center justify-center transition shadow-sm shrink-0 active:scale-95"
@@ -30,7 +29,6 @@
             </div>
         </div>
 
-        <!-- ALERT ERROR VALIDASI -->
         @if ($errors->any())
             <div class="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs space-y-1">
                 <p class="font-bold flex items-center gap-2">
@@ -44,7 +42,6 @@
             </div>
         @endif
 
-        <!-- ALERT SUKSES -->
         @if (session('success'))
             <div
                 class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl text-xs font-bold flex items-center gap-2">
@@ -52,13 +49,10 @@
             </div>
         @endif
 
-        <!-- GRID UTAMA (RESPONSIF 1 KOLOM DI MOBILE, 3 KOLOM DI DESKTOP) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
-            <!-- KOLOM KIRI: FORM TAMBAH MATERI / CARD READ-ONLY INFO -->
             <div class="w-full">
                 @if ($course->course_type !== 'school')
-                    <!-- FORM TAMBAH MATERI (KHUSUS KURSUS ADMIN) -->
                     <div class="bg-white p-5 sm:p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
                         <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
                             <i class="fas fa-plus-circle text-indigo-600 text-sm"></i>
@@ -95,7 +89,6 @@
                         </form>
                     </div>
                 @else
-                    <!-- CARD INFO READ-ONLY (KHUSUS KURSUS GURU/SEKOLAH) -->
                     <div class="bg-blue-50/60 border border-blue-100 rounded-2xl p-5 space-y-3">
                         <div class="flex items-center gap-2 text-blue-900 font-bold text-xs uppercase tracking-wider">
                             <i class="fas fa-lock text-blue-600"></i> Mode Pantau (Read-Only)
@@ -116,7 +109,6 @@
                 @endif
             </div>
 
-            <!-- KOLOM KANAN: DAFTAR MATERI (TAMPILAN DUAL DESKTOP & MOBILE) -->
             <div class="lg:col-span-2 w-full min-w-0">
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                     <div class="p-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between gap-2">
@@ -129,7 +121,6 @@
                         </span>
                     </div>
 
-                    <!-- 🖥️ DESKTOP VIEW: Tabel Tradisional -->
                     <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead
@@ -191,8 +182,6 @@
                             </tbody>
                         </table>
                     </div>
-
-                    <!-- 📱 MOBILE VIEW: List Card Vertikal (EduVan Screen) -->
                     <div class="block md:hidden p-4 space-y-3">
                         @forelse($course->contents->sortBy('order') as $content)
                             <div class="bg-gray-50/60 rounded-xl border border-gray-100 p-3.5 space-y-2 shadow-sm">
