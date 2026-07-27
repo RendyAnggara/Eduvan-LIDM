@@ -13,18 +13,20 @@ class QuizController extends Controller
 {
     public function index()
     {
-        $userId = Auth::id();
+        $schoolId = Auth::user()->school_id;
 
-        $quizzes = Quiz::whereHas('course.teachers', function ($query) use ($userId) {
-                $query->where('course_user.user_id', $userId);
+        // Ambil kuis yang mapelnya terikat dengan guru satu instansi sekolah yang sama
+        $quizzes = Quiz::whereHas('course.teachers', function ($query) use ($schoolId) {
+                $query->where('users.school_id', $schoolId);
             })
             ->with('course')
             ->withCount('questions')
             ->get();
 
+        // Ambil mapel yang dimiliki oleh sekolah yang sama lewat relasi guru
         $courses = Course::where('course_type', 'school')
-            ->whereHas('teachers', function ($query) use ($userId) {
-                $query->where('course_user.user_id', $userId);
+            ->whereHas('teachers', function ($query) use ($schoolId) {
+                $query->where('users.school_id', $schoolId);
             })
             ->get();
 
@@ -33,19 +35,19 @@ class QuizController extends Controller
 
     public function store(Request $request)
     {
-        $userId = Auth::id();
+        $schoolId = Auth::user()->school_id;
 
         $request->validate([
             'course_id' => [
                 'required',
                 'exists:courses,id',
-                function ($attribute, $value, $fail) use ($userId) {
+                function ($attribute, $value, $fail) use ($schoolId) {
                     $exists = Course::where('id', $value)
-                        ->whereHas('teachers', function ($q) use ($userId) {
-                            $q->where('course_user.user_id', $userId);
+                        ->whereHas('teachers', function ($q) use ($schoolId) {
+                            $q->where('users.school_id', $schoolId);
                         })->exists();
                     if (!$exists) {
-                        $fail('Mata pelajaran yang dipilih tidak valid untuk otoritas akun Anda.');
+                        $fail('Mata pelajaran yang dipilih tidak valid untuk otoritas instansi sekolah Anda.');
                     }
                 },
             ],
@@ -65,7 +67,7 @@ class QuizController extends Controller
     public function destroy($id)
     {
         $quiz = Quiz::whereHas('course.teachers', function ($query) {
-            $query->where('course_user.user_id', Auth::id());
+            $query->where('users.school_id', Auth::user()->school_id);
         })->findOrFail($id);
 
         $quiz->delete();
@@ -76,7 +78,7 @@ class QuizController extends Controller
     public function manageQuestions($id)
     {
         $quiz = Quiz::whereHas('course.teachers', function ($query) {
-                $query->where('course_user.user_id', Auth::id());
+                $query->where('users.school_id', Auth::user()->school_id);
             })
             ->with(['course', 'questions'])
             ->findOrFail($id);
@@ -94,8 +96,9 @@ class QuizController extends Controller
             'option_d' => 'required|string',
             'correct_answer' => 'required|in:A,B,C,D',
         ]);
+
         $quiz = Quiz::whereHas('course.teachers', function ($query) {
-            $query->where('course_user.user_id', Auth::id());
+            $query->where('users.school_id', Auth::user()->school_id);
         })->findOrFail($id);
 
         Question::create([
@@ -114,7 +117,7 @@ class QuizController extends Controller
     public function destroyQuestion($id)
     {
         $question = Question::whereHas('quiz.course.teachers', function ($query) {
-            $query->where('course_user.user_id', Auth::id());
+            $query->where('users.school_id', Auth::user()->school_id);
         })->findOrFail($id);
 
         $question->delete();
@@ -122,4 +125,3 @@ class QuizController extends Controller
         return redirect()->back()->with('success', 'Soal berhasil dihapus dari kuis!');
     }
 }
-    

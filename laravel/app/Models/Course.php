@@ -16,8 +16,10 @@ class Course extends Model
         'image',
         'rating',
         'course_type',
+        'school_id',  
         'grade_level'
     ];
+
     public function contents(): HasMany
     {
         return $this->hasMany(Content::class)->orderBy('order', 'asc');
@@ -51,5 +53,10 @@ class Course extends Model
     public function teachers()
     {
         return $this->belongsToMany(User::class, 'course_user', 'course_id', 'user_id');
+    }
+
+    public function school()
+    {
+        return $this->belongsTo(\App\Models\School::class, 'school_id');
     }
 }

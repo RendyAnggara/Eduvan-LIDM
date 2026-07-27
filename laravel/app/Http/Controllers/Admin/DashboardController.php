@@ -4,27 +4,36 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\School;
 use App\Models\User;
-use App\Models\Enrollment; // Atau Purchase, sesuaikan nama model transaksi kamu
+use App\Models\Enrollment;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     public function index()
     {
+        $totalPaidCourses = Course::where('course_type', 'premium')->count();
+
         $stats = [
-            'total_courses' => Course::count(),
-            'total_students' => User::where('role', 'student')->count(),
-            'total_purchases' => Enrollment::count(),
+            'total_courses' => $totalPaidCourses,
+            'total_schools' => School::count(),
         ];
 
-        // Ambil student unik yang baru saja melakukan aktivitas/pembelian
-        $recentStudents = User::where('role', 'student')
-            ->has('enrollments') // Pastikan hanya student yang punya kursus
-            ->with(['enrollments.course']) // Eager load untuk keperluan modal
+        $schoolsData = School::withCount([
+            'users as total_teachers' => function ($query) {
+                $query->where('role', 'teacher');
+            },
+            'users as total_students' => function ($query) {
+                $query->where('role', 'student');
+            }
+        ])->latest()->get();
+
+        $recentTransactions = Enrollment::with(['user', 'course'])
             ->latest()
             ->take(5)
             ->get();
-    return view('admin.dashboard', compact('stats', 'recentStudents'));
+
+        return view('admin.dashboard', compact('stats', 'schoolsData', 'recentTransactions'));
     }
 }
