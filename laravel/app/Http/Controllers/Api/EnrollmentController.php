@@ -155,7 +155,7 @@ class EnrollmentController extends Controller
         }
     }
 
-    public function index(Request $request)
+public function index(Request $request)
     {
         $userId = $request->user()->id;
 
@@ -164,6 +164,14 @@ class EnrollmentController extends Controller
             ->get()
             ->map(function ($item) use ($userId)
             {
+                // Normalisasi string status agar Ionic gampang bacanya
+                $statusRaw = strtolower(trim($item->status));
+                if ($statusRaw === 'checking admin') {
+                    $item->status_normalized = 'pending';
+                } else {
+                    $item->status_normalized = $statusRaw;
+                }
+
                 $totalMateri = \Illuminate\Support\Facades\DB::table('contents')
                     ->where('course_id', $item->course_id)
                     ->count();
