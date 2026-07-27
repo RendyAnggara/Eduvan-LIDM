@@ -108,26 +108,18 @@
         <div
           class="custom-video-item"
           *ngFor="let materi of contents"
-          (click)="paymentStatus === 'success' ? klikMateri(materi.id) : null"
-          [class.item-locked]="paymentStatus !== 'success'"
+          (click)="klikMateri(materi.id)"
         >
           <div class="video-item-left">
             <div class="play-indicator-circle">
-              <ion-icon
-                [name]="paymentStatus === 'success' ? 'play' : 'lock-closed'"
-              ></ion-icon>
+              <ion-icon name="play"></ion-icon>
             </div>
             <div class="video-meta-detail">
               <h4>{{ materi.title }}</h4>
               <p>Durasi: {{ materi.duration || '15' }} Menit</p>
             </div>
           </div>
-          <span
-            class="status-video-badge"
-            [class.badge-success-color]="paymentStatus === 'success'"
-          >
-            {{ paymentStatus === 'success' ? 'Akses' : 'Terkunci' }}
-          </span>
+          <span class="status-video-badge badge-success-color"> Akses </span>
         </div>
 
         <div
@@ -144,59 +136,8 @@
 
 <ion-footer class="ion-no-border premium-action-footer">
   <div class="footer-wrapper">
-    <div *ngIf="paymentStatus === 'success'" class="rating-trigger-full">
-      <div class="rating-zone-box" (click)="isModalRatingOpen = true">
-        <div class="zone-left">
-          <ion-icon name="star-outline" class="star-pulse"></ion-icon>
-          <div class="zone-texts">
-            <h4>Bagikan Pengalamanmu</h4>
-            <p>Berikan ulasan dan rating bintang untuk kelas ini</p>
-          </div>
-        </div>
-        <ion-icon
-          name="chevron-forward-outline"
-          class="arrow-forward"
-        ></ion-icon>
-      </div>
-    </div>
-
     <div class="action-buttons-row">
-      <div
-        class="button-main-col"
-        *ngIf="paymentStatus === 'none' || !paymentStatus"
-      >
-        <button
-          class="btn-premium-action bg-navy"
-          (click)="bukaModalUploadTransfer()"
-        >
-          <div class="inner-content-btn">
-            <span class="lbl-btn">Daftar & Kirim Bukti</span>
-            <span class="lbl-price"
-              >Rp {{ course?.price | number:'1.0-0' }}</span
-            >
-          </div>
-        </button>
-      </div>
-
-      <div class="button-main-col" *ngIf="paymentStatus === 'pending'">
-        <button
-          class="btn-premium-action bg-orange-gradient"
-          style="opacity: 0.9"
-          disabled
-        >
-          Menunggu Verifikasi Admin...
-          <ion-icon
-            name="time-outline"
-            style="margin-left: 6px; font-size: 16px"
-          ></ion-icon>
-        </button>
-      </div>
-
-      <div
-        class="button-main-col"
-        *ngIf="paymentStatus === 'success'"
-        style="width: 100%"
-      >
+      <div class="button-main-col" style="width: 100%">
         <ion-button
           expand="block"
           color="success"
@@ -204,7 +145,7 @@
           (click)="masukKelas(course.id)"
         >
           <div class="inner-content-btn">
-            <span class="lbl-btn">Mulai Belajar Sekarang</span>
+            <span class="lbl-btn">Mulai Belajar Sekarang (MODE TEST)</span>
           </div>
           <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
         </ion-button>
