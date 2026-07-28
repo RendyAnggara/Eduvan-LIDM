@@ -2,8 +2,6 @@
 
 @section('content')
     <div class="px-2 sm:px-4 md:px-0 space-y-4 sm:space-y-6">
-
-        <!-- NAVIGASI & HEADER TOMBOL AKSI (RESPONSIF MOBILE FLEX) -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div class="flex items-center justify-between sm:justify-start w-full sm:w-auto gap-2">
                 <a href="{{ route('admin.students.index') }}"
@@ -11,7 +9,6 @@
                     <i class="fas fa-arrow-left text-[10px]"></i> Kembali
                 </a>
 
-                <!-- Tombol Hapus tampil sejajar di mobile -->
                 <form action="{{ route('admin.students.destroy', $student->id) }}" method="POST" class="sm:hidden"
                     onsubmit="return confirm('Apakah Anda yakin ingin menghapus student ini?')">
                     @csrf
@@ -26,7 +23,6 @@
             <div class="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto">
                 <h1 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Detail Profil Student</h1>
 
-                <!-- Tombol Hapus Desktop -->
                 <form action="{{ route('admin.students.destroy', $student->id) }}" method="POST" class="hidden sm:block"
                     onsubmit="return confirm('Apakah Anda yakin ingin menghapus student ini?')">
                     @csrf
@@ -62,14 +58,12 @@
             }
         @endphp
 
-        <!-- HERO PROFILE BANNER CARD (OPTIMIZED FOR MOBILE) -->
         <div
             class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 rounded-3xl p-5 sm:p-8 text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
             <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
 
             <div
                 class="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5 text-center sm:text-left">
-                <!-- Avatar Inisial -->
                 <div
                     class="w-16 h-16 sm:w-24 sm:h-24 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center text-2xl sm:text-4xl font-black shadow-inner shrink-0">
                     {{ strtoupper(substr($student->name, 0, 1)) }}
@@ -94,7 +88,6 @@
                     <p class="text-indigo-200 text-xs sm:text-sm font-medium mt-1 truncate max-w-full px-2 sm:px-0">
                         {{ $student->email }}</p>
 
-                    <!-- BADGE SEKOLAH & KELAS -->
                     <div class="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2 mt-3 sm:mt-4">
                         @if ($student->school)
                             <span
@@ -126,7 +119,6 @@
             </div>
         </div>
 
-        <!-- 📊 KARTU RINGKASAN METRIK (RESPONSIF SIZING) -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
             <div
                 class="bg-white p-3.5 sm:p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-2.5 sm:gap-3">
@@ -320,7 +312,6 @@
                 }
             };
 
-            // CONFIG GRAFIK MOBILE
             const optionsMobile = {
                 series: [{
                     name: 'Progres Belajar',
