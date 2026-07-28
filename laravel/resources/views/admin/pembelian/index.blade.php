@@ -85,6 +85,7 @@
                 </div>
             </div>
         </div>
+
         <div class="bg-white p-2 rounded-2xl border border-gray-100 shadow-sm flex flex-wrap gap-2">
             <button onclick="switchTab('history')" id="tabBtn-history"
                 class="tab-btn flex-1 min-w-[140px] py-2.5 px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 bg-indigo-600 text-white shadow-sm">
@@ -96,6 +97,7 @@
                 <i class="fas fa-chart-pie text-xs"></i> Omzet Per Kursus
             </button>
         </div>
+
         <div id="tabContent-history" class="tab-content space-y-4">
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div
@@ -114,6 +116,7 @@
                             class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition shadow-sm">
                     </div>
                 </div>
+
                 <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left border-collapse" id="dataTable">
                         <thead
@@ -134,16 +137,20 @@
                                 @endphp
                                 <tr class="hover:bg-gray-50/80 transition-colors">
                                     <td class="p-4 pl-6 text-xs text-gray-500 whitespace-nowrap">
-                                        {{ $trans->created_at->timezone('Asia/Jakarta')->format('d M Y, H:i') }} WIB
+                                        {{ $trans->created_at ? $trans->created_at->timezone('Asia/Jakarta')->format('d M Y, H:i') : '-' }}
+                                        WIB
                                     </td>
                                     <td class="p-4 font-bold text-gray-900">
-                                        {{ $trans->user->name }}
-                                        <span
-                                            class="block text-xs font-normal text-gray-400">{{ $trans->user->email }}</span>
+                                        {{ $trans->user->name ?? 'User Tidak Ditemukan' }}
+                                        <span class="block text-xs font-normal text-gray-400">
+                                            {{ $trans->user->email ?? '-' }}
+                                        </span>
                                     </td>
-                                    <td class="p-4 text-gray-800 font-medium">{{ $trans->course->title }}</td>
+                                    <td class="p-4 text-gray-800 font-medium">
+                                        {{ $trans->course->title ?? 'Materi Tidak Ditemukan' }}
+                                    </td>
                                     <td class="p-4 text-right font-black text-gray-900">
-                                        Rp {{ number_format($trans->price_bought, 0, ',', '.') }}
+                                        Rp {{ number_format($trans->amount ?? 0, 0, ',', '.') }}
                                     </td>
                                     <td class="p-4 text-center">
                                         @if ($isPaid)
@@ -176,6 +183,7 @@
                         </tbody>
                     </table>
                 </div>
+
                 <div class="block md:hidden p-3.5 space-y-3 bg-gray-50/30" id="mobileCardsContainer">
                     @forelse ($transactionDetails as $trans)
                         @php
@@ -185,9 +193,11 @@
                             <div class="flex justify-between items-start">
                                 <div>
                                     <h5 class="font-bold text-gray-900 text-sm leading-tight student-name">
-                                        {{ $trans->user->name }}</h5>
+                                        {{ $trans->user->name ?? 'User Tidak Ditemukan' }}
+                                    </h5>
                                     <span class="text-[10px] text-gray-400 block mt-0.5">
-                                        {{ $trans->created_at->timezone('Asia/Jakarta')->format('d M Y, H:i') }} WIB
+                                        {{ $trans->created_at ? $trans->created_at->timezone('Asia/Jakarta')->format('d M Y, H:i') : '-' }}
+                                        WIB
                                     </span>
                                 </div>
                                 @if ($isPaid)
@@ -207,12 +217,14 @@
                                 <div class="max-w-[55%]">
                                     <span class="text-[10px] text-gray-400 block">Materi:</span>
                                     <p class="text-xs text-gray-800 font-bold truncate course-title">
-                                        {{ $trans->course->title }}</p>
+                                        {{ $trans->course->title ?? 'Materi Tidak Ditemukan' }}
+                                    </p>
                                 </div>
                                 <div class="text-right">
                                     <span class="text-[10px] text-gray-400 block">Harga:</span>
-                                    <p class="text-sm font-black text-gray-900">Rp
-                                        {{ number_format($trans->price_bought, 0, ',', '.') }}</p>
+                                    <p class="text-sm font-black text-gray-900">
+                                        Rp {{ number_format($trans->amount ?? 0, 0, ',', '.') }}
+                                    </p>
                                 </div>
                             </div>
 

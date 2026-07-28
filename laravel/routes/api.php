@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\CertificateApiController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\NotificationApiController;
 use App\Http\Controllers\Api\VoucherController;
+use App\Http\Controllers\Api\PaymentController; 
 
 Route::get('/', function () {
     return response()->json([
@@ -21,24 +22,25 @@ Route::get('/', function () {
     ]);
 });
 
-// Route Publik Akses Umum/Mobile Siswa Sebelum Login
 Route::get('/courses', [CourseController::class, 'index']);
 Route::get('/courses/{id}', [CourseController::class, 'show']);
+Route::get('/courses/{id}/contents', [CourseController::class, 'getContents']);
+
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/forgot-password/send-otp', [ForgotPasswordController::class, 'sendOtp']);
 Route::post('/forgot-password/verify-otp', [ForgotPasswordController::class, 'verifyOtp']);
 Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'resetPassword']);
-Route::post('/xendit/callback', [EnrollmentController::class, 'handleCallback']);
-Route::get('/courses/{id}/contents', [CourseController::class, 'getContents']);
 
+Route::post('/payment/callback', [PaymentController::class, 'handleCallback']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::put('/user/update', [AuthController::class, 'updateProfile']); // Hanya untuk update password di Controller baru
+    Route::put('/user/update', [AuthController::class, 'updateProfile']);
     Route::get('/notifications', [NotificationApiController::class, 'getNotifUser']);
     Route::post('/notifications/read/{id}', [NotificationApiController::class, 'markAsRead']);
-    Route::get('/courses', [CourseController::class, 'index']);
+
+    Route::post('/payment/request', [PaymentController::class, 'requestPayment']);
 
     Route::middleware('role:student')->group(function () {
         Route::post('/enrollments', [EnrollmentController::class, 'store']);
@@ -48,9 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/courses/{course_id}/progress', [ProgressController::class, 'getProgress']);
 
         Route::get('/courses/{course_id}/quizzes', [CourseController::class, 'getQuizzesForStudent']);
-
         Route::post('/progress/submit-quiz', [ProgressController::class, 'submitQuiz']);
-
 
         Route::get('/courses/{course_id}/certificate', [EnrollmentController::class, 'getCertificate']);
         Route::get('/my-certificates', [CertificateApiController::class, 'index']);
