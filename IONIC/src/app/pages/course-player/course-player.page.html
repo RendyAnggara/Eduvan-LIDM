@@ -12,7 +12,6 @@
 </ion-header>
 
 <ion-content style="--background: #f8fafc">
-  <!-- 1. LOADING INDIKATOR (Biar data nggak kedip/hilang sebentar) -->
   <div
     *ngIf="isLoading"
     class="ion-text-center ion-padding"
@@ -24,179 +23,329 @@
     </p>
   </div>
 
-  <!-- 2. KONTEN UTAMA (Baru muncul setelah isLoading = false) -->
   <div *ngIf="!isLoading" style="padding: 16px">
-    <!-- IFRAME VIDEO (Jika Ada) -->
     <div
-      *ngIf="activeLesson?.video_url"
       style="
         width: 100%;
-        height: 210px;
+        height: 215px;
         border-radius: 12px;
         overflow: hidden;
         background: #000;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         margin-bottom: 16px;
       "
     >
       <iframe
+        *ngIf="activeLesson?.video_url"
         [src]="getSafeVideoUrl(activeLesson.video_url)"
         style="width: 100%; height: 100%; border: none"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowfullscreen
       ></iframe>
-    </div>
 
-    <!-- BANNER TEKS BACAAN (Jika video_url NULL) -->
-    <div
-      *ngIf="activeLesson && !activeLesson?.video_url"
-      style="
-        background: #ffffff;
-        border: 1px dashed #cbd5e1;
-        border-radius: 12px;
-        padding: 20px;
-        text-align: center;
-        margin-bottom: 16px;
-      "
-    >
-      <ion-icon
-        name="document-text-outline"
-        style="font-size: 40px; color: #093c5d"
-      ></ion-icon>
-      <p
-        style="
-          margin: 6px 0 0 0;
-          font-size: 13px;
-          font-weight: 600;
-          color: #64748b;
-        "
-      >
-        Materi Berbasis Teks/Bacaan
-      </p>
-    </div>
-
-    <!-- JUDUL MATERI AKTIF -->
-    <h2
-      style="
-        font-size: 20px;
-        font-weight: 700;
-        color: #0f172a;
-        margin: 12px 0 16px 0;
-      "
-    >
-      {{ activeLesson?.title || 'Pilih Materi' }}
-    </h2>
-
-    <!-- BOX TEKS KONTEN -->
-    <div
-      *ngIf="activeLesson"
-      style="
-        background: #ffffff;
-        border-radius: 12px;
-        padding: 16px;
-        border: 1px solid #e2e8f0;
-        margin-bottom: 24px;
-      "
-    >
-      <h3
-        style="
-          font-size: 14px;
-          font-weight: 700;
-          color: #093c5d;
-          margin: 0 0 8px 0;
-        "
-      >
-        Materi Pembelajaran
-      </h3>
       <div
+        *ngIf="!activeLesson?.video_url"
         style="
-          font-size: 14px;
-          color: #334155;
-          line-height: 1.6;
-          white-space: pre-line;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          color: #94a3b8;
+          background: #1e293b;
         "
       >
-        {{ activeLesson?.content_text || 'Belum ada isi materi.' }}
-      </div>
-    </div>
-
-    <!-- DAFTAR MATERI LESSONS (Menggunakan list rapi agar tidak menumpuk) -->
-    <div style="margin-top: 20px">
-      <h3
-        style="
-          font-size: 16px;
-          font-weight: 700;
-          color: #0f172a;
-          margin-bottom: 12px;
-        "
-      >
-        Daftar Materi
-      </h3>
-
-      <!-- JIKA DAFTAR MATERI ADA -->
-      <ion-list
-        *ngIf="lessons && lessons.length > 0"
-        lines="none"
-        style="background: transparent; padding: 0"
-      >
-        <ion-item
-          *ngFor="let item of lessons; let i = index"
-          (click)="selectLesson(item)"
-          [style.--background]="item.id === activeLesson?.id ? '#e0f2fe' : '#ffffff'"
-          style="
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            --padding-start: 12px;
-            --inner-padding-end: 12px;
-          "
-        >
-          <span
-            slot="start"
-            style="
-              font-weight: 700;
-              color: #093c5d;
-              font-size: 14px;
-              margin-right: 8px;
-            "
-          >
-            {{ i + 1 }}
-          </span>
-          <ion-label>
-            <h2
-              style="
-                font-size: 14px;
-                font-weight: 600;
-                color: #1e293b;
-                margin: 0;
-              "
-            >
-              {{ item.title }}
-            </h2>
-            <p style="font-size: 11px; color: #64748b; margin: 2px 0 0 0">
-              {{ item.video_url ? '📹 Video' : '📄 Teks Bacaan' }}
-            </p>
-          </ion-label>
-          <ion-icon
-            slot="end"
-            [name]="item.id === activeLesson?.id ? 'play-circle' : 'chevron-forward-outline'"
-            style="font-size: 20px; color: #093c5d"
-          ></ion-icon>
-        </ion-item>
-      </ion-list>
-
-      <!-- JIKA DAFTAR MATERI KOSONG -->
-      <div
-        *ngIf="!lessons || lessons.length === 0"
-        style="
-          text-align: center;
-          padding: 20px;
-          background: #fff;
-          border-radius: 12px;
-        "
-      >
-        <p style="color: #64748b; margin: 0">
-          Belum ada materi untuk kelas ini.
+        <ion-icon
+          name="document-text-outline"
+          style="font-size: 42px; margin-bottom: 8px; color: #38bdf8"
+        ></ion-icon>
+        <p style="margin: 0; font-size: 13px; font-weight: 600">
+          Materi Teks / Bacaan Aktif
         </p>
       </div>
     </div>
+
+    <h2
+      style="
+        font-size: 18px;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0 0 16px 0;
+      "
+    >
+      {{ activeLesson?.title }}
+    </h2>
+
+    <ion-accordion-group value="materi-teks" expand="inset" style="margin: 0">
+      <ion-accordion
+        value="materi-teks"
+        style="
+          background: #ffffff;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+          margin-bottom: 12px;
+        "
+      >
+        <ion-item slot="header" color="light" style="--background: #ffffff">
+          <ion-icon
+            name="book-outline"
+            slot="start"
+            style="color: #093c5d; font-size: 20px"
+          ></ion-icon>
+          <ion-label
+            style="
+              font-weight: 700;
+              font-size: 14px;
+              color: #093c5d;
+              letter-spacing: 0.5px;
+            "
+          >
+            MATERI BACAAN / RINGKASAN
+          </ion-label>
+        </ion-item>
+
+        <div
+          slot="content"
+          style="
+            padding: 16px;
+            background: #ffffff;
+            border-top: 1px solid #f1f5f9;
+          "
+        >
+          <div
+            style="
+              background: #f1f5f9;
+              padding: 8px 12px;
+              border-radius: 6px;
+              margin-bottom: 12px;
+              border-left: 4px solid #093c5d;
+            "
+          >
+            <span
+              style="
+                font-size: 11px;
+                font-weight: 700;
+                color: #0284c7;
+                text-transform: uppercase;
+                display: block;
+                margin-bottom: 2px;
+              "
+            >
+              Pertemuan
+            </span>
+            <h4
+              style="
+                margin: 0;
+                font-size: 14px;
+                font-weight: 700;
+                color: #0f172a;
+              "
+            >
+              {{ activeLesson?.title ? activeLesson.title : 'Pertemuan
+              Pembelajaran' }}
+            </h4>
+          </div>
+          <div
+            style="
+              font-size: 14px;
+              color: #334155;
+              line-height: 1.6;
+              white-space: pre-line;
+            "
+          >
+            {{ activeLesson?.content_text || 'Belum ada isi materi bacaan untuk
+            bab ini.' }}
+          </div>
+        </div>
+      </ion-accordion>
+      <ion-accordion
+        value="video-list"
+        style="
+          background: #ffffff;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+          margin-bottom: 12px;
+        "
+      >
+        <ion-item slot="header" color="light" style="--background: #ffffff">
+          <ion-icon
+            name="videocam-outline"
+            slot="start"
+            style="color: #093c5d; font-size: 20px"
+          ></ion-icon>
+          <ion-label
+            style="
+              font-weight: 700;
+              font-size: 14px;
+              color: #093c5d;
+              letter-spacing: 0.5px;
+            "
+          >
+            VIDEO PEMBELAJARAN
+          </ion-label>
+        </ion-item>
+        <div
+          slot="content"
+          style="
+            padding: 8px 12px;
+            background: #ffffff;
+            border-top: 1px solid #f1f5f9;
+          "
+        >
+          <ion-list lines="none" style="background: transparent; padding: 0">
+            <ion-item
+              *ngFor="let item of lessons; let i = index"
+              (click)="selectLesson(item)"
+              [style.--background]="item.id === activeLesson?.id ? '#e0f2fe' : '#ffffff'"
+              style="
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                margin-bottom: 8px;
+                --padding-start: 10px;
+                cursor: pointer;
+              "
+            >
+              <ion-icon
+                name="play-circle-outline"
+                slot="start"
+                style="color: #093c5d; font-size: 20px"
+              ></ion-icon>
+              <ion-label>
+                <h2
+                  style="
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: #1e293b;
+                    margin: 0;
+                  "
+                >
+                  {{ item.title }}
+                </h2>
+                <p style="font-size: 11px; color: #64748b; margin: 2px 0 0 0">
+                  {{ item.video_url ? '📹 Video Tutorial' : '📄 Teks Bacaan' }}
+                </p>
+              </ion-label>
+              <ion-icon
+                slot="end"
+                [name]="item.id === activeLesson?.id ? 'checkmark-circle' : 'chevron-forward-outline'"
+                [style.color]="item.id === activeLesson?.id ? '#0284c7' : '#94a3b8'"
+                style="font-size: 18px"
+              ></ion-icon>
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-accordion>
+      <ion-accordion
+        value="tugas"
+        style="
+          background: #ffffff;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+        "
+      >
+        <ion-item slot="header" color="light" style="--background: #ffffff">
+          <ion-icon
+            name="clipboard-outline"
+            slot="start"
+            style="color: #093c5d; font-size: 20px"
+          ></ion-icon>
+          <ion-label
+            style="
+              font-weight: 700;
+              font-size: 14px;
+              color: #093c5d;
+              letter-spacing: 0.5px;
+            "
+          >
+            TUGAS & KUIS BAB
+          </ion-label>
+        </ion-item>
+
+        <div
+          slot="content"
+          style="
+            padding: 12px 16px;
+            background: #ffffff;
+            border-top: 1px solid #f1f5f9;
+          "
+        >
+          <div *ngIf="quizzes && quizzes.length > 0">
+            <div
+              *ngFor="let quiz of quizzes"
+              style="
+                background: #f8fafc;
+                border: 1px solid #cbd5e1;
+                border-radius: 10px;
+                padding: 14px;
+                margin-bottom: 10px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  margin-bottom: 8px;
+                "
+              >
+                <span
+                  style="
+                    background: #e0f2fe;
+                    color: #0369a1;
+                    font-size: 11px;
+                    font-weight: 700;
+                    padding: 4px 8px;
+                    border-radius: 6px;
+                    text-transform: uppercase;
+                  "
+                >
+                  Kuis Interaktif
+                </span>
+                <span style="font-size: 12px; color: #64748b; font-weight: 600">
+                  ⏱️ {{ quiz.time_limit || 30 }} Menit
+                </span>
+              </div>
+
+              <h4
+                style="
+                  margin: 0 0 6px 0;
+                  font-size: 15px;
+                  font-weight: 700;
+                  color: #0f172a;
+                "
+              >
+                {{ quiz.title }}
+              </h4>
+
+              <p style="margin: 0 0 12px 0; font-size: 12px; color: #64748b">
+                Jumlah Soal: {{ quiz.questions_count || 1 }} Soal Pilihan Ganda
+              </p>
+
+              <ion-button
+                (click)="openQuiz(quiz.id)"
+                expand="block"
+                size="small"
+                style="
+                  --background: #093c5d;
+                  --border-radius: 6px;
+                  font-weight: 600;
+                "
+              >
+                <ion-icon name="create-outline" slot="start"></ion-icon>
+                Kerjakan Kuis Sekarang
+              </ion-button>
+            </div>
+          </div>
+          <div
+            *ngIf="!quizzes || quizzes.length === 0"
+            style="text-align: center; padding: 12px; color: #64748b"
+          >
+            <p style="margin: 0; font-size: 13px">
+              Belum ada kuis yang ditambahkan untuk mata pelajaran ini.
+            </p>
+          </div>
+        </div>
+      </ion-accordion>
+    </ion-accordion-group>
   </div>
 </ion-content>
