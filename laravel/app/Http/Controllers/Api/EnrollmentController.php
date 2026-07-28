@@ -16,8 +16,7 @@ class EnrollmentController extends Controller
 {
     public function store(Request $request)
     {
-        try
-        {
+        try {
             // 1. VALIDASI: Wajib course_id dan file proof_of_payment (harus gambar)
             $request->validate([
                 'course_id'        => 'required|exists:courses,id',
@@ -25,8 +24,7 @@ class EnrollmentController extends Controller
             ]);
 
             $user = $request->user();
-            if (!$user)
-            {
+            if (!$user) {
                 return response()->json(['message' => 'Unauthorized'], 401);
             }
 
@@ -35,14 +33,11 @@ class EnrollmentController extends Controller
                 ->where('course_id', $request->course_id)
                 ->first();
 
-            if ($alreadyEnrolled)
-            {
-                if ($alreadyEnrolled->status === 'success')
-                {
+            if ($alreadyEnrolled) {
+                if ($alreadyEnrolled->status === 'success') {
                     return response()->json(['message' => 'Kamu sudah memiliki kursus ini'], 400);
                 }
-                if ($alreadyEnrolled->status === 'Checking Admin')
-                {
+                if ($alreadyEnrolled->status === 'Checking Admin') {
                     return response()->json([
                         'success' => false,
                         'message' => 'Pembayaran kamu sedang diperiksa oleh Admin. Mohon tunggu konfirmasi.',
@@ -52,8 +47,7 @@ class EnrollmentController extends Controller
             }
 
             $course = Course::find($request->course_id);
-            if (!$course)
-            {
+            if (!$course) {
                 return response()->json(['message' => 'Kursus tidak ditemukan'], 404);
             }
 
@@ -61,8 +55,7 @@ class EnrollmentController extends Controller
             $fileName = null;
 
             // 3. PROSES SIMPAN FILE BUKTI PEMBAYARAN KE STORAGE
-            if ($request->hasFile('proof_of_payment'))
-            {
+            if ($request->hasFile('proof_of_payment')) {
                 $file = $request->file('proof_of_payment');
 
                 // Penamaan unik file bukti transfer
@@ -92,9 +85,7 @@ class EnrollmentController extends Controller
                 'message' => 'Bukti pembayaran berhasil dikirim. Menunggu konfirmasi status oleh Admin.',
                 'data'    => $enrollment
             ]);
-        }
-        catch (\Throwable $e)
-        {
+        } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan internal: ' . $e->getMessage()
@@ -109,8 +100,7 @@ class EnrollmentController extends Controller
     {
         $mail = new PHPMailer(true);
 
-        try
-        {
+        try {
             // Konfigurasi SMTP Server (Menarik nilai dari file .env)
             $mail->isSMTP();
             $mail->Host       = env('MAIL_HOST', 'smtp.gmail.com');
@@ -147,9 +137,7 @@ class EnrollmentController extends Controller
 
             $mail->send();
             Log::info("Email notifikasi pembayaran manual Kursus ID {$course->id} berhasil dikirim ke Admin.");
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             // Dicatat ke log jika gagal agar alur response transaksi user di aplikasi tidak ikut terputus
             Log::error("Gagal memicu email notifikasi via PHPMailer. Error: {$mail->ErrorInfo}");
         }
@@ -157,56 +145,71 @@ class EnrollmentController extends Controller
 
     public function index(Request $request)
     {
-        $userId = $request->user()->id;
+        $student = $request->user();
+        $userId = $student->id;
 
-        $histori = Enrollment::with(['course'])
+        // 1. Ambil histori enrollment berbayar/manual dari tabel enrollments
+        $enrollments = Enrollment::with(['course.chapters.lessons'])
             ->where('user_id', $userId)
-            ->get()
-            ->map(function ($item) use ($userId)
-            {
-                $totalMateri = \Illuminate\Support\Facades\DB::table('contents')
-                    ->where('course_id', $item->course_id)
-                    ->count();
+            ->get();
 
-                $materiSelesai = \Illuminate\Support\Facades\DB::table('progress')
-                    ->where('user_id', $userId)
-                    ->where('course_id', $item->course_id)
-                    ->whereNotNull('content_id')
-                    ->where('is_completed', 1)
-                    ->count();
+        // 2. 🟢 AUTO-ENROLL: Ambil juga kelas sekolah sesuai kelas & sekolah siswa ini
+        $studentSchoolId = $student->school_id;
+        $rawClass = $student->class;
+        $studentClass = (string) filter_var($rawClass, FILTER_SANITIZE_NUMBER_INT);
 
-                $isQuizSelesai = \Illuminate\Support\Facades\DB::table('progress')
-                    ->where('user_id', $userId)
-                    ->where('course_id', $item->course_id)
-                    ->whereNull('content_id')
-                    ->where('is_completed', 1)
-                    ->exists();
+        $schoolCourses = Course::with(['chapters.lessons'])
+            ->leftJoin('course_user', 'courses.id', '=', 'course_user.course_id')
+            ->leftJoin('users as creators', 'course_user.user_id', '=', 'creators.id')
+            ->where('courses.course_type', 'school')
+            ->where('courses.grade_level', $studentClass)
+            ->where('creators.school_id', $studentSchoolId)
+            ->select('courses.*')
+            ->distinct()
+            ->get();
 
-                $item->is_quiz_unlocked = ($totalMateri > 0 && $materiSelesai === $totalMateri);
+        // Masukkan kelas sekolah ke daftar enrollment siswa secara otomatis jika belum ada di tabel enrollments
+        foreach ($schoolCourses as $course) {
+            $exists = $enrollments->contains('course_id', $course->id);
+            if (!$exists) {
+                $mockEnrollment = new Enrollment([
+                    'id' => $course->id,
+                    'user_id' => $userId,
+                    'course_id' => $course->id,
+                    'price_bought' => 0,
+                    'status' => 'active',
+                    'progress' => 0,
+                ]);
+                $mockEnrollment->setRelation('course', $course);
+                $enrollments->push($mockEnrollment);
+            }
+        }
 
-                $totalItemWajib = $totalMateri + 1;
-                $totalItemSelesai = $materiSelesai + ($isQuizSelesai ? 1 : 0);
+        // 3. Olah data progress dan status kuis
+        $histori = $enrollments->map(function ($item) use ($userId) {
+            $statusRaw = strtolower(trim($item->status ?? 'active'));
+            $item->status_normalized = ($statusRaw === 'checking admin') ? 'pending' : $statusRaw;
 
-                if ($totalItemWajib > 0)
-                {
-                    $item->progress = (int) round(($totalItemSelesai / $totalItemWajib) * 100);
-                }
-                else
-                {
+            // Cek apakah siswa sudah lulus kuis dari DB
+            $hasPassedQuiz = \App\Models\QuizResult::where('user_id', $userId)
+                ->where('course_id', $item->course_id)
+                ->where('status', 'passed')
+                ->exists();
+
+            if ($hasPassedQuiz || $item->progress >= 100) {
+                $item->progress = 100;
+            } else {
+                if (!$item->progress) {
                     $item->progress = 0;
                 }
+            }
 
-                if ($item->progress > 100)
-                {
-                    $item->progress = 100;
-                }
-
-                return $item;
-            });
+            return $item;
+        });
 
         return response()->json([
             'success' => true,
-            'message' => 'Histori pembelian kursus',
+            'message' => 'Histori pembelajaran siswa berhasil dimuat.',
             'data' => $histori
         ]);
     }
@@ -224,8 +227,7 @@ class EnrollmentController extends Controller
             ->where('status', 'passed')
             ->exists();
 
-        if (!$enrollment || $enrollment->progress < 100 || !$hasPassedQuiz)
-        {
+        if (!$enrollment || $enrollment->progress < 100 || !$hasPassedQuiz) {
             return response()->json([
                 'success' => false,
                 'message' => 'Selesaikan materi dan kuis untuk mengklaim sertifikat.'

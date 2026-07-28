@@ -29,7 +29,7 @@ Route::post('/forgot-password/send-otp', [ForgotPasswordController::class, 'send
 Route::post('/forgot-password/verify-otp', [ForgotPasswordController::class, 'verifyOtp']);
 Route::post('/forgot-password/reset', [ForgotPasswordController::class, 'resetPassword']);
 Route::post('/xendit/callback', [EnrollmentController::class, 'handleCallback']);
-Route::get('/courses/{course_id}/contents', [ContentController::class, 'index']);
+Route::get('/courses/{id}/contents', [CourseController::class, 'getContents']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
