@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
-use App\Models\Enrollment;
+use App\Models\Transaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -15,23 +15,24 @@ class TransactionController extends Controller
     public function index()
     {
         $courseReports = Course::where('price', '>', 0)
-            ->withCount(['enrollments as total_sold' => function ($query) {
+            ->withCount(['transactions as total_sold' => function ($query) {
                 $query->whereIn('status', ['success', 'PAID', 'SETTLED']);
             }])
-            ->withSum(['enrollments as total_revenue' => function ($query) {
+            ->withSum(['transactions as total_revenue' => function ($query) {
                 $query->whereIn('status', ['success', 'PAID', 'SETTLED']);
-            }], 'price_bought')
+            }], 'amount')
             ->get();
 
-        $transactionDetails = Enrollment::with(['user', 'course'])
+        $transactionDetails = Transaction::with(['user', 'course'])
             ->whereHas('user')
             ->whereHas('course')
             ->latest()
             ->get();
 
         $successfulTransactions = $transactionDetails->whereIn('status', ['success', 'PAID', 'SETTLED']);
-        $grandTotal = $successfulTransactions->sum('price_bought');
+        $grandTotal = $successfulTransactions->sum('amount');
         $totalSuccessCount = $successfulTransactions->count();
+
         $pendingCount = $transactionDetails->whereIn('status', ['pending', 'PENDING', 'Checking Admin'])->count();
 
         return view('admin.pembelian.index', compact(
@@ -45,12 +46,12 @@ class TransactionController extends Controller
 
     public function exportPdf()
     {
-        $transactions = Enrollment::with(['user', 'course'])
+        $transactions = Transaction::with(['user', 'course'])
             ->whereIn('status', ['success', 'PAID', 'SETTLED'])
             ->latest()
             ->get();
 
-        $totalRevenue = $transactions->sum('price_bought');
+        $totalRevenue = $transactions->sum('amount');
 
         $pdf = Pdf::loadView('admin.pembelian.pdf', compact('transactions', 'totalRevenue'));
 
@@ -59,7 +60,7 @@ class TransactionController extends Controller
 
     public function downloadReport($id)
     {
-        $trans = Enrollment::with(['user', 'course'])->findOrFail($id);
+        $trans = Transaction::with(['user', 'course'])->findOrFail($id);
 
         $data = [
             'trans' => $trans,
@@ -77,12 +78,12 @@ class TransactionController extends Controller
 
     public function downloadCourseReport($id)
     {
-        $course = Course::with(['enrollments' => function ($query) {
+        $course = Course::with(['transactions' => function ($query) {
             $query->whereIn('status', ['success', 'PAID', 'SETTLED'])->with('user')->latest();
         }])->findOrFail($id);
 
-        $totalSold = $course->enrollments->count();
-        $totalRevenue = $course->enrollments->sum('price_bought');
+        $totalSold = $course->transactions->count();
+        $totalRevenue = $course->transactions->sum('amount');
 
         $data = [
             'course' => $course,

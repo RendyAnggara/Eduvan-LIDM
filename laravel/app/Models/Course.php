@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Progress;
+use App\Models\Transaction;
 
 class Course extends Model
 {
@@ -16,7 +17,7 @@ class Course extends Model
         'image',
         'rating',
         'course_type',
-        'school_id',  
+        'school_id',
         'grade_level'
     ];
 
@@ -33,6 +34,11 @@ class Course extends Model
     public function enrollments(): HasMany
     {
         return $this->hasMany(Enrollment::class);
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
     }
 
     public function users()

@@ -8,10 +8,10 @@ use App\Models\Enrollment;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class PaymentController extends Controller
 {
-    // 1. Fungsi ketika siswa menekan tombol "Beli Kursus" di aplikasi
     public function requestPayment(Request $request)
     {
         $request->validate([
@@ -21,15 +21,15 @@ class PaymentController extends Controller
 
         $user = $request->user();
         $referenceId = 'EV-' . time() . '-' . Str::upper(Str::random(5));
+        $paymentUrl = 'https://checkout.dompetx.com/pay/' . $referenceId;
 
-        // Simpan data ke database dengan status awal 'pending'
         $transaction = Transaction::create([
             'user_id' => $user->id,
             'course_id' => $request->course_id,
             'reference_id' => $referenceId,
             'amount' => $request->amount,
             'status' => 'pending',
-            'payment_url' => 'https://checkout.dompetx.com/simulate-link/' . $referenceId
+            'payment_url' => $paymentUrl
         ]);
 
         return response()->json([
@@ -39,38 +39,38 @@ class PaymentController extends Controller
         ]);
     }
 
-    // 2. Fungsi Webhook/Callback untuk menerima laporan lunas dari DompetX (Simulasi Postman)
     public function handleCallback(Request $request)
     {
-        $request->validate([
-            'transaction_id' => 'required',
-            'status' => 'required'
-        ]);
+        $refId = $request->input('reference_id')
+            ?? $request->input('reference')
+            ?? $request->input('transaction_id');
+
+        $status = strtoupper($request->input('status', ''));
+
+        if (!$refId) {
+            return response()->json(['message' => 'Parameter reference_id wajib diisi'], 400);
+        }
 
         DB::beginTransaction();
 
         try {
-            $transaction = Transaction::where('reference_id', $request->transaction_id)->first();
+            $transaction = Transaction::where('reference_id', $refId)->first();
 
             if (!$transaction) {
-                return response()->json(['message' => 'Transaksi tidak ditemukan'], 404);
+                return response()->json(['message' => 'Transaksi tidak ditemukan: ' . $refId], 404);
             }
 
-            if ($transaction->status === 'success') {
+            if (in_array(strtoupper($transaction->status), ['SUCCESS', 'PAID', 'SETTLED'])) {
                 return response()->json(['message' => 'Transaksi ini sudah sukses sebelumnya']);
             }
 
-            if ($request->status === 'SUCCESS') {
-                // Ubah transaksi menjadi sukses
+            if (in_array($status, ['SUCCESS', 'PAID', 'SETTLED'])) {
                 $transaction->status = 'success';
                 $transaction->save();
 
-                // Buka akses kursus secara otomatis di tabel enrollments
                 $isEnrolled = Enrollment::where('user_id', $transaction->user_id)
                     ->where('course_id', $transaction->course_id)
                     ->exists();
-
-                // ... kode di atasnya sama ...
 
                 if (!$isEnrolled) {
                     Enrollment::create([
@@ -79,15 +79,23 @@ class PaymentController extends Controller
                         'progress' => 0,
                         'is_quiz_unlocked' => 0,
                         'status' => 'active',
-                        'price_bought' => $transaction->amount // 🟢 TAMBAHKAN BARIS INI
+                        'price_bought' => $transaction->amount
                     ]);
                 }
-
-                // ... kode di bawahnya sama ...
+            } elseif (in_array($status, ['EXPIRED', 'FAILED', 'CANCELLED'])) {
+                $transaction->status = strtolower($status);
+                $transaction->save();
             }
 
             DB::commit();
-            return response()->json(['message' => 'Callback DompetX berhasil diproses!']);
+            return response()->json([
+                'success' => true,
+                'message' => 'Callback DompetX berhasil diproses!',
+                'data' => [
+                    'reference_id' => $transaction->reference_id,
+                    'status' => $transaction->status
+                ]
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([

@@ -11,7 +11,6 @@ class Transaction extends Model
 {
     use HasFactory;
 
-    // 🟢 1. DAFTARKAN KOLOM YANG BOLEH DIISI (MASS ASSIGNMENT)
     protected $fillable = [
         'user_id',
         'course_id',
@@ -21,13 +20,11 @@ class Transaction extends Model
         'payment_url',
     ];
 
-    // 🔗 2. RELASI: Menghubungkan Transaksi ke Data User/Siswa
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // 🔗 3. RELASI: Menghubungkan Transaksi ke Data Kursus
     public function course()
     {
         return $this->belongsTo(Course::class);

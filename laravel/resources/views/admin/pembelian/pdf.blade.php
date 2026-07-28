@@ -193,14 +193,15 @@
             @forelse ($transactions as $index => $t)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td>{{ $t->created_at->timezone('Asia/Jakarta')->format('d/m/Y H:i') }} WIB</td>
+                    <td>{{ $t->created_at ? $t->created_at->timezone('Asia/Jakarta')->format('d/m/Y H:i') : '-' }} WIB
+                    </td>
                     <td>
                         <strong>{{ $t->user->name ?? 'Student' }}</strong>
                     </td>
                     <td>{{ $t->course->title ?? '-' }}</td>
-                    <td class="text-center">{{ $t->payment_method ?? 'DompetX' }}</td>
+                    <td class="text-center">DompetX</td>
                     <td class="text-right font-bold">
-                        Rp {{ number_format($t->price_bought, 0, ',', '.') }}
+                        Rp {{ number_format($t->amount ?? 0, 0, ',', '.') }}
                     </td>
                     <td class="text-center">
                         <span class="badge-success">LUNAS</span>
@@ -215,6 +216,7 @@
             @endforelse
         </tbody>
     </table>
+
     <div class="summary-box">
         <div class="summary-row">
             <span class="summary-label">Total Transaksi Lunas:</span>
@@ -222,7 +224,7 @@
         </div>
         <div class="summary-row grand-total">
             <span class="summary-label">Grand Total Pendapatan:</span>
-            <span class="summary-value">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</span>
+            <span class="summary-value">Rp {{ number_format($totalRevenue ?? 0, 0, ',', '.') }}</span>
         </div>
     </div>
 

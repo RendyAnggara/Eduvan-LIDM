@@ -8,10 +8,10 @@
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             color: #374151;
-            line-height: 1.5;
+            line-height: 1.4;
             margin: 0;
             padding: 0;
-            font-size: 12px;
+            font-size: 11px;
             background-color: #ffffff;
         }
 
@@ -23,19 +23,19 @@
 
         .header-container {
             border-bottom: 2px dashed #e5e7eb;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+            padding-bottom: 12px;
+            margin-bottom: 18px;
         }
 
         .logo-img {
             vertical-align: middle;
-            margin-right: 10px;
-            width: 38px;
+            margin-right: 8px;
+            width: 36px;
             height: auto;
         }
 
         .brand-name {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
             color: #4f46e5;
             line-height: 1.1;
@@ -43,7 +43,7 @@
         }
 
         .brand-tagline {
-            font-size: 10px;
+            font-size: 9px;
             color: #6b7280;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -51,7 +51,7 @@
 
         .invoice-title {
             text-align: right;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 800;
             color: #1f2937;
             text-transform: uppercase;
@@ -64,10 +64,8 @@
             border-collapse: collapse;
         }
 
-        .meta-block {
-            width: 50%;
+        .meta-section td {
             vertical-align: top;
-            border: none;
             padding: 0;
         }
 
@@ -76,21 +74,26 @@
             text-transform: uppercase;
             color: #9ca3af;
             font-weight: 700;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             letter-spacing: 0.5px;
         }
 
-        .meta-value {
-            font-size: 12px;
-            color: #1f2937;
-            line-height: 1.4;
+        .info-table {
+            border-collapse: collapse;
+            font-size: 11px;
+            width: 100%;
+        }
+
+        .info-table td {
+            padding: 2px 0;
+            vertical-align: middle;
         }
 
         .item-details-box {
             background-color: #f9fafb;
             border: 1px solid #e5e7eb;
             border-radius: 8px;
-            padding: 15px;
+            padding: 14px;
             margin-bottom: 20px;
         }
 
@@ -104,7 +107,7 @@
         }
 
         .course-main-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             color: #111827;
             margin-bottom: 6px;
@@ -160,12 +163,21 @@
         .badge-success {
             color: #047857;
             font-weight: bold;
-            font-size: 10px;
+            font-size: 9px;
             background-color: #d1fae5;
-            padding: 2px 8px;
-            border-radius: 6px;
+            padding: 2px 6px;
+            border-radius: 4px;
             border: 1px solid #a7f3d0;
-            display: inline-block;
+        }
+
+        .badge-pending {
+            color: #b45309;
+            font-weight: bold;
+            font-size: 9px;
+            background-color: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid #fde68a;
         }
 
         .footer {
@@ -198,25 +210,60 @@
                 </td>
             </tr>
         </table>
+
+        @php
+            $isPaid = in_array(strtoupper($trans->status), ['SUCCESS', 'PAID', 'SETTLED']);
+        @endphp
+
         <table class="meta-section">
             <tr>
-                <td class="meta-block">
+                <td style="width: 50%;">
                     <div class="meta-label">Diterbitkan Kepada:</div>
-                    <div class="meta-value">
-                        <strong>{{ $trans->user->name ?? 'Student' }}</strong><br>
-                        Email: {{ $trans->user->email ?? '-' }}<br>
-                        <span style="color: #6b7280; font-size: 11px;">Status: Registered Student</span>
-                    </div>
+                    <table class="info-table">
+                        <tr>
+                            <td><strong>{{ $trans->user->name ?? 'Student' }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="color: #4b5563;">Email: {{ $trans->user->email ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <td style="color: #6b7280; font-size: 10px;">Status: Registered Student</td>
+                        </tr>
+                    </table>
                 </td>
-                <td class="meta-block" style="text-align: right;">
-                    <div class="meta-label">Detail Transaksi:</div>
-                    <div class="meta-value">
-                        Nomor Ref: <span
-                            style="font-family: monospace; font-weight: bold; color: #4f46e5;">#EDX-{{ $trans->id }}</span><br>
-                        Tanggal: {{ $trans->created_at->timezone('Asia/Jakarta')->format('d F Y, H:i') }} WIB<br>
-                        Metode: <strong>{{ $trans->payment_method ?? 'DompetX Gateway' }}</strong><br>
-                        Status: <span class="badge-success">LUNAS / SUCCESS</span>
-                    </div>
+
+                <td style="width: 50%;">
+                    <div class="meta-label" style="text-align: right;">Detail Transaksi:</div>
+                    <table class="info-table">
+                        <tr>
+                            <td style="text-align: right; color: #6b7280; width: 45%;">Nomor Ref:</td>
+                            <td
+                                style="text-align: right; font-family: monospace; font-weight: bold; color: #4f46e5; font-size: 10px;">
+                                {{ $trans->reference_id ?? '-' }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right; color: #6b7280;">Tanggal:</td>
+                            <td style="text-align: right;">
+                                {{ $trans->created_at ? $trans->created_at->timezone('Asia/Jakarta')->format('d F Y, H:i') : '-' }}
+                                WIB
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right; color: #6b7280;">Metode:</td>
+                            <td style="text-align: right;"><strong>DompetX Gateway</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right; color: #6b7280;">Status:</td>
+                            <td style="text-align: right;">
+                                @if ($isPaid)
+                                    <span class="badge-success">LUNAS / SUCCESS</span>
+                                @else
+                                    <span class="badge-pending">{{ strtoupper($trans->status) }}</span>
+                                @endif
+                            </td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </table>
@@ -234,7 +281,7 @@
             <table style="width: 100%; border-collapse: collapse;">
                 <tr class="summary-row">
                     <td class="summary-label">Subtotal Harga Materi</td>
-                    <td class="summary-value">Rp {{ number_format($trans->price_bought, 0, ',', '.') }}</td>
+                    <td class="summary-value">Rp {{ number_format($trans->amount ?? 0, 0, ',', '.') }}</td>
                 </tr>
                 <tr class="summary-row">
                     <td class="summary-label">Biaya Layanan Gateway</td>
@@ -246,7 +293,7 @@
                             <tr>
                                 <td class="grand-total-label" style="border: none;">Total Pembayaran Lunas</td>
                                 <td class="grand-total-value" style="border: none;">
-                                    Rp {{ number_format($trans->price_bought, 0, ',', '.') }}
+                                    Rp {{ number_format($trans->amount ?? 0, 0, ',', '.') }}
                                 </td>
                             </tr>
                         </table>
