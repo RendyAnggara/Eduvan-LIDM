@@ -1,26 +1,20 @@
 <ion-header mode="ios" class="ion-no-border">
-  <!-- 🌊 SPANDUK BIRU GRADASI ATAS MODERN -->
   <div class="header-navy">
     <ion-title>Pelajaranku</ion-title>
   </div>
 </ion-header>
 
 <ion-content>
-  <!-- KONTROL TAB SEGMEN DENGAN SUDUT BULAT -->
   <div class="segment-container">
     <ion-segment [(ngModel)]="activeTab" (ionChange)="filterData()" mode="ios">
       <ion-segment-button value="ongoing">Pelajaranku</ion-segment-button>
       <ion-segment-button value="completed">Selesai</ion-segment-button>
     </ion-segment>
   </div>
-
-  <!-- STATE LOADING -->
   <div *ngIf="loading" class="empty-state-box">
     <ion-spinner name="crescent"></ion-spinner>
     <p>Memuat kelas kamu...</p>
   </div>
-
-  <!-- STATE KOSONG -->
   <div
     *ngIf="!loading && filteredEnrollments.length === 0"
     class="empty-state-box"
@@ -30,20 +24,17 @@
     </div>
     <p>Tidak ada pelajaran yang ditemukan di tab ini.</p>
   </div>
-
-  <!-- WADAH UTAMA KARTU KURSUS -->
   <div
     class="course-container"
     *ngIf="!loading && filteredEnrollments.length > 0"
   >
     <div *ngFor="let item of filteredEnrollments" class="premium-course-card">
       <div class="card-main-body">
-        <!-- LOGO KATEGORI BULAT LEMBUT -->
         <div class="img-category-box">
           <img
-            [src]="item.course?.image ? item.course.image : getCategoryLogo(item.course?.category)"
+            [src]="item.course?.image ? item.course.image : getCategoryLogo(item.course?.title || item.course?.category)"
             alt="Thumbnail Kursus"
-            (error)="$any($event.target).src = getCategoryLogo(item.course?.category)"
+            (error)="$any($event.target).src = getCategoryLogo(item.course?.title || item.course?.category)"
           />
         </div>
         <div class="metadata-info-box">
@@ -55,8 +46,6 @@
           </h3>
         </div>
       </div>
-
-      <!-- INDIKATOR PROGRESS BELAJAR PASTEL -->
       <div class="card-progress-zone">
         <div class="progress-meta-row">
           <span class="lbl-prog">Progress Belajar</span>
@@ -67,11 +56,8 @@
           class="custom-progress"
         ></ion-progress-bar>
       </div>
-
-      <!-- GRID TOMBOL AKSI DENGAN WARNA DINAMIS -->
       <div class="card-action-footer">
         <div class="action-grid-buttons" *ngIf="activeTab === 'ongoing'">
-          <!-- TOMBOL LANJUT BELAJAR -->
           <ion-button
             class="btn-action-main"
             expand="block"
@@ -86,7 +72,7 @@
             [class.quiz-unlocked]="item.is_quiz_unlocked"
             [class.quiz-locked]="!item.is_quiz_unlocked"
             [disabled]="!item.is_quiz_unlocked"
-            (click)="openQuiz({ course_id: item.course_id || item.course?.id || item.id })"
+            (click)="openQuizModal(item)"
           >
             <ion-icon
               name="lock-closed-outline"
@@ -101,8 +87,6 @@
             {{ item.is_quiz_unlocked ? 'Kuis' : 'Terkunci' }}
           </ion-button>
         </div>
-
-        <!-- TOMBOL TAB SELESAI -->
         <div class="action-grid-buttons" *ngIf="activeTab === 'completed'">
           <ion-button
             class="btn-action-success"
@@ -118,4 +102,154 @@
       </div>
     </div>
   </div>
+
+  <ion-modal
+    [isOpen]="isQuizModalOpen"
+    (didDismiss)="closeQuizModal()"
+    initial-breakpoint="0.65"
+    [breakpoints]="[0, 0.65, 0.9]"
+    mode="ios"
+  >
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar style="--background: #093c5d; --color: #ffffff">
+          <ion-title style="font-size: 15px; font-weight: 700">
+            Daftar Kuis: {{ selectedCourseTitle }}
+          </ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeQuizModal()" color="light"
+              >Tutup</ion-button
+            >
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content style="--background: #f8fafc">
+        <div
+          *ngIf="loadingQuizModal"
+          class="ion-text-center ion-padding"
+          style="margin-top: 30px"
+        >
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+          <p style="color: #64748b; font-size: 13px; margin-top: 8px">
+            Memuat pertemuan...
+          </p>
+        </div>
+        <div *ngIf="!loadingQuizModal" style="padding: 16px">
+          <p
+            style="
+              font-size: 12px;
+              color: #64748b;
+              margin-top: 0;
+              margin-bottom: 12px;
+              font-weight: 600;
+            "
+          >
+            Pilih pertemuan untuk mulai mengerjakan kuis:
+          </p>
+
+          <ion-accordion-group
+            expand="inset"
+            style="margin: 0"
+            *ngIf="courseLessons && courseLessons.length > 0"
+          >
+            <ion-accordion
+              *ngFor="let lesson of courseLessons; let i = index"
+              [value]="'quiz-' + i"
+              style="
+                background: #ffffff;
+                border-radius: 10px;
+                border: 1px solid #e2e8f0;
+                margin-bottom: 10px;
+              "
+            >
+              <ion-item
+                slot="header"
+                color="light"
+                style="--background: #ffffff"
+              >
+                <ion-icon
+                  name="help-circle-outline"
+                  slot="start"
+                  style="color: #093c5d; font-size: 20px"
+                ></ion-icon>
+                <ion-label
+                  style="font-weight: 700; font-size: 14px; color: #093c5d"
+                >
+                  Pertemuan {{ i + 1 }}: {{ lesson.title }}
+                </ion-label>
+              </ion-item>
+              <div
+                slot="content"
+                style="
+                  padding: 14px;
+                  background: #ffffff;
+                  border-top: 1px solid #f1f5f9;
+                "
+              >
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+                  "
+                >
+                  <span
+                    style="font-size: 12px; color: #64748b; font-weight: 600"
+                  >
+                    📝 Soal Evaluasi Pertemuan {{ i + 1 }}
+                  </span>
+                  <span
+                    style="
+                      font-size: 11px;
+                      color: #0284c7;
+                      font-weight: 700;
+                      background: #e0f2fe;
+                      padding: 3px 8px;
+                      border-radius: 6px;
+                    "
+                  >
+                    ⏱️ 30 Menit
+                  </span>
+                </div>
+
+                <ion-button
+                  (click)="startQuiz(lesson.id)"
+                  expand="block"
+                  size="small"
+                  style="
+                    --background: #093c5d;
+                    --border-radius: 8px;
+                    font-weight: 700;
+                  "
+                >
+                  <ion-icon name="play-outline" slot="start"></ion-icon>
+                  Mulai Kerjakan Kuis
+                </ion-button>
+              </div>
+            </ion-accordion>
+          </ion-accordion-group>
+          <div
+            *ngIf="!courseLessons || courseLessons.length === 0"
+            style="
+              text-align: center;
+              padding: 30px 16px;
+              background: #ffffff;
+              border-radius: 12px;
+              border: 1px solid #e2e8f0;
+            "
+          >
+            <ion-icon
+              name="alert-circle-outline"
+              style="font-size: 42px; color: #94a3b8; margin-bottom: 6px"
+            ></ion-icon>
+            <p style="color: #64748b; font-size: 13px; margin: 0">
+              Belum ada kuis yang tersedia untuk mata pelajaran ini.
+            </p>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

@@ -206,7 +206,6 @@
   </ng-template>
 </ion-modal>
 
-<!-- MODAL TRANSFER MANUAL DENGAN CAPACITOR NATIVE CAMERA -->
 <ion-modal
   [isOpen]="isModalTransferOpen"
   (didDismiss)="isModalTransferOpen = false"
@@ -263,8 +262,6 @@
         Silakan transfer sesuai nominal harga kelas, Gunakan kamera atau pilih
         foto bukti transfernya di bawah ini:
       </p>
-
-      <!-- 🔥 UBAH TOTAL: Area Clickable untuk Trigger Kamera Native -->
       <div
         (click)="pilihFileBuktiTransfer()"
         style="
@@ -284,7 +281,6 @@
             gap: 8px;
           "
         >
-          <!-- 📸 Tampilkan Preview Gambar kalau user sudah milih foto -->
           <div
             *ngIf="imagePreviewUrl"
             style="
@@ -301,7 +297,6 @@
             />
           </div>
 
-          <!-- Icon default kalau belum ada foto yang dipilih -->
           <ion-icon
             *ngIf="!imagePreviewUrl"
             name="camera-outline"

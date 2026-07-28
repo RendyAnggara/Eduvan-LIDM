@@ -5,7 +5,9 @@
         <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Kuis Kursus</ion-title>
+    <ion-title
+      >{{ isReviewMode ? 'Pembahasan Kuis' : 'Kuis Kursus' }}</ion-title
+    >
   </div>
 </ion-header>
 
@@ -20,18 +22,44 @@
       Memuat data kuis...
     </p>
   </div>
-
-  <div *ngIf="!loading && !isFinished && questions.length > 0">
+  <div *ngIf="!loading && !isFinished && questions && questions.length > 0">
     <div class="quiz-progress">
-      <p>Soal {{ currentQuestionIndex + 1 }} dari {{ questions.length }}</p>
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 6px;
+        "
+      >
+        <span style="font-size: 13px; font-weight: 600; color: #475569">
+          Soal {{ currentQuestionIndex + 1 }} dari {{ questions.length }}
+        </span>
+        <span
+          *ngIf="!isReviewMode"
+          [style.background]="timeLeftSeconds < 300 ? '#fee2e2' : '#e0f2fe'"
+          [style.color]="timeLeftSeconds < 300 ? '#b91c1c' : '#0369a1'"
+          style="
+            font-size: 13px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+          "
+        >
+          ⏱️ Sisa Waktu: {{ formattedTime }}
+        </span>
+      </div>
+
       <ion-progress-bar
         [value]="(currentQuestionIndex + 1) / questions.length"
         mode="ios"
         color="warning"
       ></ion-progress-bar>
     </div>
-
-    <div class="question-card">
+    <div class="question-card" style="margin-top: 12px">
       <h3
         style="
           color: #1a202c;
@@ -40,61 +68,199 @@
           line-height: 1.5;
         "
       >
-        {{ questions[currentQuestionIndex]['question'] }}
+        {{ questions[currentQuestionIndex]?.question_text ||
+        questions[currentQuestionIndex]?.question }}
       </h3>
     </div>
-    <ion-radio-group [(ngModel)]="selectedAnswer">
-      <ion-item
-        class="option-item"
-        [class.item-radio-checked]="selectedAnswer === 'a'"
-        button
-        (click)="selectAnswer('a')"
+    <div *ngIf="isReviewMode" style="margin-bottom: 12px">
+      <div
+        *ngIf="userAnswers[currentQuestionIndex] === getCorrectKey(questions[currentQuestionIndex])"
+        style="
+          background: #dcfce7;
+          color: #15803d;
+          border: 1px solid #86efac;
+          padding: 10px;
+          border-radius: 10px;
+          font-weight: 700;
+          font-size: 13px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        "
       >
-        <ion-radio slot="start" value="a"></ion-radio>
-        <ion-label class="ion-text-wrap"
-          >A. {{ questions[currentQuestionIndex].option_a }}</ion-label
-        >
-      </ion-item>
+        <ion-icon name="checkmark-circle" style="font-size: 20px"></ion-icon>
+        Jawaban Kamu Benar!
+      </div>
 
-      <ion-item
-        class="option-item"
-        [class.item-radio-checked]="selectedAnswer === 'b'"
-        button
-        (click)="selectAnswer('b')"
+      <div
+        *ngIf="userAnswers[currentQuestionIndex] !== getCorrectKey(questions[currentQuestionIndex])"
+        style="
+          background: #fee2e2;
+          color: #b91c1c;
+          border: 1px solid #fca5a5;
+          padding: 10px;
+          border-radius: 10px;
+          font-weight: 700;
+          font-size: 13px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        "
       >
-        <ion-radio slot="start" value="b"></ion-radio>
-        <ion-label class="ion-text-wrap"
-          >B. {{ questions[currentQuestionIndex].option_b }}</ion-label
-        >
-      </ion-item>
+        <ion-icon name="close-circle" style="font-size: 20px"></ion-icon>
+        Jawaban Kamu Salah. Kunci Jawaban yang Benar: Opsi {{
+        getCorrectKey(questions[currentQuestionIndex]) }}
+      </div>
+    </div>
 
-      <ion-item
-        *ngIf="questions[currentQuestionIndex].option_c"
-        class="option-item"
-        [class.item-radio-checked]="selectedAnswer === 'c'"
-        button
-        (click)="selectAnswer('c')"
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <div
+        (click)="selectAnswer('A')"
+        [style.background]="
+          isReviewMode && getCorrectKey(questions[currentQuestionIndex]) === 'A' ? '#dcfce7' :
+          isReviewMode && userAnswers[currentQuestionIndex] === 'A' && getCorrectKey(questions[currentQuestionIndex]) !== 'A' ? '#fee2e2' :
+          selectedAnswer === 'A' ? '#eef3f7' : '#ffffff'
+        "
+        [style.border-color]="
+          isReviewMode && getCorrectKey(questions[currentQuestionIndex]) === 'A' ? '#22c55e' :
+          isReviewMode && userAnswers[currentQuestionIndex] === 'A' && getCorrectKey(questions[currentQuestionIndex]) !== 'A' ? '#ef4444' :
+          selectedAnswer === 'A' ? '#093c5d' : '#e0e0e0'
+        "
+        style="
+          padding: 14px;
+          border-radius: 12px;
+          border: 2px solid;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        "
       >
-        <ion-radio slot="start" value="c"></ion-radio>
-        <ion-label class="ion-text-wrap"
-          >C. {{ questions[currentQuestionIndex].option_c }}</ion-label
+        <span style="font-size: 14px; font-weight: 600; color: #334155">
+          A. {{ questions[currentQuestionIndex]?.option_a }}
+        </span>
+        <span
+          *ngIf="isReviewMode && getCorrectKey(questions[currentQuestionIndex]) === 'A'"
+          style="color: #15803d; font-weight: 700; font-size: 12px"
+          >✔ Kunci Benar</span
         >
-      </ion-item>
-
-      <ion-item
-        *ngIf="questions[currentQuestionIndex].option_d"
-        class="option-item"
-        [class.item-radio-checked]="selectedAnswer === 'd'"
-        button
-        (click)="selectAnswer('d')"
+        <span
+          *ngIf="isReviewMode && userAnswers[currentQuestionIndex] === 'A' && getCorrectKey(questions[currentQuestionIndex]) !== 'A'"
+          style="color: #b91c1c; font-weight: 700; font-size: 12px"
+          >✖ Pilihanmu</span
+        >
+      </div>
+      <div
+        (click)="selectAnswer('B')"
+        [style.background]="
+          isReviewMode && getCorrectKey(questions[currentQuestionIndex]) === 'B' ? '#dcfce7' :
+          isReviewMode && userAnswers[currentQuestionIndex] === 'B' && getCorrectKey(questions[currentQuestionIndex]) !== 'B' ? '#fee2e2' :
+          selectedAnswer === 'B' ? '#eef3f7' : '#ffffff'
+        "
+        [style.border-color]="
+          isReviewMode && getCorrectKey(questions[currentQuestionIndex]) === 'B' ? '#22c55e' :
+          isReviewMode && userAnswers[currentQuestionIndex] === 'B' && getCorrectKey(questions[currentQuestionIndex]) !== 'B' ? '#ef4444' :
+          selectedAnswer === 'B' ? '#093c5d' : '#e0e0e0'
+        "
+        style="
+          padding: 14px;
+          border-radius: 12px;
+          border: 2px solid;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        "
       >
-        <ion-radio slot="start" value="d"></ion-radio>
-        <ion-label class="ion-text-wrap"
-          >D. {{ questions[currentQuestionIndex].option_d }}</ion-label
+        <span style="font-size: 14px; font-weight: 600; color: #334155">
+          B. {{ questions[currentQuestionIndex]?.option_b }}
+        </span>
+        <span
+          *ngIf="isReviewMode && getCorrectKey(questions[currentQuestionIndex]) === 'B'"
+          style="color: #15803d; font-weight: 700; font-size: 12px"
+          >✔ Kunci Benar</span
         >
-      </ion-item>
-    </ion-radio-group>
-
+        <span
+          *ngIf="isReviewMode && userAnswers[currentQuestionIndex] === 'B' && getCorrectKey(questions[currentQuestionIndex]) !== 'B'"
+          style="color: #b91c1c; font-weight: 700; font-size: 12px"
+          >✖ Pilihanmu</span
+        >
+      </div>
+      <div
+        *ngIf="questions[currentQuestionIndex]?.option_c"
+        (click)="selectAnswer('C')"
+        [style.background]="
+          isReviewMode && getCorrectKey(questions[currentQuestionIndex]) === 'C' ? '#dcfce7' :
+          isReviewMode && userAnswers[currentQuestionIndex] === 'C' && getCorrectKey(questions[currentQuestionIndex]) !== 'C' ? '#fee2e2' :
+          selectedAnswer === 'C' ? '#eef3f7' : '#ffffff'
+        "
+        [style.border-color]="
+          isReviewMode && getCorrectKey(questions[currentQuestionIndex]) === 'C' ? '#22c55e' :
+          isReviewMode && userAnswers[currentQuestionIndex] === 'C' && getCorrectKey(questions[currentQuestionIndex]) !== 'C' ? '#ef4444' :
+          selectedAnswer === 'C' ? '#093c5d' : '#e0e0e0'
+        "
+        style="
+          padding: 14px;
+          border-radius: 12px;
+          border: 2px solid;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        "
+      >
+        <span style="font-size: 14px; font-weight: 600; color: #334155">
+          C. {{ questions[currentQuestionIndex]?.option_c }}
+        </span>
+        <span
+          *ngIf="isReviewMode && getCorrectKey(questions[currentQuestionIndex]) === 'C'"
+          style="color: #15803d; font-weight: 700; font-size: 12px"
+          >✔ Kunci Benar</span
+        >
+        <span
+          *ngIf="isReviewMode && userAnswers[currentQuestionIndex] === 'C' && getCorrectKey(questions[currentQuestionIndex]) !== 'C'"
+          style="color: #b91c1c; font-weight: 700; font-size: 12px"
+          >✖ Pilihanmu</span
+        >
+      </div>
+      <div
+        *ngIf="questions[currentQuestionIndex]?.option_d"
+        (click)="selectAnswer('D')"
+        [style.background]="
+          isReviewMode && getCorrectKey(questions[currentQuestionIndex]) === 'D' ? '#dcfce7' :
+          isReviewMode && userAnswers[currentQuestionIndex] === 'D' && getCorrectKey(questions[currentQuestionIndex]) !== 'D' ? '#fee2e2' :
+          selectedAnswer === 'D' ? '#eef3f7' : '#ffffff'
+        "
+        [style.border-color]="
+          isReviewMode && getCorrectKey(questions[currentQuestionIndex]) === 'D' ? '#22c55e' :
+          isReviewMode && userAnswers[currentQuestionIndex] === 'D' && getCorrectKey(questions[currentQuestionIndex]) !== 'D' ? '#ef4444' :
+          selectedAnswer === 'D' ? '#093c5d' : '#e0e0e0'
+        "
+        style="
+          padding: 14px;
+          border-radius: 12px;
+          border: 2px solid;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        "
+      >
+        <span style="font-size: 14px; font-weight: 600; color: #334155">
+          D. {{ questions[currentQuestionIndex]?.option_d }}
+        </span>
+        <span
+          *ngIf="isReviewMode && getCorrectKey(questions[currentQuestionIndex]) === 'D'"
+          style="color: #15803d; font-weight: 700; font-size: 12px"
+          >✔ Kunci Benar</span
+        >
+        <span
+          *ngIf="isReviewMode && userAnswers[currentQuestionIndex] === 'D' && getCorrectKey(questions[currentQuestionIndex]) !== 'D'"
+          style="color: #b91c1c; font-weight: 700; font-size: 12px"
+          >✖ Pilihanmu</span
+        >
+      </div>
+    </div>
     <div
       class="nav-buttons"
       style="margin-top: 20px; display: flex; justify-content: space-between"
@@ -103,22 +269,34 @@
         fill="clear"
         (click)="prevQuestion()"
         [disabled]="currentQuestionIndex === 0"
-        >SEBELUMNYA</ion-button
       >
+        SEBELUMNYA
+      </ion-button>
+
       <ion-button
         *ngIf="currentQuestionIndex < questions.length - 1"
         (click)="nextQuestion()"
-        >SELANJUTNYA</ion-button
       >
+        SELANJUTNYA
+      </ion-button>
+
       <ion-button
-        *ngIf="currentQuestionIndex === questions.length - 1"
+        *ngIf="currentQuestionIndex === questions.length - 1 && !isReviewMode"
         (click)="submitQuiz()"
         color="success"
-        >KIRIM JAWABAN</ion-button
       >
+        KIRIM JAWABAN
+      </ion-button>
+
+      <ion-button
+        *ngIf="isReviewMode && currentQuestionIndex === questions.length - 1"
+        (click)="showFinalResult()"
+        color="primary"
+      >
+        LIHAT HASIL SKOR AKHIR
+      </ion-button>
     </div>
   </div>
-
   <div *ngIf="!loading && isFinished" class="result-container ion-text-center">
     <div class="result-card">
       <div *ngIf="quizStatus === 'passed'">
@@ -162,7 +340,7 @@
         [color]="quizStatus === 'passed' ? 'success' : 'danger'"
         class="finish-btn"
       >
-        {{ quizStatus === 'passed' ? 'Kembali ke My Learning' : 'Coba Kuis Lagi'
+        {{ quizStatus === 'passed' ? 'Kembali ke Pelajaranku' : 'Coba Kuis Lagi'
         }}
       </ion-button>
     </div>

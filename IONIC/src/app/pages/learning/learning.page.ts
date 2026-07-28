@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { NavController, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { CourseService } from '../../services/course.service';
@@ -15,6 +15,10 @@ export class LearningPage implements OnInit, OnDestroy {
   allEnrollments: any[] = [];
   filteredEnrollments: any[] = [];
   loading: boolean = false;
+  isQuizModalOpen: boolean = false;
+  selectedCourseTitle: string = '';
+  courseLessons: any[] = [];
+  loadingQuizModal: boolean = false;
 
   private progressSub: Subscription = new Subscription();
 
@@ -23,6 +27,7 @@ export class LearningPage implements OnInit, OnDestroy {
     private alertCtrl: AlertController,
     private router: Router,
     private courseService: CourseService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   getCategoryLogo(category: string): string {
@@ -36,8 +41,6 @@ export class LearningPage implements OnInit, OnDestroy {
       return 'assets/icon/favicon.png';
     }
   }
-  // -------------------------------------------------
-  // ------------------------------------
 
   ngOnInit() {
     this.loadData();
@@ -51,7 +54,7 @@ export class LearningPage implements OnInit, OnDestroy {
             this.loadData();
           }, 1000);
         }
-      },
+      }
     );
   }
 
@@ -63,7 +66,7 @@ export class LearningPage implements OnInit, OnDestroy {
 
   ionViewWillEnter() {
     console.log(
-      'User kembali membuka halaman My Learning, memuat data terbaru...',
+      'User kembali membuka halaman My Learning, memuat data terbaru...'
     );
     this.loadData();
   }
@@ -74,19 +77,34 @@ export class LearningPage implements OnInit, OnDestroy {
       next: (res: any) => {
         this.loading = false;
         if (res && res.success && res.data) {
-          this.allEnrollments = res.data.filter(
-            (item: any) => String(item.status).toLowerCase() === 'success',
-          );
-          console.log(
-            'Data Riwayat Belajar Asli Student:',
-            this.allEnrollments,
-          );
+          this.allEnrollments = res.data
+            .filter((item: any) => {
+              const status = String(item.status || '')
+                .toLowerCase()
+                .trim();
+              return (
+                status === 'success' ||
+                status === 'active' ||
+                status === 'checking admin'
+              );
+            })
+            .map((item: any) => {
+              item.is_quiz_unlocked = true;
+              return item;
+            });
+
+          console.log('Data My Learning:', this.allEnrollments);
           this.filterData();
+        } else {
+          this.allEnrollments = [];
+          this.filteredEnrollments = [];
         }
       },
       error: (err: any) => {
         this.loading = false;
-        console.error('Gagal menarik data My Learning dari server:', err);
+        console.error('Gagal memuat My Learning:', err);
+        this.allEnrollments = [];
+        this.filteredEnrollments = [];
       },
     });
   }
@@ -99,9 +117,6 @@ export class LearningPage implements OnInit, OnDestroy {
   filterData() {
     this.filteredEnrollments = this.allEnrollments.filter((item) => {
       const nilaiProgress = parseInt(item.progress, 10) || 0;
-      const statusKuis = (item.quiz_status || item.status_quiz || '')
-        .toString()
-        .toLowerCase();
 
       if (this.activeTab === 'ongoing') {
         return nilaiProgress < 100;
@@ -109,6 +124,11 @@ export class LearningPage implements OnInit, OnDestroy {
         return nilaiProgress >= 100;
       }
     });
+
+    console.log(
+      `Data untuk tab [${this.activeTab}]:`,
+      this.filteredEnrollments
+    );
   }
 
   goToPlayer(courseId: any) {
@@ -119,15 +139,48 @@ export class LearningPage implements OnInit, OnDestroy {
     this.navCtrl.navigateForward(['/course-player', courseId]);
   }
 
-  async openQuiz(item: any) {
+  openQuizModal(item: any) {
     const targetId =
       item.course_id || (item.course ? item.course.id : null) || item.id;
-    if (targetId) {
-      this.navCtrl.navigateForward(['/quiz', targetId]);
-    } else {
-      console.error('Gagal navigasi, ID kursus murni kosong!');
+
+    if (!targetId) {
+      console.error('ID Kursus murni kosong!');
+      return;
     }
+
+    this.selectedCourseTitle = item.course?.title || 'Mata Pelajaran';
+    this.isQuizModalOpen = true;
+    this.loadingQuizModal = true;
+
+    this.courseService.getCourseContents(targetId).subscribe({
+      next: (res: any) => {
+        this.loadingQuizModal = false;
+        if (res && res.data) {
+          this.courseLessons = Array.isArray(res.data)
+            ? res.data
+            : res.data.lessons || [];
+        } else {
+          this.courseLessons = [];
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        this.loadingQuizModal = false;
+        console.error('Gagal mengambil materi pertemuan:', err);
+        this.courseLessons = [];
+        this.cdr.detectChanges();
+      },
+    });
   }
+
+  closeQuizModal() {
+    this.isQuizModalOpen = false;
+  }
+  startQuiz(lessonId: any) {
+    this.closeQuizModal();
+    this.navCtrl.navigateForward(['/quiz', lessonId]);
+  }
+
   goToSertifikat() {
     this.router.navigate(['/tabs/certificate']);
   }

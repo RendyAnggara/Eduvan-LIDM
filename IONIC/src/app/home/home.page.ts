@@ -47,7 +47,6 @@ export class HomePage implements OnInit {
       this.kursusTersaring = this.courses;
     } else {
       this.selectedCategory = kategori;
-      // Memfilter array berdasarkan course_type dari backend
       this.kursusTersaring = this.courses.filter(
         (k: any) => k.course_type === kategori
       );
@@ -71,7 +70,7 @@ export class HomePage implements OnInit {
       try {
           const user = JSON.parse(localUserData);
           const namaLengkap = user.name || user.nama || user.fullname || 'User';
-          this.namaUser = namaLengkap; //  Langsung masukkan seluruh nama lengkapnya
+          this.namaUser = namaLengkap;
           this.cdr.detectChanges();
       } catch (e) {
         console.error('Gagal parse user data di beranda:', e);
@@ -89,11 +88,8 @@ export class HomePage implements OnInit {
 
     this.courseService.getCourses().subscribe({
       next: (res: any) => {
-        // Simpan respons data polosan tanpa manipulasi map string aneh-aneh
         const dataAsli = res.data || [];
         this.courses = dataAsli;
-
-        // Kembalikan filter sesuai status tombol yang sedang aktif
         if (this.selectedCategory) {
           this.kursusTersaring = dataAsli.filter(
             (k: any) => k.course_type === this.selectedCategory
@@ -145,7 +141,7 @@ ambilNamaUserLive() {
   this.authService.currentUser$.subscribe((user: any) => {
     if (user) {
       const namaLengkap = user.name || user.nama || user.fullname || 'User';
-      this.namaUser = namaLengkap; //  Nama lengkap utuh tanpa dipotong spasi
+      this.namaUser = namaLengkap;
       this.cdr.detectChanges();
     } else {
       this.namaUser = 'User';

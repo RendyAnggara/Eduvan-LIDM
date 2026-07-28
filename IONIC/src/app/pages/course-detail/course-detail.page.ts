@@ -71,7 +71,7 @@ export class CourseDetailPage implements OnInit {
   }
 
   isFreeCourse(): boolean {
-    return true; // 🔥 BYPASS: Paksa semua course dianggap gratis
+    return true;
   }
 
   getDetail(id: string) {
@@ -118,7 +118,7 @@ export class CourseDetailPage implements OnInit {
         }
       },
     });
-    this.paymentStatus = 'success'; // Paksa status jadi lunas/sukses
+    this.paymentStatus = 'success';
     this.cdr.detectChanges();
   }
 
@@ -270,7 +270,6 @@ export class CourseDetailPage implements OnInit {
   }
 
   masukKelas(courseId?: any) {
-    // 🔥 AMBIL ID DARI BEBERAPA ALTERNATIF SUMBER BIAR GAK KETEMU UNDEFINED
     const idDariCourse = this.course?.id;
     const idDariParam = courseId;
     const idDariRoute = this.route.snapshot.paramMap.get('id');
@@ -280,10 +279,8 @@ export class CourseDetailPage implements OnInit {
     console.log('Navigasi masukKelas membawa ID:', finalId);
 
     if (finalId) {
-      // Pindah ke course player dengan ID yang valid
       this.router.navigate(['/course-player', finalId]);
     } else {
-      // Fallback kalau bener-bener ID tidak ketemu
       this.alertMessageCustom = 'ID Kursus tidak ditemukan!';
       this.isErrorAlertOpen = true;
       this.cdr.detectChanges();
