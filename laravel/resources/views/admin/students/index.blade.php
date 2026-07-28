@@ -102,7 +102,6 @@
                 <tbody class="text-gray-600 text-sm divide-y divide-gray-100">
                     @forelse($students as $student)
                         @php
-                            // Ambil kelas secara presisi (khusus 7, 8, 9 SMP)
                             $rawClass = $student->class ?? $student->enrollments->first()?->course?->grade_level;
                             $studentClass = null;
 
