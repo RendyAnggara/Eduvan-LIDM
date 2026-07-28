@@ -2,11 +2,31 @@
 
 @section('content')
     <div class="px-2 sm:px-4 md:px-0 space-y-6">
-        <div>
-            <h1 class="text-2xl font-black text-gray-900 tracking-tight">Daftar Student</h1>
-            <p class="text-sm text-gray-500 mt-0.5">Pantau aktivitas, progres belajar, dan detail instansi setiap student
-                EduLearn.</p>
+        <div
+            class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="space-y-1">
+                <h1 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight pt-1">
+                    Daftar Student
+                </h1>
+                <p class="text-xs text-gray-500">Pantau aktivitas, progres belajar, dan detail instansi setiap student
+                    EduLearn.</p>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+                <div
+                    class="px-3.5 py-2 bg-indigo-50/70 text-indigo-700 border border-indigo-100/80 rounded-xl font-black text-xs flex items-center gap-2">
+                    <i class="fas fa-user-graduate text-indigo-500 text-sm"></i>
+                    <span>{{ $stats['total_students'] ?? $students->total() }} Total Student</span>
+                </div>
+            </div>
         </div>
+        @if (session('success'))
+            <div
+                class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl text-xs font-bold flex items-center gap-2 shadow-sm">
+                <i class="fas fa-check-circle text-emerald-500 text-sm"></i>
+                {{ session('success') }}
+            </div>
+        @endif
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
@@ -17,7 +37,8 @@
                 <div>
                     <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Student</p>
                     <h3 class="text-lg font-black text-gray-900 leading-none mt-1">
-                        {{ $stats['total_students'] ?? $students->total() }}</h3>
+                        {{ $stats['total_students'] ?? $students->total() }}
+                    </h3>
                 </div>
             </div>
 
@@ -28,7 +49,8 @@
                 </div>
                 <div>
                     <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Siswa Aktif</p>
-                    <h3 class="text-lg font-black text-emerald-600 leading-none mt-1">{{ $stats['active_students'] ?? 0 }}
+                    <h3 class="text-lg font-black text-emerald-600 leading-none mt-1">
+                        {{ $stats['active_students'] ?? 0 }}
                     </h3>
                 </div>
             </div>
@@ -40,11 +62,12 @@
                 </div>
                 <div>
                     <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Belum Ada Course</p>
-                    <h3 class="text-lg font-black text-amber-600 leading-none mt-1">{{ $stats['no_course'] ?? 0 }}</h3>
+                    <h3 class="text-lg font-black text-amber-600 leading-none mt-1">
+                        {{ $stats['no_course'] ?? 0 }}
+                    </h3>
                 </div>
             </div>
         </div>
-
         <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
             <form action="{{ route('admin.students.index') }}" method="GET"
                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
@@ -52,14 +75,15 @@
                 <div class="relative w-full lg:col-span-2">
                     <input type="text" name="search" value="{{ request('search') }}"
                         placeholder="Cari nama student, email, atau sekolah..."
-                        class="pl-10 pr-4 py-2.5 border border-gray-200 bg-gray-50/50 rounded-xl focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition text-sm w-full font-medium placeholder:text-gray-400">
+                        class="pl-10 pr-4 py-2.5 border border-gray-200 bg-white rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition text-xs w-full font-medium text-gray-900 placeholder:text-gray-400 shadow-sm">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
                         <i class="fas fa-search text-xs"></i>
                     </div>
                 </div>
+
                 <div class="w-full">
                     <select name="filter" onchange="this.form.submit()"
-                        class="w-full px-3 py-2.5 border border-gray-200 bg-gray-50/50 rounded-xl text-sm font-medium focus:border-indigo-500 focus:bg-white outline-none transition cursor-pointer">
+                        class="w-full px-3 py-2.5 border border-gray-200 bg-white rounded-xl text-xs font-bold text-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition cursor-pointer shadow-sm">
                         <option value="">Semua Status Belajar</option>
                         <option value="bought" {{ request('filter') == 'bought' ? 'selected' : '' }}>Sudah Beli Course
                         </option>
@@ -70,7 +94,7 @@
 
                 <div class="w-full flex gap-2">
                     <select name="grade_level" onchange="this.form.submit()"
-                        class="w-full px-3 py-2.5 border border-gray-200 bg-gray-50/50 rounded-xl text-sm font-medium focus:border-indigo-500 focus:bg-white outline-none transition cursor-pointer">
+                        class="w-full px-3 py-2.5 border border-gray-200 bg-white rounded-xl text-xs font-bold text-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition cursor-pointer shadow-sm">
                         <option value="all">Semua Kelas SMP</option>
                         <option value="7" {{ request('grade_level') == '7' ? 'selected' : '' }}>Kelas 7 SMP</option>
                         <option value="8" {{ request('grade_level') == '8' ? 'selected' : '' }}>Kelas 8 SMP</option>
@@ -79,24 +103,24 @@
 
                     @if (request('search') || request('filter') || (request('grade_level') && request('grade_level') !== 'all'))
                         <a href="{{ route('admin.students.index') }}"
-                            class="px-3 py-2.5 border border-gray-200 text-center rounded-xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition shrink-0 flex items-center justify-center"
+                            class="px-3.5 py-2.5 border border-rose-100 text-center rounded-xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition shrink-0 flex items-center justify-center gap-1 shadow-sm"
                             title="Reset Filter">
-                            <i class="fas fa-undo"></i>
+                            <i class="fas fa-undo text-xs"></i>
                         </a>
                     @endif
                 </div>
 
             </form>
         </div>
-
         <div class="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <table class="w-full text-left border-collapse">
-                <thead class="bg-gray-50 text-gray-400 text-xs uppercase font-bold tracking-wider">
+                <thead
+                    class="bg-gray-50/80 text-gray-400 text-xs uppercase font-bold tracking-wider border-b border-gray-100">
                     <tr>
-                        <th class="p-4 pl-6 border-b w-12 text-center">No</th>
-                        <th class="p-4 border-b">Detail Student & Instansi</th>
-                        <th class="p-4 border-b text-center w-40">Status Belajar</th>
-                        <th class="p-4 border-b text-right pr-6 w-36">Aksi</th>
+                        <th class="p-4 pl-6 w-12 text-center">No</th>
+                        <th class="p-4">Detail Student & Instansi</th>
+                        <th class="p-4 text-center w-40">Status Belajar</th>
+                        <th class="p-4 text-right pr-6 w-36">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm divide-y divide-gray-100">
@@ -117,7 +141,8 @@
                         @endphp
                         <tr class="hover:bg-gray-50/80 transition-colors">
                             <td class="p-4 pl-6 text-center font-bold text-gray-400">
-                                {{ $loop->iteration + ($students->currentPage() - 1) * $students->perPage() }}</td>
+                                {{ $loop->iteration + ($students->currentPage() - 1) * $students->perPage() }}
+                            </td>
                             <td class="p-4">
                                 <div class="font-bold text-gray-900 text-base leading-snug">
                                     {{ $student->name }}
@@ -158,7 +183,7 @@
                                 @if ($student->enrollments->count() > 0)
                                     <span
                                         class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs rounded-xl font-bold">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                         {{ $student->enrollments->count() }} Course Diikuti
                                     </span>
                                 @else
@@ -170,15 +195,15 @@
                             </td>
 
                             <td class="p-4 text-right pr-6 whitespace-nowrap">
-                                <div class="inline-flex items-center gap-2">
+                                <div class="inline-flex items-center gap-1.5">
                                     <button onclick="openStudentModal('{{ $student->id }}')"
-                                        class="w-8 h-8 flex items-center justify-center bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-xl transition-colors"
+                                        class="w-8 h-8 flex items-center justify-center bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-xl transition-colors border border-indigo-100/50 shadow-sm"
                                         title="Detail Cepat Modal">
                                         <i class="fas fa-eye text-xs"></i>
                                     </button>
 
                                     <a href="{{ route('admin.students.show', $student->id) }}"
-                                        class="w-8 h-8 flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-xl transition-colors"
+                                        class="w-8 h-8 flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-xl transition-colors border border-blue-100/50 shadow-sm"
                                         title="Halaman Detail Penuh">
                                         <i class="fas fa-external-link-alt text-xs"></i>
                                     </a>
@@ -189,7 +214,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                            class="w-8 h-8 flex items-center justify-center bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl transition-colors cursor-pointer"
+                                            class="w-8 h-8 flex items-center justify-center bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl transition-colors cursor-pointer border border-rose-100/50 shadow-sm"
                                             title="Hapus Student">
                                             <i class="fas fa-trash text-xs"></i>
                                         </button>
@@ -199,7 +224,8 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="p-10 text-center text-gray-400 italic">
+                            <td colspan="4" class="p-12 text-center text-gray-400 italic">
+                                <i class="fas fa-inbox text-3xl mb-2 text-gray-300 block"></i>
                                 Data student tidak ditemukan.
                             </td>
                         </tr>
@@ -264,12 +290,12 @@
 
                     <div class="pt-2 border-t border-gray-100 flex gap-2">
                         <button onclick="openStudentModal('{{ $student->id }}')"
-                            class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 py-2.5 rounded-xl text-xs font-bold text-center transition flex items-center justify-center gap-1.5">
+                            class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 py-2.5 rounded-xl text-xs font-bold text-center transition flex items-center justify-center gap-1.5 border border-indigo-100/50 shadow-sm">
                             <i class="fas fa-eye text-[10px]"></i> Quick View
                         </button>
 
                         <a href="{{ route('admin.students.show', $student->id) }}"
-                            class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl text-xs font-bold text-center transition flex items-center justify-center gap-1.5">
+                            class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl text-xs font-bold text-center transition flex items-center justify-center gap-1.5 shadow-sm">
                             <i class="fas fa-external-link-alt text-[10px]"></i> Detail Penuh
                         </a>
 
@@ -279,14 +305,15 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                class="w-10 h-10 bg-rose-50 text-rose-600 flex items-center justify-center rounded-xl active:bg-rose-100 transition">
+                                class="w-10 h-10 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center rounded-xl transition border border-rose-100/50 shadow-sm">
                                 <i class="fas fa-trash text-xs"></i>
                             </button>
                         </form>
                     </div>
                 </div>
             @empty
-                <div class="bg-white p-8 rounded-2xl text-center text-gray-400 text-sm italic border border-gray-100">
+                <div class="bg-white p-8 rounded-2xl text-center text-gray-400 text-xs italic border border-gray-100">
+                    <i class="fas fa-inbox text-2xl mb-1 text-gray-300 block"></i>
                     Data student tidak ditemukan.
                 </div>
             @endforelse
@@ -297,7 +324,6 @@
         </div>
 
     </div>
-
     <div id="studentModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4">
             <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
