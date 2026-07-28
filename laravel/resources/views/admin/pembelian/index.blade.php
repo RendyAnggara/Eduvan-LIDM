@@ -2,24 +2,31 @@
 
 @section('content')
     <div class="px-2 sm:px-4 md:px-0 space-y-6">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-                <h1 class="text-2xl font-black text-gray-900 tracking-tight">Laporan Transaksi EduLearn</h1>
-                <p class="text-sm text-gray-500 mt-0.5">Monitoring pendapatan materi dan status pembayaran otomatis.</p>
+        <div
+            class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="space-y-1">
+                <h1 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight pt-1">
+                    Laporan Transaksi EduLearn
+                </h1>
+                <p class="text-xs text-gray-500">Monitoring pendapatan materi dan status pembayaran otomatis.</p>
             </div>
-            <a href="{{ route('admin.pembelian.pdf') }}"
-                class="w-full sm:w-auto inline-flex items-center justify-center bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md shadow-rose-100 gap-2">
-                <i class="fas fa-file-pdf text-sm"></i> Cetak Laporan PDF
-            </a>
+
+            <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                <a href="{{ route('admin.pembelian.pdf') }}"
+                    class="w-full sm:w-auto inline-flex items-center justify-center bg-rose-600 hover:bg-rose-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md shadow-rose-100 gap-2">
+                    <i class="fas fa-file-pdf text-sm"></i> Cetak Laporan PDF
+                </a>
+            </div>
         </div>
 
         @if (session('success'))
             <div
-                class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl text-xs font-bold flex items-center gap-2">
+                class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl text-xs font-bold flex items-center gap-2 shadow-sm">
                 <i class="fas fa-check-circle text-emerald-500 text-sm"></i>
                 {{ session('success') }}
             </div>
         @endif
+
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-3">
                 <div
@@ -89,7 +96,6 @@
                 <i class="fas fa-chart-pie text-xs"></i> Omzet Per Kursus
             </button>
         </div>
-
         <div id="tabContent-history" class="tab-content space-y-4">
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div
@@ -105,20 +111,20 @@
                             <i class="fas fa-search text-xs"></i>
                         </span>
                         <input type="text" id="studentSearchInput" placeholder="Cari nama student atau materi..."
-                            class="w-full pl-10 pr-4 py-2 bg-gray-50/50 border border-gray-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition">
+                            class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition shadow-sm">
                     </div>
                 </div>
-
-                <div class="hidden md:block">
+                <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left border-collapse" id="dataTable">
-                        <thead class="bg-gray-50 text-gray-400 text-xs uppercase font-bold tracking-wider">
+                        <thead
+                            class="bg-gray-50/80 text-gray-400 text-xs uppercase font-bold tracking-wider border-b border-gray-100">
                             <tr>
-                                <th class="p-4 pl-6 border-b">Tanggal & Waktu</th>
-                                <th class="p-4 border-b">Nama Student</th>
-                                <th class="p-4 border-b">Materi Kursus</th>
-                                <th class="p-4 border-b text-right">Harga Beli</th>
-                                <th class="p-4 border-b text-center">Status</th>
-                                <th class="p-4 border-b text-center pr-6">Aksi</th>
+                                <th class="p-4 pl-6">Tanggal & Waktu</th>
+                                <th class="p-4">Nama Student</th>
+                                <th class="p-4">Materi Kursus</th>
+                                <th class="p-4 text-right">Harga Beli</th>
+                                <th class="p-4 text-center">Status</th>
+                                <th class="p-4 text-center pr-6">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="text-gray-600 text-sm divide-y divide-gray-100">
@@ -154,14 +160,16 @@
                                     </td>
                                     <td class="p-4 text-center pr-6">
                                         <a href="{{ route('admin.pembelian.download', $trans->id) }}"
-                                            class="inline-flex items-center px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-xs font-bold rounded-xl transition gap-1.5">
+                                            class="inline-flex items-center px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 text-xs font-bold rounded-xl transition gap-1.5 shadow-sm">
                                             <i class="fas fa-file-download text-[10px]"></i> Laporan PDF
                                         </a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="p-10 text-center text-gray-400 italic">Belum ada transaksi.
+                                    <td colspan="6" class="p-12 text-center text-gray-400 italic">
+                                        <i class="fas fa-inbox text-3xl mb-2 text-gray-300 block"></i>
+                                        Belum ada transaksi.
                                     </td>
                                 </tr>
                             @endforelse
@@ -210,13 +218,17 @@
 
                             <div class="pt-2 border-t border-gray-100">
                                 <a href="{{ route('admin.pembelian.download', $trans->id) }}"
-                                    class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 py-2 rounded-xl text-xs font-bold text-center transition flex items-center justify-center gap-1.5">
+                                    class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-600 border border-indigo-100 py-2 rounded-xl text-xs font-bold text-center transition flex items-center justify-center gap-1.5 shadow-sm">
                                     <i class="fas fa-file-download text-[10px]"></i> Unduh Laporan PDF
                                 </a>
                             </div>
                         </div>
                     @empty
-                        <div class="text-center py-6 text-gray-400 text-xs italic">Belum ada transaksi.</div>
+                        <div
+                            class="bg-white p-8 rounded-2xl text-center text-gray-400 text-xs italic border border-gray-100">
+                            <i class="fas fa-inbox text-2xl mb-1 text-gray-300 block"></i>
+                            Belum ada transaksi.
+                        </div>
                     @endforelse
                 </div>
             </div>
@@ -236,19 +248,20 @@
                             <i class="fas fa-search text-xs"></i>
                         </span>
                         <input type="text" id="courseSearchInput" placeholder="Cari materi / kursus..."
-                            class="w-full pl-10 pr-4 py-2 bg-gray-50/50 border border-gray-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500 focus:bg-white transition">
+                            class="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-xs font-medium text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition shadow-sm">
                     </div>
                 </div>
 
-                <div class="hidden md:block">
+                <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left border-collapse" id="courseDataTable">
-                        <thead class="bg-gray-50 text-gray-400 text-xs uppercase font-bold tracking-wider">
+                        <thead
+                            class="bg-gray-50/80 text-gray-400 text-xs uppercase font-bold tracking-wider border-b border-gray-100">
                             <tr>
-                                <th class="p-4 pl-6 border-b">Materi / Kursus</th>
-                                <th class="p-4 border-b text-right">Harga Kursus</th>
-                                <th class="p-4 border-b text-center">Total Terjual</th>
-                                <th class="p-4 border-b text-right">Total Pendapatan</th>
-                                <th class="p-4 border-b text-center pr-6">Aksi</th>
+                                <th class="p-4 pl-6">Materi / Kursus</th>
+                                <th class="p-4 text-right">Harga Kursus</th>
+                                <th class="p-4 text-center">Total Terjual</th>
+                                <th class="p-4 text-right">Total Pendapatan</th>
+                                <th class="p-4 text-center pr-6">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="text-gray-600 text-sm divide-y divide-gray-100">
@@ -270,15 +283,17 @@
                                     </td>
                                     <td class="p-4 text-center pr-6">
                                         <a href="{{ route('admin.pembelian.course_pdf', $report->id) }}"
-                                            class="inline-flex items-center px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 text-xs font-bold rounded-xl transition gap-1.5">
+                                            class="inline-flex items-center px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 text-xs font-bold rounded-xl transition gap-1.5 shadow-sm">
                                             <i class="fas fa-file-pdf text-[10px]"></i> Cetak
                                         </a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="p-10 text-center text-gray-400 italic">Belum ada data materi
-                                        berbayar.</td>
+                                    <td colspan="5" class="p-12 text-center text-gray-400 italic">
+                                        <i class="fas fa-inbox text-3xl mb-2 text-gray-300 block"></i>
+                                        Belum ada data materi berbayar.
+                                    </td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -317,13 +332,17 @@
                                         {{ number_format($report->total_revenue ?? 0, 0, ',', '.') }}</span>
                                 </div>
                                 <a href="{{ route('admin.pembelian.course_pdf', $report->id) }}"
-                                    class="inline-flex items-center px-2.5 py-1 bg-rose-50 text-rose-600 border border-rose-100 text-[10px] font-bold rounded-lg transition gap-1">
+                                    class="inline-flex items-center px-2.5 py-1 bg-rose-50 text-rose-600 border border-rose-100 text-[10px] font-bold rounded-lg transition gap-1 shadow-sm">
                                     <i class="fas fa-file-pdf text-[9px]"></i> Cetak
                                 </a>
                             </div>
                         </div>
                     @empty
-                        <div class="text-center py-6 text-gray-400 text-xs italic">Belum ada data materi berbayar.</div>
+                        <div
+                            class="bg-white p-8 rounded-2xl text-center text-gray-400 text-xs italic border border-gray-100">
+                            <i class="fas fa-inbox text-2xl mb-1 text-gray-300 block"></i>
+                            Belum ada data materi berbayar.
+                        </div>
                     @endforelse
 
                     <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-4 flex justify-between items-center"

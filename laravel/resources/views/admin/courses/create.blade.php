@@ -2,22 +2,31 @@
 
 @section('content')
     <div class="px-2 sm:px-4 md:px-0 space-y-6 w-full">
-        <div class="flex items-center gap-3">
-            <a href="{{ route('admin.courses.index') }}"
-                class="w-10 h-10 rounded-xl bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 flex items-center justify-center transition shadow-sm shrink-0 active:scale-95"
-                title="Kembali ke Daftar Kursus">
-                <i class="fas fa-arrow-left text-xs"></i>
-            </a>
-            <div>
-                <h1 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Tambah Kursus Baru</h1>
-                <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Lengkapi formulir di bawah untuk membuat kursus baru di
-                    marketplace.</p>
+        <div
+            class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('admin.courses.index') }}"
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-50 hover:bg-indigo-50 text-gray-500 hover:text-indigo-600 rounded-lg font-bold text-[11px] transition border border-gray-100">
+                        <i class="fas fa-arrow-left text-[10px]"></i> Kembali
+                    </a>
+                    <span class="text-xs font-bold text-gray-300">/</span>
+                    <span
+                        class="text-xs font-bold text-indigo-600 bg-indigo-50/60 px-2.5 py-0.5 rounded-lg border border-indigo-100/50">
+                        Tambah Kursus Baru
+                    </span>
+                </div>
+                <h1 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight pt-1">
+                    Buat Kursus Marketplace
+                </h1>
+                <p class="text-xs text-gray-500">Lengkapi formulir di bawah untuk membuat kursus baru di marketplace.</p>
             </div>
         </div>
 
-        <div class="p-4 bg-indigo-50/70 border border-indigo-100 rounded-2xl flex items-start gap-3 text-indigo-900 text-xs">
+        <div
+            class="p-4 bg-indigo-50/70 border border-indigo-100 rounded-2xl flex items-start gap-3 text-indigo-900 text-xs shadow-sm">
             <div
-                class="w-7 h-7 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm shadow-indigo-200">
+                class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm shadow-indigo-200">
                 <i class="fas fa-store text-xs"></i>
             </div>
             <div>
@@ -29,17 +38,17 @@
                 </p>
             </div>
         </div>
-
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6 md:p-8">
-            <form action="{{ route('admin.courses.store') }}" method="POST" enctype="multipart/form-data"
-                class="space-y-6">
+            <form id="createCourseForm" action="{{ route('admin.courses.store') }}" method="POST"
+                enctype="multipart/form-data" class="space-y-6">
                 @csrf
 
+                <!-- JUDUL KURSUS -->
                 <div>
                     <label class="block text-xs font-bold text-gray-800 uppercase tracking-wider mb-2">Judul Kursus <span
                             class="text-rose-500">*</span></label>
                     <input type="text" name="title" value="{{ old('title') }}" required
-                        class="w-full px-4 py-3 border border-gray-200 bg-gray-50/50 rounded-xl text-sm font-medium focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 transition placeholder:text-gray-400 placeholder:font-normal"
+                        class="w-full px-4 py-3 border border-gray-200 bg-white rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition placeholder:text-gray-400 shadow-sm"
                         placeholder="Contoh: Pemrograman Web Lanjutan dengan Laravel & Tailwind">
                 </div>
 
@@ -50,7 +59,7 @@
                             <span class="text-rose-500">*</span></label>
                         <div class="relative">
                             <select name="category" required
-                                class="w-full px-4 py-3 border border-gray-200 bg-gray-50/50 rounded-xl text-sm font-medium focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 transition appearance-none cursor-pointer">
+                                class="w-full px-4 py-3 border border-gray-200 bg-white rounded-xl text-sm font-bold text-gray-700 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition appearance-none cursor-pointer shadow-sm">
                                 <option value="" disabled selected>-- Pilih Kategori --</option>
                                 <option value="Computer Science"
                                     {{ old('category') == 'Computer Science' ? 'selected' : '' }}>Computer Science</option>
@@ -68,9 +77,9 @@
                         <label class="block text-xs font-bold text-gray-800 uppercase tracking-wider mb-2">Harga Jual (Rp)
                             <span class="text-rose-500">*</span></label>
                         <div class="relative">
-                            <span class="absolute left-4 top-3 text-xs font-black text-gray-400">Rp</span>
+                            <span class="absolute left-4 top-3.5 text-xs font-black text-gray-400">Rp</span>
                             <input type="number" name="price" value="{{ old('price') }}" required min="0"
-                                class="w-full pl-10 pr-4 py-3 border border-gray-200 bg-gray-50/50 rounded-xl text-sm font-bold text-gray-900 focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 transition placeholder:text-gray-400 placeholder:font-normal"
+                                class="w-full pl-10 pr-4 py-3 border border-gray-200 bg-white rounded-xl text-sm font-bold text-gray-900 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition placeholder:text-gray-400 shadow-sm"
                                 placeholder="150000">
                         </div>
                     </div>
@@ -81,10 +90,11 @@
                     <label class="block text-xs font-bold text-gray-800 uppercase tracking-wider mb-2">Deskripsi Lengkap
                         <span class="text-rose-500">*</span></label>
                     <textarea name="description" rows="4" required
-                        class="w-full px-4 py-3 border border-gray-200 bg-gray-50/50 rounded-xl text-sm font-medium focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 transition placeholder:text-gray-400 placeholder:font-normal leading-relaxed"
+                        class="w-full px-4 py-3 border border-gray-200 bg-white rounded-xl text-sm font-medium text-gray-900 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition placeholder:text-gray-400 leading-relaxed shadow-sm"
                         placeholder="Jelaskan secara ringkas materi apa saja yang akan dipelajari student dalam kursus ini...">{{ old('description') }}</textarea>
                 </div>
 
+                <!-- UPLOAD COVER -->
                 <div>
                     <label class="block text-xs font-bold text-gray-800 uppercase tracking-wider mb-2">Cover Sampul Kursus
                         (Opsional)</label>
@@ -119,11 +129,11 @@
 
                 <div class="pt-4 border-t border-gray-100 flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
                     <a href="{{ route('admin.courses.index') }}"
-                        class="w-full sm:w-auto px-6 py-3 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold text-center transition">
+                        class="w-full sm:w-auto px-6 py-3 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold text-center transition shadow-sm">
                         Batal
                     </a>
                     <button type="submit"
-                        class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-black shadow-lg shadow-indigo-600/10 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
+                        class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-black shadow-md shadow-indigo-100 flex items-center justify-center gap-2 transition active:scale-95 cursor-pointer">
                         <i class="fas fa-save text-xs"></i> Simpan & Publikasikan
                     </button>
                 </div>

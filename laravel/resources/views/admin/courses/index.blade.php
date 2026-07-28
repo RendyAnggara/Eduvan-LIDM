@@ -2,20 +2,30 @@
 
 @section('content')
     <div class="px-2 sm:px-4 md:px-0 space-y-6">
-
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-                <h1 class="text-2xl font-black text-gray-900 tracking-tight">Daftar Kursus</h1>
-                <p class="text-sm text-gray-500 mt-0.5">Kelola materi, harga, kategori, dan seluruh konten pembelajaran
-                    EduLearn.</p>
+        <div
+            class="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="space-y-1">
+                <h1 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight pt-1">
+                    Daftar Kursus
+                </h1>
+                <p class="text-xs text-gray-500">Kelola materi, harga, kategori, dan seluruh konten pembelajaran EduLearn.
+                </p>
             </div>
-            <div>
+
+            <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
                 <a href="{{ route('admin.courses.create') }}"
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-2 shadow-lg shadow-indigo-100 w-full sm:w-auto transition-all active:scale-95">
+                    class="w-full sm:w-auto inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-100 gap-2">
                     <i class="fas fa-plus text-[10px]"></i> Tambah Kursus Baru
                 </a>
             </div>
         </div>
+        @if (session('success'))
+            <div
+                class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl text-xs font-bold flex items-center gap-2 shadow-sm">
+                <i class="fas fa-check-circle text-emerald-500 text-sm"></i>
+                {{ session('success') }}
+            </div>
+        @endif
 
         <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
             <form action="{{ route('admin.courses.index') }}" method="GET"
@@ -24,7 +34,7 @@
                 <div class="relative w-full lg:col-span-2">
                     <input type="text" name="search" value="{{ request('search') }}"
                         placeholder="Cari judul, deskripsi, atau nama sekolah..."
-                        class="pl-10 pr-4 py-2.5 border border-gray-200 bg-gray-50/50 rounded-xl focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition text-sm w-full font-medium placeholder:text-gray-400">
+                        class="pl-10 pr-4 py-2.5 border border-gray-200 bg-white rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition text-xs w-full font-medium text-gray-900 placeholder:text-gray-400 shadow-sm">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
                         <i class="fas fa-search text-xs"></i>
                     </div>
@@ -32,7 +42,7 @@
 
                 <div class="w-full">
                     <select name="course_type" onchange="this.form.submit()"
-                        class="w-full px-3 py-2.5 border border-gray-200 bg-gray-50/50 rounded-xl text-sm font-medium focus:border-indigo-500 focus:bg-white outline-none transition cursor-pointer">
+                        class="w-full px-3 py-2.5 border border-gray-200 bg-white rounded-xl text-xs font-bold text-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition cursor-pointer shadow-sm">
                         <option value="all" {{ request('course_type') == 'all' ? 'selected' : '' }}>Semua Jenis Kursus
                         </option>
                         <option value="premium" {{ request('course_type') == 'premium' ? 'selected' : '' }}>Marketplace
@@ -44,7 +54,7 @@
 
                 <div class="w-full flex gap-2">
                     <select name="grade_level" onchange="this.form.submit()"
-                        class="w-full px-3 py-2.5 border border-gray-200 bg-gray-50/50 rounded-xl text-sm font-medium focus:border-indigo-500 focus:bg-white outline-none transition cursor-pointer">
+                        class="w-full px-3 py-2.5 border border-gray-200 bg-white rounded-xl text-xs font-bold text-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition cursor-pointer shadow-sm">
                         <option value="all">Semua Kelas SMP</option>
                         <option value="7" {{ request('grade_level') == '7' ? 'selected' : '' }}>Kelas 7 SMP</option>
                         <option value="8" {{ request('grade_level') == '8' ? 'selected' : '' }}>Kelas 8 SMP</option>
@@ -55,27 +65,27 @@
                             (request('course_type') && request('course_type') !== 'all') ||
                             (request('grade_level') && request('grade_level') !== 'all'))
                         <a href="{{ route('admin.courses.index') }}"
-                            class="px-3 py-2.5 border border-gray-200 text-center rounded-xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition shrink-0 flex items-center justify-center"
+                            class="px-3.5 py-2.5 border border-rose-100 text-center rounded-xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition shrink-0 flex items-center justify-center gap-1 shadow-sm"
                             title="Reset Filter">
-                            <i class="fas fa-undo"></i>
+                            <i class="fas fa-undo text-xs"></i>
                         </a>
                     @endif
                 </div>
 
             </form>
         </div>
-
         <div class="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <table class="w-full text-left border-collapse">
-                <thead class="bg-gray-50 text-gray-400 text-xs uppercase font-bold tracking-wider">
+                <thead
+                    class="bg-gray-50/80 text-gray-400 text-xs uppercase font-bold tracking-wider border-b border-gray-100">
                     <tr>
-                        <th class="p-4 pl-6 border-b w-12 text-center">No</th>
-                        <th class="p-4 border-b w-24">Cover</th>
-                        <th class="p-4 border-b">Judul Kursus & Detail Instansi</th>
-                        <th class="p-4 border-b w-36">Kategori</th>
-                        <th class="p-4 border-b w-32">Harga</th>
-                        <th class="p-4 border-b w-24 text-center">Rating</th>
-                        <th class="p-4 border-b text-right pr-6 w-28">Aksi</th>
+                        <th class="p-4 pl-6 w-12 text-center">No</th>
+                        <th class="p-4 w-24">Cover</th>
+                        <th class="p-4">Judul Kursus & Detail Instansi</th>
+                        <th class="p-4 w-36">Kategori</th>
+                        <th class="p-4 w-32">Harga</th>
+                        <th class="p-4 w-24 text-center">Rating</th>
+                        <th class="p-4 text-right pr-6 w-28">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="text-gray-600 text-sm divide-y divide-gray-100">
@@ -149,16 +159,16 @@
                                 </div>
                             </td>
                             <td class="p-4 text-right pr-6 whitespace-nowrap">
-                                <div class="inline-flex items-center gap-2">
+                                <div class="inline-flex items-center gap-1.5">
                                     @if ($course->course_type !== 'school')
                                         <a href="{{ route('admin.courses.edit', $course->id) }}"
-                                            class="w-8 h-8 flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-xl transition-colors"
+                                            class="w-8 h-8 flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-xl transition-colors border border-blue-100/50 shadow-sm"
                                             title="Edit Kursus">
                                             <i class="fas fa-edit text-xs"></i>
                                         </a>
                                     @else
                                         <span
-                                            class="w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-400 rounded-xl cursor-not-allowed"
+                                            class="w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-400 rounded-xl cursor-not-allowed border border-gray-200/50"
                                             title="Kursus Sekolah Hanya Bisa Diubah Oleh Guru Pengampu">
                                             <i class="fas fa-lock text-xs"></i>
                                         </span>
@@ -170,7 +180,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                            class="w-8 h-8 flex items-center justify-center bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl transition-colors cursor-pointer"
+                                            class="w-8 h-8 flex items-center justify-center bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl transition-colors cursor-pointer border border-rose-100/50 shadow-sm"
                                             title="Hapus Kursus">
                                             <i class="fas fa-trash text-xs"></i>
                                         </button>
@@ -180,7 +190,8 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="p-10 text-center text-gray-400 italic">
+                            <td colspan="7" class="p-12 text-center text-gray-400 italic">
+                                <i class="fas fa-inbox text-3xl mb-2 text-gray-300 block"></i>
                                 Data kursus tidak ditemukan atau belum didaftarkan.
                             </td>
                         </tr>
@@ -188,10 +199,9 @@
                 </tbody>
             </table>
         </div>
-
-        <div class="block md:hidden space-y-4">
+        <div class="block md:hidden space-y-3">
             @forelse($courses as $course)
-                <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+                <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-3">
                     <div class="flex gap-3">
                         <div
                             class="w-24 h-16 shrink-0 overflow-hidden rounded-xl border border-gray-100 shadow-sm bg-gray-50">
@@ -255,14 +265,14 @@
 
                     <div class="pt-2 border-t border-gray-100 flex gap-2">
                         <a href="{{ route('admin.courses.show', $course->id) }}"
-                            class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 py-2.5 rounded-xl text-xs font-bold text-center transition flex items-center justify-center gap-1.5">
+                            class="flex-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 py-2.5 rounded-xl text-xs font-bold text-center transition flex items-center justify-center gap-1.5 border border-indigo-100/50 shadow-sm">
                             <i class="fas fa-eye text-[10px]"></i>
                             {{ $course->course_type === 'school' ? 'Lihat Materi' : 'Kelola Materi' }}
                         </a>
 
                         @if ($course->course_type !== 'school')
                             <a href="{{ route('admin.courses.edit', $course->id) }}"
-                                class="w-11 h-10 bg-blue-50 text-blue-600 flex items-center justify-center rounded-xl active:bg-blue-100 transition shrink-0">
+                                class="w-11 h-10 bg-blue-50 text-blue-600 flex items-center justify-center rounded-xl active:bg-blue-100 transition shrink-0 border border-blue-100/50 shadow-sm">
                                 <i class="fas fa-edit text-xs"></i>
                             </a>
                         @endif
@@ -273,14 +283,15 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                class="w-11 h-10 bg-rose-50 text-rose-600 flex items-center justify-center rounded-xl active:bg-rose-100 transition">
+                                class="w-11 h-10 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center rounded-xl transition border border-rose-100/50 shadow-sm">
                                 <i class="fas fa-trash text-xs"></i>
                             </button>
                         </form>
                     </div>
                 </div>
             @empty
-                <div class="bg-white p-8 rounded-2xl text-center text-gray-400 text-sm italic border border-gray-100">
+                <div class="bg-white p-8 rounded-2xl text-center text-gray-400 text-xs italic border border-gray-100">
+                    <i class="fas fa-inbox text-2xl mb-1 text-gray-300 block"></i>
                     Data kursus tidak ditemukan atau belum didaftarkan.
                 </div>
             @endforelse

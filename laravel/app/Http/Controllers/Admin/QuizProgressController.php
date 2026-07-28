@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Course;
 use App\Models\Quiz;
+use App\Models\Question;
 use App\Models\Progress;
 use App\Models\Content;
 
@@ -15,57 +16,49 @@ class QuizProgressController extends Controller
     {
         $search = $request->input('search');
 
-        // 1. Ambil data course dengan filter search & hitung progres asli
-        $courses = Course::withCount(['users', 'progress as completed_count' => function ($query)
-        {
-            // Menghitung yang sudah menyelesaikan Quiz (progres final)
-            $query->where('is_completed', true)->whereNull('content_id');
-        }])
-            ->when($search, function ($query, $search)
-            {
+        $courses = Course::where('price', '>', 0)
+            ->withCount([
+                'users',
+                'quizzes',
+                'progress as completed_count' => function ($query) {
+                    $query->where('is_completed', true)->whereNull('content_id');
+                }
+            ])
+            ->when($search, function ($query, $search) {
                 return $query->where('title', 'like', "%{$search}%");
             })
+            ->latest()
             ->get();
 
-        // 2. Statistik Ringkasan Asli
-        // Menghitung total student unik yang sudah menyelesaikan minimal satu course (Quiz Done)
         $totalCompleted = Progress::where('is_completed', true)
             ->whereNull('content_id')
             ->distinct('user_id')
             ->count('user_id');
 
-        // Rata-rata nilai dari semua quiz yang masuk
-        // (Opsional: Tetap 85 kalau lo belum mau tarik data dari perhitungan nilai submit)
-        $averageScore = 85;
+        $totalQuizDoneCount = Progress::where('is_completed', true)
+            ->whereNull('content_id')
+            ->count();
 
-        return view('admin.quiz.index', compact('courses', 'totalCompleted', 'averageScore'));
+        return view('admin.quiz.index', compact('courses', 'totalCompleted', 'totalQuizDoneCount'));
     }
 
     public function show($id)
     {
-        // 1. Ambil data Course beserta student dan progres spesifik course ini
-        $course = Course::with(['users.progress' => function ($query) use ($id)
-        {
+        $course = Course::with(['users.progress' => function ($query) use ($id) {
             $query->where('course_id', $id);
         }])->findOrFail($id);
 
-        // 2. Hitung total materi video di kursus ini sebagai pembagi (biar dinamis)
         $totalVideo = Content::where('course_id', $id)->count();
 
-        // 3. Kita "petakan" (map) datanya supaya di Blade tinggal panggil saja
-        $course->users->each(function ($user) use ($id, $totalVideo)
-        {
-            // Ambil baris Quiz (penandanya: content_id NULL sesuai kesepakatan kita)
+        $course->users->each(function ($user) use ($id, $totalVideo) {
             $quiz = $user->progress->where('course_id', $id)->whereNull('content_id')->first();
-            $user->nilai_quiz_asli = $quiz ? $quiz->score : '-';
+            $user->nilai_quiz_asli = $quiz ? ($quiz->score ?? '-') : '-';
 
-            // Hitung berapa video yang sudah 'is_completed'
             $completedVideoCount = $user->progress->where('course_id', $id)
                 ->whereNotNull('content_id')
                 ->where('is_completed', true)
                 ->count();
 
-            // Hitung persentase progres belajar
             $user->persentase_asli = $totalVideo > 0
                 ? round(($completedVideoCount / $totalVideo) * 100)
                 : 0;
@@ -76,9 +69,14 @@ class QuizProgressController extends Controller
 
     public function manage(Course $course)
     {
-        // Mengambil semua quiz yang miliknya course ini
-        $quizzes = $course->quizzes;
-        return view('admin.quiz.manage', compact('course', 'quizzes'));
+        $quiz = Quiz::firstOrCreate(
+            ['course_id' => $course->id],
+            ['title' => 'Quiz ' . $course->title, 'time_limit' => 30]
+        );
+
+        $questions = Question::where('quiz_id', $quiz->id)->oldest()->get();
+
+        return view('admin.quiz.manage', compact('course', 'quiz', 'questions'));
     }
 
     public function storeQuiz(Request $request, Course $course)
@@ -92,15 +90,29 @@ class QuizProgressController extends Controller
             'answer'   => 'required|in:a,b,c,d',
         ]);
 
-        // Simpan quiz lewat relasi course agar course_id terisi otomatis
-        $course->quizzes()->create($request->all());
+        $quiz = Quiz::firstOrCreate(
+            ['course_id' => $course->id],
+            ['title' => 'Quiz ' . $course->title, 'time_limit' => 30]
+        );
 
-        return redirect()->back()->with('success', 'Soal berhasil ditambahkan!');
+        Question::create([
+            'quiz_id'        => $quiz->id,
+            'question_text'  => $request->question,
+            'option_a'       => $request->option_a,
+            'option_b'       => $request->option_b,
+            'option_c'       => $request->option_c,
+            'option_d'       => $request->option_d,
+            'correct_answer' => strtolower($request->answer),
+        ]);
+
+        return redirect()->back()->with('success', 'Soal kuis berhasil ditambahkan!');
     }
 
-    public function destroyQuiz(Quiz $quiz)
+    public function destroyQuiz($id)
     {
-        $quiz->delete();
-        return redirect()->back()->with('success', 'Soal berhasil dihapus!');
+        $question = Question::findOrFail($id);
+        $question->delete();
+
+        return redirect()->back()->with('success', 'Soal kuis berhasil dihapus!');
     }
 }
