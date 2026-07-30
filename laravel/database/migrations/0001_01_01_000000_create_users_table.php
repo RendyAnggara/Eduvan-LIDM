@@ -3,8 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Http\Request;
-
 
 return new class extends Migration
 {
@@ -22,6 +20,7 @@ return new class extends Migration
             $table->enum('role', ['admin', 'teacher', 'student'])->default('student');
             $table->foreignId('school_id')->nullable()->constrained('schools')->onDelete('cascade');
             $table->rememberToken();
+            $table->text('fcm_token')->nullable(); 
             $table->timestamps();
             $table->string('otp_code')->nullable();
             $table->timestamp('otp_expiry')->nullable();
@@ -42,6 +41,7 @@ return new class extends Migration
             $table->integer('last_activity')->index();
         });
     }
+
     /**
      * Reverse the migrations.
      */

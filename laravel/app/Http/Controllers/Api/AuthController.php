@@ -15,8 +15,9 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required',
+            'email'     => 'required|email',
+            'password'  => 'required',
+            'fcm_token' => 'nullable|string',
         ]);
 
         if ($validator->fails())
@@ -40,8 +41,14 @@ class AuthController extends Controller
         if (!$user->email_verified_at)
         {
             $user->email_verified_at = now();
-            $user->save();
         }
+
+        if ($request->filled('fcm_token')) {
+            $user->fcm_token = $request->fcm_token;
+        }
+
+        $user->save();
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         $enrollmentsCount = DB::table('enrollments')->where('user_id', $user->id)->count();
@@ -52,9 +59,33 @@ class AuthController extends Controller
         $userArray['certificates_count'] = $certificatesCount;
 
         return response()->json([
-            'success' => true,
+            'success'      => true,
             'access_token' => $token,
-            'user' => $userArray
+            'user'         => $userArray
+        ], 200);
+    }
+
+    public function updateFcmToken(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'fcm_token' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'FCM Token wajib diisi.'
+            ], 422);
+        }
+
+        $user = $request->user();
+        $user->update([
+            'fcm_token' => $request->fcm_token
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'FCM Token berhasil diperbarui.'
         ], 200);
     }
 
@@ -63,10 +94,10 @@ class AuthController extends Controller
         $teacher = Auth::user();
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:50',
-            'email' => 'required|string|email|max:255|unique:users,email',
+            'name'        => 'required|string|max:50',
+            'email'       => 'required|string|email|max:255|unique:users,email',
             'nisn_or_nip' => 'nullable|string|max:20',
-            'class' => 'required|in:Kelas 7,Kelas 8,Kelas 9'
+            'class'       => 'required|in:Kelas 7,Kelas 8,Kelas 9'
         ]);
 
         if ($validator->fails())
@@ -80,21 +111,21 @@ class AuthController extends Controller
         $generatedPassword = 'edulearn' . rand(1000, 9999);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($generatedPassword),
-            'role' => 'student',
-            'nisn_or_nip' => $request->nisn_or_nip,
-            'school_id' => $teacher->school_id,
-            'class' => $request->class,
+            'name'              => $request->name,
+            'email'             => $request->email,
+            'password'          => Hash::make($generatedPassword),
+            'role'              => 'student',
+            'nisn_or_nip'       => $request->nisn_or_nip,
+            'school_id'         => $teacher->school_id,
+            'class'             => $request->class,
             'email_verified_at' => now(),
-            'avatar' => 'assets/icon/avatar-neutral.png',
+            'avatar'            => 'assets/icon/avatar-neutral.png',
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Akun siswa berhasil disimpan ke database!',
-            'user' => $user
+            'user'    => $user
         ], 201);
     }
 
@@ -125,7 +156,7 @@ class AuthController extends Controller
         $user = $request->user();
         $request->validate([
             'current_password' => 'required',
-            'new_password' => 'required|string|min:6|confirmed',
+            'new_password'      => 'required|string|min:6|confirmed',
         ]);
 
         if (!Hash::check($request->current_password, $user->password)) {
@@ -151,6 +182,8 @@ class AuthController extends Controller
     {
         if ($request->user())
         {
+            $request->user()->update(['fcm_token' => null]);
+
             $request->user()->currentAccessToken()->delete();
         }
 

@@ -7,56 +7,71 @@ use Illuminate\Http\Request;
 
 class NotificationApiController extends Controller
 {
-    // 1. API mengambil daftar notif + menghitung jumlah unread khusus student yang login
     public function getNotifUser(Request $request)
     {
-        try
-        {
-            $user = $request->user(); // Mendeteksi student yang sedang login di Ionic
+        try {
+            $user = $request->user();
 
-            // Ambil semua notifikasi milik user ini
-            $notifications = $user->notifications;
-
-            // Hitung jumlah notifikasi yang BELUM DIBACA (read_at masih NULL)
             $unreadCount = $user->unreadNotifications()->count();
+
+            $notifications = $user->notifications()->latest()->get()->map(function ($notif) {
+                return [
+                    'id'         => $notif->id,
+                    'title'      => $notif->data['title'] ?? 'Pemberitahuan',
+                    'message'    => $notif->data['message'] ?? '',
+                    'type'       => $notif->data['type'] ?? 'info',
+                    'is_read'    => !is_null($notif->read_at),
+                    'read_at'    => $notif->read_at ? $notif->read_at->timezone('Asia/Jakarta')->format('d M Y, H:i') . ' WIB' : null,
+                    'created_at' => $notif->created_at->timezone('Asia/Jakarta')->format('d M Y, H:i') . ' WIB',
+                ];
+            });
 
             return response()->json([
                 'status'       => 'success',
-                'unread_count' => $unreadCount, // Ini untuk angka merah di lonceng Ionic
+                'unread_count' => $unreadCount,
                 'data'         => $notifications
             ], 200);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Gagal mengambil data: ' . $e->getMessage()
             ], 500);
         }
     }
 
-    // 2. API mengubah status menjadi SUDAH DIBACA pas diklik di Ionic
     public function markAsRead(Request $request, $id)
     {
-        try
-        {
-            // Cari notif berdasarkan ID milik user yang login
+        try {
             $notification = $request->user()->notifications()->where('id', $id)->first();
 
-            if ($notification)
-            {
-                $notification->markAsRead(); // Otomatis mengisi kolom read_at di database
+            if ($notification) {
+                $notification->markAsRead();
             }
 
             return response()->json([
-                'status' => 'success',
+                'status'  => 'success',
                 'message' => 'Notifikasi berhasil dibaca'
             ], 200);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
+                'message' => 'Gagal mengupdate status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function markAllAsRead(Request $request)
+    {
+        try {
+            $request->user()->unreadNotifications->markAsRead();
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Semua notifikasi berhasil ditandai telah dibaca'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
                 'message' => 'Gagal mengupdate status: ' . $e->getMessage()
             ], 500);
         }

@@ -17,30 +17,24 @@ class CourseController extends Controller
         $gradeFilter = $request->input('grade_level');
 
         $query = Course::query();
-
-        // 1. Pencarian Teks Terintegrasi (Judul, Deskripsi, & Nama Sekolah via Guru)
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                   ->orWhere('description', 'like', "%{$search}%")
-                  // Ambil nama sekolah dari relasi guru pengampu
                   ->orWhereHas('teachers.school', function ($ts) use ($search) {
                       $ts->where('name', 'like', "%{$search}%");
                   });
             });
         }
 
-        // 2. Filter Tipe Kursus (premium / school)
         if (!empty($typeFilter) && $typeFilter !== 'all') {
             $query->where('course_type', $typeFilter);
         }
 
-        // 3. Filter Tingkat Kelas SMP (7, 8, 9)
         if (!empty($gradeFilter) && $gradeFilter !== 'all') {
             $query->where('grade_level', $gradeFilter);
         }
 
-        // Load relasi teachers.school tanpa memanggil relasi 'school' langsung
         $courses = $query->with(['teachers.school'])->latest()->get();
 
         return view('admin.courses.index', compact(

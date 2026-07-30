@@ -37,8 +37,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::put('/user/update', [AuthController::class, 'updateProfile']);
+
+    Route::post('/user/fcm-token', [AuthController::class, 'updateFcmToken']);
+
     Route::get('/notifications', [NotificationApiController::class, 'getNotifUser']);
     Route::post('/notifications/read/{id}', [NotificationApiController::class, 'markAsRead']);
+    Route::post('/notifications/read-all', [NotificationApiController::class, 'markAllAsRead']); // Opsional / Tambahan
+
     Route::get('/courses', [CourseController::class, 'index']);
     Route::post('/checkout/dompetx', [PaymentController::class, 'requestPayment']);
     Route::post('/payment/request', [PaymentController::class, 'requestPayment']);

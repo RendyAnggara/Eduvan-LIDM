@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Web\Teacher; 
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Notifications\UmumNotification;
 use Google\Client as GoogleClient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
 
@@ -14,7 +15,7 @@ class NotificationController extends Controller
 {
     public function index()
     {
-        return view('admin.notifications.index');
+        return view('teacher.notifications.index');
     }
 
     public function store(Request $request)
@@ -26,10 +27,14 @@ class NotificationController extends Controller
         ]);
 
         try {
-            $students = User::where('role', 'student')->get();
+            $teacher = Auth::user();
+
+            $students = User::where('role', 'student')
+                ->where('school_id', $teacher->school_id)
+                ->get();
 
             if ($students->isEmpty()) {
-                return redirect()->back()->with('error', 'Gagal blast, belum ada data student di database.');
+                return redirect()->back()->with('error', 'Gagal blast, tidak ada data siswa di sekolah Anda.');
             }
 
             Notification::send($students, new UmumNotification(
@@ -44,36 +49,9 @@ class NotificationController extends Controller
                 $this->sendFcmNotification($fcmTokens, $request->title, $request->message, $request->type);
             }
 
-            return redirect()->back()->with('success', 'Notifikasi berhasil dikirim ke seluruh siswa.');
+            return redirect()->back()->with('success', 'Notifikasi berhasil dikirim ke seluruh siswa di sekolah Anda.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-        }
-    }
-
-    public function getNotifUser(Request $request)
-    {
-        try {
-            $user = $request->user();
-            $notifications = $user->notifications()->latest()->get()->map(function ($notif) {
-                return [
-                    'id'          => $notif->id,
-                    'title'       => $notif->data['title'] ?? 'Pemberitahuan',
-                    'message'     => $notif->data['message'] ?? '',
-                    'type'        => $notif->data['type'] ?? 'info',
-                    'read_at'     => $notif->read_at,
-                    'created_at'  => $notif->created_at->timezone('Asia/Jakarta')->format('d M Y, H:i') . ' WIB',
-                ];
-            });
-
-            return response()->json([
-                'status' => 'success',
-                'data'   => $notifications
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => 'Gagal mengambil data: ' . $e->getMessage()
-            ], 500);
         }
     }
 
