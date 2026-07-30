@@ -18,6 +18,7 @@ use App\Http\Controllers\Web\Teacher\TeacherController;
 use App\Http\Controllers\Web\Teacher\TeacherAuthController;
 use App\Http\Controllers\Web\Teacher\MaterialController;
 use App\Http\Controllers\Web\Teacher\QuizController;
+use App\Http\Controllers\Web\Teacher\NotificationController as TeacherNotificationController; 
 
 Route::get('/', function () {
     return redirect()->route('landing.page');
@@ -63,12 +64,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/schools/{id}', [SchoolController::class, 'update'])->name('admin.schools.update');
     Route::delete('/schools/{id}', [SchoolController::class, 'destroy'])->name('admin.schools.destroy');
 
-    // MANAGEMENT ROUTE: KELOLA GURU
     Route::get('/teachers', [TeacherManagementController::class, 'index'])->name('admin.teachers.index');
     Route::post('/teachers', [TeacherManagementController::class, 'store'])->name('admin.teachers.store');
     Route::put('/teachers/{id}', [TeacherManagementController::class, 'update'])->name('admin.teachers.update');
     Route::delete('/teachers/{id}', [TeacherManagementController::class, 'destroy'])->name('admin.teachers.destroy');
-    // 🆕 ROUTE BARU: FITUR MASAL GURU VIA EXCEL
     Route::post('/teachers/import-excel', [TeacherManagementController::class, 'importExcel'])->name('admin.teachers.import_excel');
     Route::get('/teachers/download-template', [TeacherManagementController::class, 'downloadTemplate'])->name('admin.teachers.download_template');
 
@@ -148,4 +147,7 @@ Route::middleware(['auth', 'role:teacher,admin'])->prefix('teacher')->group(func
     Route::get('/quiz/{id}/questions', [QuizController::class, 'manageQuestions'])->name('teacher.quiz.questions');
     Route::post('/quiz/{id}/questions', [QuizController::class, 'storeQuestion'])->name('teacher.quiz.store_question');
     Route::delete('/quiz/question/{id}', [QuizController::class, 'destroyQuestion'])->name('teacher.quiz.destroy_question');
+
+    Route::get('/notifications', [TeacherNotificationController::class, 'index'])->name('teacher.notifications.index');
+    Route::post('/notifications/send', [TeacherNotificationController::class, 'store'])->name('teacher.notifications.send');
 });

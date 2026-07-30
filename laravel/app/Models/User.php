@@ -27,6 +27,7 @@ class User extends Authenticatable
         'nisn_or_nip',
         'otp_code',
         'otp_expiry',
+        'fcm_token',
     ];
 
     /**

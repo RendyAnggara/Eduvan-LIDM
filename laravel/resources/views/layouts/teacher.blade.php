@@ -19,7 +19,6 @@
             <h2 class="text-lg font-bold tracking-tight">Edu<span class="text-teal-400">Learn</span></h2>
         </div>
 
-        <!-- Tombol Hamburger Trigger Open -->
         <button onclick="toggleMobileSidebar(true)" class="p-1 text-slate-400 hover:text-white focus:outline-none">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                 stroke="currentColor" class="w-6 h-6">
@@ -28,15 +27,9 @@
         </button>
     </header>
 
-    <!-- ====================================================== -->
-    <!-- 2. SIDEBAR NAVIGASI (Desktop & Full Height Mobile Drawer) -->
-    <!-- ====================================================== -->
     <aside id="sidebarMenu"
         class="fixed inset-y-0 left-0 w-64 bg-slate-950 text-white flex flex-col justify-between shrink-0 border-r border-slate-800 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:h-screen md:sticky md:top-0 h-full">
-
-        <!-- Bagian Atas Menu -->
         <div class="p-6 flex-1 flex flex-col">
-            <!-- Brand Asset & Tombol Close Mobile -->
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-2">
                     <div
@@ -49,7 +42,6 @@
                     </div>
                 </div>
 
-                <!-- Tombol Close (Hanya di layar HP) -->
                 <button onclick="toggleMobileSidebar(false)"
                     class="p-1 text-slate-400 hover:text-white md:hidden focus:outline-none">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
@@ -59,7 +51,6 @@
                 </button>
             </div>
 
-            <!-- Menu Links -->
             <nav class="mt-4 space-y-1.5 flex-1">
                 <a href="{{ route('teacher.dashboard') }}"
                     class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-200 {{ Route::is('teacher.dashboard') ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/20' : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200' }}">
@@ -100,10 +91,19 @@
                     </svg>
                     <span>Soal & Kuis</span>
                 </a>
+
+                <a href="{{ route('teacher.notifications.index') }}"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition duration-150 {{ request()->routeIs('teacher.notifications.*') ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/20' : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                    </svg>
+                    <span>Notifikasi Siswa</span>
+                </a>
             </nav>
         </div>
 
-        <!-- Tombol Logout (Tetap nempel di bawah tapi menyatu di area aside h-full) -->
         <div class="p-4 border-t border-slate-800 bg-slate-950 mt-auto">
             <form action="{{ route('teacher.logout') }}" method="POST">
                 @csrf
