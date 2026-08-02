@@ -51,7 +51,7 @@
             <div class="p-6 border-b border-slate-700 flex flex-col items-center text-center gap-4 bg-slate-900/20">
                 <div
                     class="w-28 h-28 flex items-center justify-center transition-transform duration-300 hover:scale-105">
-                    <img src="{{ asset('assets/images/eduvan.png') }}" alt="Logo EduVan"
+                    <img src="{{ asset('assets/images/edulearn.png') }}" alt="Logo EduLearn"
                         class="w-full h-full object-contain">
                 </div>
 
