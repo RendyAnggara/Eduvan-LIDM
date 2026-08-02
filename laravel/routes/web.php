@@ -8,7 +8,6 @@ use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\QuizProgressController;
-use App\Http\Controllers\Admin\CertificateController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\OrderController;
@@ -18,7 +17,7 @@ use App\Http\Controllers\Web\Teacher\TeacherController;
 use App\Http\Controllers\Web\Teacher\TeacherAuthController;
 use App\Http\Controllers\Web\Teacher\MaterialController;
 use App\Http\Controllers\Web\Teacher\QuizController;
-use App\Http\Controllers\Web\Teacher\NotificationController as TeacherNotificationController; 
+use App\Http\Controllers\Web\Teacher\NotificationController as TeacherNotificationController;
 
 Route::get('/', function () {
     return redirect()->route('landing.page');
@@ -100,11 +99,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/quiz/{quiz}/edit', [QuizProgressController::class, 'editQuiz'])->name('admin.quiz.edit');
     Route::put('/quiz/{quiz}', [QuizProgressController::class, 'updateQuiz'])->name('admin.quiz.update');
     Route::delete('/quiz/{quiz}', [QuizProgressController::class, 'destroyQuiz'])->name('admin.quiz.destroy');
-
-    Route::get('/certificates', [CertificateController::class, 'index'])->name('admin.certificates.index');
-    Route::post('/certificates/issue/{userId}/{courseId}', [CertificateController::class, 'issue'])->name('admin.certificates.issue');
-    Route::get('/certificates/preview/{id}', [CertificateController::class, 'preview'])->name('admin.certificates.preview');
-    Route::get('/certificates/download/{id}', [CertificateController::class, 'download'])->name('admin.certificates.download');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('admin.notifications.index');
     Route::post('/notifications/send', [NotificationController::class, 'store'])->name('admin.notifications.send');

@@ -9,7 +9,6 @@ use App\Http\Controllers\Api\ContentController;
 use App\Http\Controllers\Api\ProgressController;
 use App\Http\Controllers\Api\QuizController;
 use App\Http\Controllers\Api\WishlistController;
-use App\Http\Controllers\Api\CertificateApiController;
 use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\NotificationApiController;
 use App\Http\Controllers\Api\VoucherController;
@@ -39,12 +38,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user/update', [AuthController::class, 'updateProfile']);
 
     Route::post('/user/fcm-token', [AuthController::class, 'updateFcmToken']);
-
     Route::get('/notifications', [NotificationApiController::class, 'getNotifUser']);
     Route::post('/notifications/read/{id}', [NotificationApiController::class, 'markAsRead']);
-    Route::post('/notifications/read-all', [NotificationApiController::class, 'markAllAsRead']); // Opsional / Tambahan
+    Route::post('/notifications/read-all', [NotificationApiController::class, 'markAllAsRead']);
 
-    Route::get('/courses', [CourseController::class, 'index']);
     Route::post('/checkout/dompetx', [PaymentController::class, 'requestPayment']);
     Route::post('/payment/request', [PaymentController::class, 'requestPayment']);
 
@@ -58,9 +55,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/courses/{course_id}/quizzes', [CourseController::class, 'getQuizzesForStudent']);
         Route::post('/progress/submit-quiz', [ProgressController::class, 'submitQuiz']);
 
-        Route::get('/courses/{course_id}/certificate', [EnrollmentController::class, 'getCertificate']);
-        Route::get('/my-certificates', [CertificateApiController::class, 'index']);
-        Route::get('/certificates/{id}/download', [CertificateApiController::class, 'downloadMobile']);
         Route::post('/courses/{id}/rate', [CourseController::class, 'rate']);
 
         Route::get('/wishlist', [WishlistController::class, 'index']);
