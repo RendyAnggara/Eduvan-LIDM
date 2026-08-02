@@ -16,7 +16,6 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
-        /* Custom scrollbar biar estetik */
         ::-webkit-scrollbar {
             width: 5px;
         }
@@ -71,7 +70,6 @@
                     <span class="font-semibold text-sm">Dashboard</span>
                 </a>
 
-                <!-- MASTER DATA: Kelola Sekolah (BARU) -->
                 <a href="{{ route('admin.schools.index') }}"
                     class="group flex items-center gap-3 p-3 rounded-xl transition {{ request()->is('admin/schools*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
                     <i
@@ -79,7 +77,6 @@
                     <span class="font-semibold text-sm">Kelola Sekolah</span>
                 </a>
 
-                <!-- MASTER DATA: Kelola Akun Guru (BARU) -->
                 <a href="{{ route('admin.teachers.index') }}"
                     class="group flex items-center gap-3 p-3 rounded-xl transition {{ request()->is('admin/teachers*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
                     <i
@@ -115,12 +112,6 @@
                     <span class="font-semibold text-sm">Quiz & Progress</span>
                 </a>
 
-                <a href="{{ route('admin.certificates.index') }}"
-                    class="group flex items-center gap-3 p-3 rounded-xl transition {{ request()->routeIs('admin.certificates.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' : 'text-slate-300 hover:bg-slate-700 hover:text-white' }}">
-                    <i
-                        class="fas fa-award text-sm {{ request()->routeIs('admin.certificates.*') ? '' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
-                    <span class="font-semibold text-sm">Certificate</span>
-                </a>
             </nav>
 
             <div class="px-4 py-2">
@@ -171,7 +162,7 @@
         </main>
     </div>
 
-    <!-- Modal Logout Bawaan Lu -->
+
     <div id="logoutModal"
         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm transition-all duration-300 hidden opacity-0">
         <div class="fixed inset-0 bg-transparent" onclick="closeLogoutModal()"></div>
@@ -204,7 +195,6 @@
         </div>
     </div>
 
-    <!-- Script Bawaan Lu -->
     <script>
         function openLogoutModal() {
             const modal = document.getElementById('logoutModal');
