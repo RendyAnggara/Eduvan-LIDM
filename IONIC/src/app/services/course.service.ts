@@ -42,8 +42,14 @@ export class CourseService {
     });
   }
 
+  // getCourseById(id: string): Observable<any> {
+  //   return this.http.get(`${this.apiUrl}/${id}`);
+  // }
+
   getCourseById(id: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${id}`);
+    return this.http.get(`${this.apiUrl}/${id}`, {
+      headers: this.dapatkanHeaderAutentikasi(),
+    });
   }
 
   buyCourse(courseId: number): Observable<any> {

@@ -70,29 +70,79 @@ export class CourseDetailPage implements OnInit {
     }
   }
 
+  // 1. Logika Pemisah Murni Wajib (Gratis) vs Pilihan (Berbayar)
   isFreeCourse(): boolean {
-    return true;
+    if (!this.course || !this.course.category) {
+      // Jika data course belum ter-load dari API, kembalikan false dulu agar tidak flicker/salah mode
+      return false;
+    }
+
+    // Mengubah category ke huruf kecil agar pencarian kata kunci akurat
+    const category = String(this.course.category).toLowerCase().trim();
+    const price = Number(this.course.price || 0);
+
+    // A. MATA PELAJARAN WAJIB (GRATIS)
+    // Cek apakah kategorinya mengandung kata 'school', 'wajib', atau 'free'
+    if (
+      category.includes('school') ||
+      category.includes('wajib') ||
+      category.includes('free')
+    ) {
+      return true;
+    }
+
+    // B. MATA PELAJARAN PILIHAN (BERBAYAR)
+    // Cek apakah kategorinya 'premium', 'pilihan', atau memiliki harga > 0
+    if (
+      category.includes('premium') ||
+      category.includes('pilihan') ||
+      price > 0
+    ) {
+      return false; // Berbayar!
+    }
+
+    // C. FALLBACK
+    // Jika harga 0 gratis, jika harga > 0 berbayar
+    return price === 0;
   }
 
+  // 2. Perbaiki getDetail agar status pembayaran tidak saling menimpa
   getDetail(id: string) {
     const targetCourseId = Number(id);
 
+    // Reset status payment awal ke 'none'
+    this.paymentStatus = 'none';
+
     this.courseService.getCourseById(id).subscribe({
       next: (res: any) => {
-        if (res.success) {
-          this.course = res.data;
-          console.log('Detail Kursus Sukses Dimuat:', this.course);
+        // Ambil data dari response API
+        const data = res.data || res;
+        if (data) {
+          this.course = data;
+
+          // Pastikan harga tipe number
+          if (this.course.price !== undefined && this.course.price !== null) {
+            this.course.price = Number(this.course.price);
+          }
+
+          console.log(
+            'Detail Loaded -> Category:',
+            this.course.category,
+            '| Price:',
+            this.course.price
+          );
+
           this.cdr.detectChanges();
           this.cekStatusWishlistUser(targetCourseId);
           this.ambilKontenKurikulum(targetCourseId);
         }
       },
-
       error: (error) => {
         console.error('Gagal ambil detail:', error);
       },
     });
 
+    // Cek pendaftaran transaksi user
     this.courseService.getMyEnrollments().subscribe({
       next: (enrollRes: any) => {
         if (enrollRes.success && enrollRes.data) {
@@ -110,16 +160,11 @@ export class CourseDetailPage implements OnInit {
           this.cdr.detectChanges();
         }
       },
-
-      error: (enrollError) => {
-        if (enrollError.status === 400) {
-          this.paymentStatus = 'success';
-          this.cdr.detectChanges();
-        }
+      error: () => {
+        this.paymentStatus = 'none';
+        this.cdr.detectChanges();
       },
     });
-    this.paymentStatus = 'success';
-    this.cdr.detectChanges();
   }
 
   bukaModalUploadTransfer() {
@@ -270,20 +315,12 @@ export class CourseDetailPage implements OnInit {
   }
 
   masukKelas(courseId?: any) {
-    const idDariCourse = this.course?.id;
-    const idDariParam = courseId;
-    const idDariRoute = this.route.snapshot.paramMap.get('id');
-
-    const finalId = idDariCourse || idDariParam || idDariRoute;
-
-    console.log('Navigasi masukKelas membawa ID:', finalId);
-
-    if (finalId) {
+    const finalId =
+      this.course?.id || courseId || this.route.snapshot.paramMap.get('id');
+    if (this.isFreeCourse() || this.paymentStatus === 'success') {
       this.router.navigate(['/course-player', finalId]);
     } else {
-      this.alertMessageCustom = 'ID Kursus tidak ditemukan!';
-      this.isErrorAlertOpen = true;
-      this.cdr.detectChanges();
+      this.goToCheckout(finalId);
     }
   }
 
@@ -316,5 +353,9 @@ export class CourseDetailPage implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  goToCheckout(subjectId: number) {
+    this.router.navigate(['/checkout', subjectId]);
   }
 }
