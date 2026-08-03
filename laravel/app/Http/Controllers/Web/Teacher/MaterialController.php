@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Chapter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class MaterialController extends Controller
 {
@@ -58,7 +59,6 @@ class MaterialController extends Controller
             'image' => ''
         ]);
 
-        // Hubungkan guru pembuat ke pivot
         $course->teachers()->attach(Auth::id());
 
         return redirect()->back()->with('success', 'Mata Pelajaran baru berhasil didaftarkan!');
@@ -114,9 +114,13 @@ class MaterialController extends Controller
             $query->where('users.school_id', Auth::user()->school_id);
         })->findOrFail($id);
 
+        if ($lesson->file_path && Storage::disk('public')->exists($lesson->file_path)) {
+            Storage::disk('public')->delete($lesson->file_path);
+        }
+
         $lesson->delete();
 
-        return redirect()->back()->with('success', 'Pertemuan berhasil dihapus dari daftar bab!');
+        return redirect()->back()->with('success', 'Pertemuan beserta dokumennya berhasil dihapus dari daftar bab!');
     }
 
     public function storeLesson(Request $request)
@@ -153,21 +157,41 @@ class MaterialController extends Controller
     public function updateContent(Request $request, $id)
     {
         $request->validate([
-            'video_url' => 'nullable|url|max:255',
+            'video_url'    => 'nullable|url|max:255',
             'content_text' => 'nullable|string',
+            'document'     => 'nullable|file|mimes:pdf,ppt,pptx,doc,docx,xls,xlsx,zip|max:20480', // Maks 20MB
         ]);
 
         $lesson = \App\Models\Lesson::whereHas('chapter.course.teachers', function ($query) {
             $query->where('users.school_id', Auth::user()->school_id);
         })->findOrFail($id);
 
-        $lesson->update([
-            'video_url' => $request->video_url,
+        $dataToUpdate = [
+            'video_url'    => $request->video_url,
             'content_text' => $request->content_text,
-        ]);
+        ];
+
+        if ($request->hasFile('document')) {
+            $file = $request->file('document');
+            if ($lesson->file_path && Storage::disk('public')->exists($lesson->file_path)) {
+                Storage::disk('public')->delete($lesson->file_path);
+            }
+
+            $fileName = $file->getClientOriginalName();
+            $fileType = strtolower($file->getClientOriginalExtension());
+            $fileSize = $file->getSize();
+            $filePath = $file->storeAs('lessons_documents', time() . '_' . preg_replace('/[^A-Za-z0-9\._-]/', '', $fileName), 'public');
+
+            $dataToUpdate['file_path'] = $filePath;
+            $dataToUpdate['file_name'] = $fileName;
+            $dataToUpdate['file_type'] = $fileType;
+            $dataToUpdate['file_size'] = $fileSize;
+        }
+
+        $lesson->update($dataToUpdate);
 
         return redirect()->route('teacher.material.manage', $lesson->chapter->course_id)
-            ->with('success', 'Materi pembelajaran diferensiasi berhasil diperbarui!');
+            ->with('success', 'Materi pembelajaran dan dokumen berhasil diperbarui!');
     }
 
     public function updateCourse(Request $request, $id)
@@ -191,5 +215,21 @@ class MaterialController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Mata pelajaran berhasil diperbarui!');
+    }
+
+    public function downloadDocument($id)
+    {
+        $lesson = \App\Models\Lesson::findOrFail($id);
+
+        if (!$lesson->file_path || !\Illuminate\Support\Facades\Storage::disk('public')->exists($lesson->file_path)) {
+            abort(404, 'File dokumen tidak ditemukan.');
+        }
+
+        $fullPath = storage_path('app/public/' . $lesson->file_path);
+
+        return response()->file($fullPath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $lesson->file_name . '"'
+        ]);
     }
 }

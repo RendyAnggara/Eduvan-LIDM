@@ -25,41 +25,93 @@
             </div>
         </div>
 
-        <form action="{{ route('teacher.material.update_content', $lesson->id) }}" method="POST" class="space-y-6">
+        @if ($errors->any())
+            <div class="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold rounded-xl">
+                <ul class="list-disc list-inside space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form action="{{ route('teacher.material.update_content', $lesson->id) }}" method="POST"
+            enctype="multipart/form-data" class="space-y-6">
             @csrf
             @method('PUT')
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div
-                    class="lg:col-span-1 bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between gap-4">
-                    <div>
-                        <div class="flex items-center gap-2 mb-2">
-                            <h3 class="text-base font-bold text-slate-800 tracking-tight">Jalur Visual & Auditori</h3>
-                        </div>
-                        <p class="text-xs text-slate-400 leading-relaxed mb-4">
-                            Tujukan bagian ini untuk siswa dengan gaya belajar Visual/Auditori. Tempelkan tautan video
-                            penjelasan materi pembelajaran yang relevan.
-                        </p>
+                <div class="lg:col-span-1 space-y-6">
+                    <div
+                        class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-2 mb-2">
+                                <h3 class="text-base font-bold text-slate-800 tracking-tight">Jalur Visual & Auditori</h3>
+                            </div>
+                            <p class="text-xs text-slate-400 leading-relaxed mb-4">
+                                Tujukan bagian ini untuk siswa dengan gaya belajar Visual/Auditori. Tempelkan tautan video
+                                penjelasan materi pembelajaran yang relevan.
+                            </p>
 
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-xs font-bold text-slate-600">URL Video Pembelajaran</label>
-                            <input type="url" name="video_url" value="{{ old('video_url', $lesson->video_url) }}"
-                                placeholder="https://www.youtube.com/watch?v=..."
-                                class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-teal-500 font-medium">
-                            <span class="text-[10px] text-slate-400 leading-tight mt-0.5 block">Mendukung tautan sematan
-                                dari YouTube atau Google Drive.</span>
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-xs font-bold text-slate-600">URL Video Pembelajaran</label>
+                                <input type="url" name="video_url" value="{{ old('video_url', $lesson->video_url) }}"
+                                    placeholder="https://www.youtube.com/watch?v=..."
+                                    class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:border-teal-500 font-medium">
+                                <span class="text-[10px] text-slate-400 leading-tight mt-0.5 block">Mendukung tautan sematan
+                                    dari YouTube atau Google Drive.</span>
+                            </div>
                         </div>
+
+                        @if ($lesson->video_url)
+                            <div
+                                class="p-3 bg-sky-50 border border-sky-100 text-sky-700 text-[11px] font-bold rounded-xl flex items-center gap-2 shadow-2xs">
+                                <span
+                                    class="flex items-center justify-center w-4 h-4 rounded-full bg-sky-500 text-white text-[9px]">&checkmark;</span>
+                                Konten video pembelajaran tersemat.
+                            </div>
+                        @endif
                     </div>
 
-                    @if ($lesson->video_url)
-                        <div
-                            class="p-3 bg-sky-50 border border-sky-100 text-sky-700 text-[11px] font-bold rounded-xl flex items-center gap-2 shadow-2xs">
-                            <span
-                                class="flex items-center justify-center w-4 h-4 rounded-full bg-sky-500 text-white text-[9px]">&checkmark;</span>
-                            Konten video pembelajaran tersemat.
+                    <div class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800 tracking-tight">Dokumen Modul (PDF/PPT)</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed mt-1">
+                                Unggah berkas modul atau slide presentasi pembelajaran agar dapat diunduh oleh siswa.
+                            </p>
                         </div>
-                    @endif
+
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-xs font-bold text-slate-600">Pilih Berkas Dokumen</label>
+                            <input type="file" name="document" accept=".pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip"
+                                class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 cursor-pointer">
+                            <span class="text-[10px] text-slate-400 leading-tight mt-0.5 block">Mendukung file: PDF, PPTX,
+                                DOCX, ZIP. Maks 20 MB.</span>
+                        </div>
+
+                        @if ($lesson->file_path)
+                            <div class="p-3.5 bg-emerald-50/80 border border-emerald-200/80 rounded-xl space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span
+                                        class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-emerald-600 text-white rounded">
+                                        {{ $lesson->file_type ?? 'DOC' }}
+                                    </span>
+                                    <span class="text-[10px] text-emerald-600 font-bold font-mono">
+                                        {{ $lesson->formatted_size }}
+                                    </span>
+                                </div>
+                                <div class="text-xs font-bold text-slate-800 truncate" title="{{ $lesson->file_name }}">
+                                    {{ $lesson->file_name }}
+                                </div>
+                                <a href="{{ route('teacher.material.download_document', $lesson->id) }}" target="_blank"
+                                    class="inline-flex items-center justify-center w-full px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold rounded-lg transition shadow-2xs">
+                                    Unduh / Lihat File Terunggah
+                                </a>
+                            </div>
+                        @endif
+                    </div>
                 </div>
+
                 <div class="lg:col-span-2 bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                         <div>
@@ -73,10 +125,11 @@
                         <label class="text-xs font-bold text-slate-600">Isi Dokumen / Artikel Materi</label>
                         <textarea name="content_text"
                             placeholder="Tuliskan isi materi pembelajaran atau rangkuman bab di sini secara mendalam..."
-                            class="w-full h-64 lg:h-96 px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-700 focus:outline-none focus:border-teal-500 font-medium leading-relaxed resize-y">{{ old('content_text', $lesson->content_text) }}</textarea>
+                            class="w-full h-80 lg:h-[480px] px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-700 focus:outline-none focus:border-teal-500 font-medium leading-relaxed resize-y">{{ old('content_text', $lesson->content_text) }}</textarea>
                     </div>
                 </div>
             </div>
+
             <div
                 class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center sm:justify-end gap-2.5 w-full">
                 <button type="submit"
