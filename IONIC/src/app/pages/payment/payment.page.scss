@@ -1,0 +1,27 @@
+.amount-text {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--ion-color-primary);
+}
+
+.timer-badge {
+  font-size: 1.1rem;
+  padding: 6px 16px;
+  border-radius: 12px;
+}
+
+.qr-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 220px;
+
+  .qr-image {
+    max-width: 250px;
+    width: 100%;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px;
+    background: #fff;
+  }
+}

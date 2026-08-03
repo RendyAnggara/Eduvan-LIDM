@@ -122,6 +122,20 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
 
+  {
+    path: 'checkout/:id',
+    loadChildren: () =>
+      import('./pages/checkout/checkout.module').then(
+        (m) => m.CheckoutPageModule
+      ),
+  },
+
+  {
+    path: 'payment',
+    loadChildren: () =>
+      import('./pages/payment/payment.module').then((m) => m.PaymentPageModule),
+  },
+
   { path: '**', redirectTo: 'splash' },
 ];
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
@@ -16,59 +17,51 @@ class PaymentController extends Controller
     {
         $request->validate([
             'course_id' => 'required|exists:courses,id',
-            'amount' => 'required|numeric',
-            'payment_method' => 'required|string' // qris, va, atau wallet
         ]);
 
         $user = $request->user();
+
+        // 1. Ambil data course murni langsung dari database
+        $course = Course::findOrFail($request->course_id);
+
+        // 2. Bersihkan karakter titik/koma/spasi jika harga di DB tersimpan sebagai string (contoh: "50.000")
+        $cleanAmount = (int) str_replace(['.', ',', ' '], '', $course->price);
+
         $referenceId = 'EV-' . time() . '-' . Str::upper(Str::random(5));
-        $method = strtolower($request->payment_method);
 
-        // Dapatkan data spesifik dari DompetX berdasarkan metode bayar
-        $paymentData = [];
+        // URL Web Simulator Checkout DompetX
+        $paymentUrl = 'https://checkout.dompetx.com/pay/' . $referenceId;
 
-        if ($method === 'qris') {
-            // 1. String QRIS Standar Nasional (EMVCo Standard)
-            // Jika ada API DompetX asli, ambil dari $responseDompetX['qris_string']
-            $qrisPayload = "00020101021226680016ID.CO.DOMPETX.WWW01189360091430000000005204581253033605802ID5911EduVan Class6007Jakarta61051234562070703A016304A1B2";
-
-            // 2. Buat URL gambar QR dari string QRIS di atas (URL encoded)
-            $qrImageUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($qrisPayload);
-
-            $paymentData = [
-                'type' => 'qris',
-                'qr_content' => $qrisPayload,
-                'qr_image_url' => $qrImageUrl
-            ];
-        } elseif ($method === 'va') {
-            // Contoh: Nomor Virtual Account
-            $paymentData = [
-                'type' => 'va',
-                'bank_name' => 'Bank Mandiri',
-                'va_number' => '88012' . rand(10000000, 99999999)
-            ];
-        } else {
-            $paymentData = [
-                'type' => 'wallet',
-                'wallet_name' => 'DompetX Pay',
-                'pay_code' => 'DX-' . rand(1000, 9999)
-            ];
-        }
+        // 3. GENERATE QR CODE DINAMIS DARI PAYMENT URL / REF ID
+        // Menggunakan API QR Server gratis untuk merender gambar QRIS secara otomatis
+        $qrImage = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($paymentUrl);
 
         $transaction = Transaction::create([
             'user_id' => $user->id,
-            'course_id' => $request->course_id,
+            'course_id' => $course->id,
             'reference_id' => $referenceId,
-            'amount' => $request->amount,
+            'amount' => $cleanAmount,
             'status' => 'pending',
-            'payment_url' => $paymentData['qr_image_url'] ?? null
+            'payment_url' => $paymentUrl
         ]);
 
+        // 4. Return JSON lengkap dengan 'qrData' & 'expiresAt' agar dibaca sempurna oleh Ionic
         return response()->json([
             'success' => true,
             'message' => 'Transaksi berhasil dibuat',
-            'reference_id' => $referenceId,
-            'payment_info' => $paymentData
+            'data' => [
+                'id' => $transaction->id,
+                'amount' => $transaction->amount,
+                'reference_id' => $transaction->reference_id,
+                'status' => $transaction->status,
+                'payment_url' => $transaction->payment_url,
+                'expiresAt' => date('c', strtotime('+1 hour')), // Expire 1 jam dari sekarang
+                'qrData' => [
+                    'qrImage' => $qrImage,
+                    'qrString' => $paymentUrl,
+                    'refId' => $referenceId,
+                ]
+            ]
         ]);
     }
 

@@ -138,16 +138,34 @@
   <div class="footer-wrapper">
     <div class="action-buttons-row">
       <div class="button-main-col" style="width: 100%">
+        <!-- KONTEN A: WAJIB (GRATIS) ATAU SUDAH DIBELI / LUNAS -->
         <ion-button
+          *ngIf="isFreeCourse() || paymentStatus === 'success'"
           expand="block"
           color="success"
           class="btn-premium-action bg-emerald"
           (click)="masukKelas(course.id)"
         >
           <div class="inner-content-btn">
-            <span class="lbl-btn">Mulai Belajar Sekarang (MODE TEST)</span>
+            <span class="lbl-btn">Mulai Belajar Sekarang</span>
           </div>
           <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+        </ion-button>
+
+        <!-- KONTEN B: PILIHAN (BERBAYAR) & BELUM DIBELI -->
+        <ion-button
+          *ngIf="!isFreeCourse() && paymentStatus !== 'success'"
+          expand="block"
+          color="primary"
+          class="btn-premium-action"
+          (click)="masukKelas(course.id)"
+        >
+          <div class="inner-content-btn">
+            <span class="lbl-btn">
+              Beli Sekarang — Rp {{ (course?.price || 0) | number }}
+            </span>
+          </div>
+          <ion-icon name="card-outline" slot="end"></ion-icon>
         </ion-button>
       </div>
     </div>
@@ -201,128 +219,6 @@
         (click)="kirimUlasanRatingLive()"
       >
         KIRIM BINTANG
-      </ion-button>
-    </div>
-  </ng-template>
-</ion-modal>
-
-<ion-modal
-  [isOpen]="isModalTransferOpen"
-  (didDismiss)="isModalTransferOpen = false"
->
-  <ng-template>
-    <ion-header class="ion-no-border">
-      <ion-toolbar style="--background: #093c5d; --color: #ffffff">
-        <ion-title>Transfer Pembayaran</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="isModalTransferOpen = false" color="light"
-            >Tutup</ion-button
-          >
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-
-    <div
-      style="
-        padding: 20px;
-        background: #ffffff;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-      "
-    >
-      <div
-        style="
-          background: #f8fafc;
-          padding: 14px;
-          border-radius: 12px;
-          border: 1px solid #e2e8f0;
-        "
-      >
-        <h4
-          style="
-            margin: 0 0 6px 0;
-            color: #093c5d;
-            font-weight: 700;
-            font-size: 14px;
-          "
-        >
-          Rekening Pembayaran EduVan:
-        </h4>
-        <p style="margin: 0; font-size: 13px; color: #475569">
-          Bank Jago: <strong>1007 5633 0974</strong>
-        </p>
-        <p style="margin: 2px 0 0 0; font-size: 13px; color: #475569">
-          A.N: <strong>Haikal Aji Prabowo</strong>
-        </p>
-      </div>
-
-      <p style="font-size: 12px; color: #64748b; margin: 0">
-        Silakan transfer sesuai nominal harga kelas, Gunakan kamera atau pilih
-        foto bukti transfernya di bawah ini:
-      </p>
-      <div
-        (click)="pilihFileBuktiTransfer()"
-        style="
-          border: 2px dashed #093c5d;
-          border-radius: 14px;
-          padding: 20px;
-          text-align: center;
-          background: #f8fafc;
-          cursor: pointer;
-        "
-      >
-        <div
-          style="
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-          "
-        >
-          <div
-            *ngIf="imagePreviewUrl"
-            style="
-              margin-bottom: 8px;
-              width: 100%;
-              max-height: 180px;
-              overflow: hidden;
-              border-radius: 8px;
-            "
-          >
-            <img
-              [src]="imagePreviewUrl"
-              style="max-height: 180px; object-fit: contain; width: 100%"
-            />
-          </div>
-
-          <ion-icon
-            *ngIf="!imagePreviewUrl"
-            name="camera-outline"
-            style="font-size: 40px; color: #093c5d"
-          ></ion-icon>
-
-          <span style="font-size: 13px; font-weight: 600; color: #475569">
-            {{ namaFileTerpilih || 'Ambil Foto / Galeri Bukti Transfer' }}
-          </span>
-        </div>
-      </div>
-
-      <ion-button
-        expand="block"
-        shape="round"
-        color="primary"
-        style="margin-top: auto; font-weight: 700; margin-bottom: 10px"
-        [disabled]="loadingUpload"
-        (click)="kirimBuktiTransferKeServer()"
-      >
-        <ion-spinner
-          name="crescent"
-          slot="start"
-          *ngIf="loadingUpload"
-        ></ion-spinner>
-        {{ loadingUpload ? 'Mengirim Data...' : 'KIRIM BUKTI PEMBAYARAN' }}
       </ion-button>
     </div>
   </ng-template>

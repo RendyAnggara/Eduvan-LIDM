@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Pembayaran QRIS</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding ion-text-center">
+  <ion-card *ngIf="responseData">
+    <ion-card-header>
+      <ion-card-subtitle>Total Pembayaran</ion-card-subtitle>
+      <ion-card-title class="amount-text">
+        {{ responseData.amount | currency:'IDR':'symbol':'1.0-0' }}
+      </ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <!-- Timer Hitung Mundur -->
+      <div class="timer-container">
+        <p>Sisa Waktu Pembayaran:</p>
+        <ion-badge
+          [color]="isExpired ? 'danger' : 'warning'"
+          class="timer-badge"
+        >
+          {{ countdownText }}
+        </ion-badge>
+      </div>
+
+      <!-- QR Code Generator Local -->
+      <div class="qr-container ion-margin-top">
+        <!-- Kita gunakan *ngIf untuk memastikan QR dirender HANYA jika data tersedia -->
+        <qrcode
+          *ngIf="!isExpired && responseData && responseData.qrData && responseData.qrData.qrString"
+          [qrdata]="responseData.qrData.qrString"
+          [width]="240"
+          [errorCorrectionLevel]="'M'"
+        >
+        </qrcode>
+
+        <div
+          *ngIf="isExpired || !responseData || !responseData.qrData"
+          class="expired-placeholder"
+        >
+          <ion-icon
+            name="alert-circle-outline"
+            size="large"
+            color="danger"
+          ></ion-icon>
+          <p>
+            {{ isExpired ? 'QR Code Sudah Kadaluwarsa' : 'QR Gagal Dimuat (Cek
+            Data)' }}
+          </p>
+        </div>
+      </div>
+
+      <ion-note class="ion-margin-top display-block">
+        Scan QRIS di atas menggunakan GoPay, OVO, ShopeePay, Dana, atau Mobile
+        Banking pilihanmu.
+      </ion-note>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
