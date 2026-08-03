@@ -38,6 +38,7 @@
                 &checkmark; {{ session('success') }}
             </div>
         @endif
+
         <div class="space-y-4">
             @forelse($course->chapters as $index => $chapter)
                 <div
@@ -63,7 +64,6 @@
                         <div class="flex items-center justify-between md:justify-end gap-3 md:gap-4 shrink-0 w-full md:w-auto pt-3 md:pt-0 border-t border-slate-200/60 md:border-none"
                             onclick="event.stopPropagation();">
                             <div class="flex items-center gap-2">
-                                <!-- Indikator Total Pertemuan -->
                                 <span
                                     class="text-[10px] sm:text-xs font-bold text-slate-600 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">
                                     {{ $chapter->lessons->count() }} Pertemuan
@@ -91,21 +91,28 @@
                                     <h5 class="text-xs sm:text-sm font-bold text-slate-700 tracking-tight leading-relaxed">
                                         {{ $lesson->title }}</h5>
 
-                                    <!-- Badge Jalur Diferensiasi -->
                                     <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
                                         @if ($lesson->video_url)
                                             <span
                                                 class="px-2 py-0.5 bg-sky-50 text-sky-700 border border-sky-100 text-[8px] sm:text-[9px] font-black rounded uppercase tracking-wide">
-                                                Visual / Auditori
+                                                Video
                                             </span>
                                         @endif
                                         @if ($lesson->content_text)
                                             <span
                                                 class="px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-100 text-[8px] sm:text-[9px] font-black rounded uppercase tracking-wide">
-                                                Teks Reading
+                                                Teks
                                             </span>
                                         @endif
-                                        @if (!$lesson->video_url && !$lesson->content_text)
+
+                                        @if ($lesson->file_path)
+                                            <span
+                                                class="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[8px] sm:text-[9px] font-black rounded uppercase tracking-wide flex items-center gap-1">
+                                                 {{ $lesson->file_type ? strtoupper($lesson->file_type) : 'DOC' }} Modul
+                                            </span>
+                                        @endif
+
+                                        @if (!$lesson->video_url && !$lesson->content_text && !$lesson->file_path)
                                             <span
                                                 class="px-2 py-0.5 bg-slate-100 text-slate-400 border border-slate-200 text-[8px] sm:text-[9px] font-bold rounded uppercase tracking-wide">
                                                 Konten Kosong
@@ -181,7 +188,8 @@
 
                     <div
                         class="pt-3 text-[11px] leading-relaxed font-medium text-slate-400 border-t border-dashed border-slate-200">
-                        * Pengisian materi diferensiasi (Video & Teks Editor) akan diarahkan pada halaman formulir khusus
+                        * Pengisian materi diferensiasi (Video, Teks, & Upload Dokumen PDF/PPT) akan diarahkan pada halaman
+                        formulir khusus
                         setelah nama pertemuan dibuat.
                     </div>
 

@@ -14,6 +14,10 @@ return new class extends Migration
             $table->string('title');
             $table->string('video_url')->nullable();
             $table->text('content_text')->nullable();
+            $table->string('file_path')->nullable();
+            $table->string('file_name')->nullable();
+            $table->string('file_type')->nullable();
+            $table->bigInteger('file_size')->default(0);
 
             $table->timestamps();
         });

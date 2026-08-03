@@ -131,6 +131,7 @@ Route::middleware(['auth', 'role:teacher,admin'])->prefix('teacher')->group(func
     Route::post('/material/course', [MaterialController::class, 'storeCourse'])->name('teacher.material.store_course');
     Route::get('/material/manage/{id}', [MaterialController::class, 'manage'])->name('teacher.material.manage');
     Route::delete('/material/chapter/{id}', [MaterialController::class, 'destroyChapter'])->name('teacher.material.destroy_chapter');
+    Route::get('/material/lesson/{id}/download', [MaterialController::class, 'downloadDocument'])->name('teacher.material.download_document');
     Route::post('/material/lesson', [MaterialController::class, 'storeLesson'])->name('teacher.material.store_lesson');
     Route::get('/material/lesson/{id}/edit', [MaterialController::class, 'editContent'])->name('teacher.material.edit_content');
     Route::put('/material/lesson/{id}/update', [MaterialController::class, 'updateContent'])->name('teacher.material.update_content');
