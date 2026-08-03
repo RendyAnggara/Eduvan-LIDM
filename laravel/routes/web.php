@@ -113,6 +113,8 @@ Route::middleware(['auth', 'role:teacher,admin'])->prefix('teacher')->group(func
     Route::post('/student/store-massal', [TeacherController::class, 'storeStudent'])->name('teacher.student.store');
     Route::delete('/students/{id}', [TeacherController::class, 'destroyStudent'])->name('teacher.student.destroy');
     Route::put('/students/{id}/update', [TeacherController::class, 'updateStudentByTeacher'])->name('teacher.students.update');
+    Route::put('/students/{id}/promote', [TeacherController::class, 'promoteStudent'])->name('teacher.students.promote');
+    Route::post('/students/promote-bulk', [TeacherController::class, 'promoteClassBulk'])->name('teacher.students.promote_bulk');
     Route::post('/students/{id}/resend', [TeacherController::class, 'resendStudentAccount'])->name('teacher.students.resend');
     Route::get('/students/{id}/export-rapor', [TeacherController::class, 'exportRaporPdf'])->name('teacher.students.export_rapor');
     Route::get('/students/{id}/progress', [TeacherController::class, 'showStudentProgress'])->name('teacher.students.show_progress');

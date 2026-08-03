@@ -18,9 +18,11 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role', ['admin', 'teacher', 'student'])->default('student');
+            $table->string('nisn_or_nip')->nullable();
             $table->foreignId('school_id')->nullable()->constrained('schools')->onDelete('cascade');
+            $table->enum('class', ['Kelas 7', 'Kelas 8', 'Kelas 9', 'Umum'])->nullable();
             $table->rememberToken();
-            $table->text('fcm_token')->nullable(); 
+            $table->text('fcm_token')->nullable();
             $table->timestamps();
             $table->string('otp_code')->nullable();
             $table->timestamp('otp_expiry')->nullable();

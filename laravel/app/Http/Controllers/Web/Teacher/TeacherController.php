@@ -249,12 +249,11 @@ class TeacherController extends Controller
     public function updateStudentByTeacher(Request $request, $id)
     {
         $student = User::where('role', 'student')->findOrFail($id);
-
         $request->validate([
             'nisn_or_nip' => ['required', 'string', 'max:50', 'unique:users,nisn_or_nip,' . $id],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $id],
-            'class' => ['required', 'string', 'in:Kelas 7,Kelas 8,Kelas 9'],
+            'class' => ['required', 'string', 'in:Kelas 7,Kelas 8,Kelas 9,Umum'],
             'password' => ['nullable', 'string', 'min:6'],
         ]);
 
@@ -326,6 +325,63 @@ class TeacherController extends Controller
         }
 
         return redirect()->route('teacher.students.index')->with('success', 'Perubahan informasi siswa berhasil disimpan!');
+    }
+
+    public function promoteStudent(Request $request, $id)
+    {
+        $student = User::where('role', 'student')
+            ->where('school_id', Auth::user()->school_id)
+            ->findOrFail($id);
+
+        $currentClass = $student->class;
+        $nextClass = $currentClass;
+
+        if ($currentClass === 'Kelas 7') {
+            $nextClass = 'Kelas 8';
+        } elseif ($currentClass === 'Kelas 8') {
+            $nextClass = 'Kelas 9';
+        } elseif ($currentClass === 'Kelas 9') {
+            $nextClass = 'Umum';
+        }
+
+        $student->update(['class' => $nextClass]);
+
+        $message = ($nextClass === 'Umum')
+            ? "Siswa {$student->name} telah LULUS dan beralih ke akun 'Umum' (Alumni)."
+            : "Siswa {$student->name} berhasil dinaikkan ke {$nextClass}.";
+
+        return redirect()->back()->with('success', $message);
+    }
+
+    public function promoteClassBulk(Request $request)
+    {
+        $request->validate([
+            'from_class' => 'required|in:Kelas 7,Kelas 8,Kelas 9',
+        ]);
+
+        $fromClass = $request->from_class;
+        $toClass = match($fromClass) {
+            'Kelas 7' => 'Kelas 8',
+            'Kelas 8' => 'Kelas 9',
+            'Kelas 9' => 'Umum',
+        };
+
+        $schoolId = Auth::user()->school_id;
+
+        $updatedCount = User::where('role', 'student')
+            ->where('school_id', $schoolId)
+            ->where('class', $fromClass)
+            ->update(['class' => $toClass]);
+
+        if ($updatedCount === 0) {
+            return redirect()->back()->with('error', "Tidak ada siswa di {$fromClass} yang dapat dinaikkan.");
+        }
+
+        $message = ($toClass === 'Umum')
+            ? "Sebanyak {$updatedCount} siswa {$fromClass} berhasil LULUS menjadi Alumni ('Umum')!"
+            : "Sebanyak {$updatedCount} siswa {$fromClass} berhasil dinaikkan secara masal ke {$toClass}!";
+
+        return redirect()->back()->with('success', $message);
     }
 
     public function downloadExcelTemplate()
@@ -406,6 +462,8 @@ class TeacherController extends Controller
     {
         $student = \App\Models\User::where('role', 'student')->findOrFail($id);
         $gradeLevel = filter_var($student->class, FILTER_SANITIZE_NUMBER_INT);
+        $gradeLevel = $gradeLevel ?: 0;
+
         $courses = \App\Models\Course::where('course_type', 'school')
             ->where('grade_level', $gradeLevel)
             ->with(['chapters'])
@@ -426,8 +484,8 @@ class TeacherController extends Controller
     public function showStudentQuizzes($id)
     {
         $student = User::where('role', 'student')->findOrFail($id);
-
         $gradeLevel = filter_var($student->class, FILTER_SANITIZE_NUMBER_INT);
+        $gradeLevel = $gradeLevel ?: 0;
 
         $allQuizzes = \App\Models\Quiz::whereHas('course', function($q) use ($gradeLevel) {
                 $q->where('grade_level', $gradeLevel);

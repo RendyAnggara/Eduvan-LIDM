@@ -142,10 +142,16 @@
                 class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-100 lg:col-span-2 flex flex-col w-full">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                     <h4 class="font-bold text-slate-800 text-lg tracking-tight">Daftar Siswa Terdaftar</h4>
-                    <button type="button" onclick="openExcelModal()"
-                        class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold hover:bg-emerald-100 transition shadow-sm w-full sm:w-auto">
-                        Import Excel (.Excel)
-                    </button>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <button type="button" onclick="openBulkPromoteModal()"
+                            class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold hover:bg-indigo-100 transition shadow-sm w-full sm:w-auto">
+                            Naik Kelas
+                        </button>
+                        <button type="button" onclick="openExcelModal()"
+                            class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold hover:bg-emerald-100 transition shadow-sm w-full sm:w-auto">
+                            Import Excel (.Excel)
+                        </button>
+                    </div>
                 </div>
 
                 <form action="{{ route('teacher.students.index') }}" method="GET" class="flex gap-2 mb-6 w-full">
@@ -172,7 +178,7 @@
                                 <th class="py-3 px-4">Nama Siswa</th>
                                 <th class="py-3 px-4 text-center">Kelas</th>
                                 <th class="py-3 px-4 text-center">Status Akses</th>
-                                <th class="py-3 px-4 text-center rounded-r-xl w-32">Aksi</th>
+                                <th class="py-3 px-4 text-center rounded-r-xl w-44">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 text-slate-700 font-medium">
@@ -195,8 +201,8 @@
                                     </td>
                                     <td class="py-4 px-4 text-center">
                                         <span
-                                            class="px-2 py-0.5 rounded-md text-xs font-bold bg-slate-50 text-slate-600 border border-slate-200">
-                                            {{ str_replace('Kelas ', 'K-', $student->class ?? '??') }}
+                                            class="px-2 py-0.5 rounded-md text-xs font-bold {{ $student->class === 'Umum' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-slate-50 text-slate-600 border border-slate-200' }}">
+                                            {{ $student->class === 'Umum' ? 'Umum' : str_replace('Kelas ', 'K-', $student->class ?? '??') }}
                                         </span>
                                     </td>
                                     <td class="py-4 px-4 text-center">
@@ -215,6 +221,25 @@
                                     </td>
                                     <td class="py-4 px-4 text-center">
                                         <div class="flex items-center justify-center gap-1.5">
+                                            @if ($student->class !== 'Umum')
+                                                <form action="{{ route('teacher.students.promote', $student->id) }}"
+                                                    method="POST"
+                                                    onsubmit="return confirm('Apakah Anda yakin ingin menaikkan kelas siswa {{ $student->name }}?')">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <button type="submit"
+                                                        class="text-xs font-bold bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 px-2 py-1 rounded-lg transition duration-150"
+                                                        title="Naikkan Kelas">
+                                                        {{ $student->class === 'Kelas 9' ? 'Lulus' : 'Naik Kelas ' }}
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <span
+                                                    class="px-2 py-1 bg-slate-100 text-slate-400 text-[10px] font-bold rounded-lg border border-slate-200">
+                                                    Alumni
+                                                </span>
+                                            @endif
+
                                             <button type="button"
                                                 onclick="openEditModal('{{ $student->id }}', '{{ $student->nisn_or_nip }}', '{{ $student->name }}', '{{ $student->email }}', '{{ $student->class }}')"
                                                 class="text-amber-600 hover:text-amber-800 text-xs font-bold bg-amber-50 hover:bg-amber-100 border border-amber-200 px-2 py-1 rounded-lg transition duration-150">
@@ -253,7 +278,7 @@
                                 <div class="flex items-center gap-1.5">
                                     <span
                                         class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
-                                        {{ str_replace('Kelas ', 'K-', $student->class ?? '??') }}
+                                        {{ $student->class === 'Umum' ? 'Umum' : str_replace('Kelas ', 'K-', $student->class ?? '??') }}
                                     </span>
                                     @if ($student->email_verified_at)
                                         <span
@@ -275,6 +300,18 @@
                                 </div>
                             </div>
                             <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-200/60">
+                                @if ($student->class !== 'Umum')
+                                    <form action="{{ route('teacher.students.promote', $student->id) }}" method="POST"
+                                        onsubmit="return confirm('Naikkan kelas {{ $student->name }}?')">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit"
+                                            class="px-3 py-1.5 bg-teal-50 text-teal-700 border border-teal-200 text-xs font-bold rounded-lg transition">
+                                            {{ $student->class === 'Kelas 9' ? 'Lulus' : 'Naik Kelas ' }}
+                                        </button>
+                                    </form>
+                                @endif
+
                                 <button type="button"
                                     onclick="openEditModal('{{ $student->id }}', '{{ $student->nisn_or_nip }}', '{{ $student->name }}', '{{ $student->email }}', '{{ $student->class }}')"
                                     class="px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold rounded-lg transition">
@@ -334,6 +371,8 @@
                         </option>
                         <option value="Kelas 9" {{ request('monitor_class') == 'Kelas 9' ? 'selected' : '' }}>Kelas 9
                         </option>
+                        <option value="Umum" {{ request('monitor_class') == 'Umum' ? 'selected' : '' }}>Umum (Alumni)
+                        </option>
                     </select>
 
                     <div class="flex items-center gap-2 w-full sm:w-auto">
@@ -376,13 +415,11 @@
                                 </td>
                                 <td class="py-4 px-4 text-center">
                                     <div class="flex items-center gap-3 justify-center max-w-[200px] mx-auto">
-                                        <!-- Bar Progres Visual -->
                                         <div
                                             class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200/50 shrink-0">
                                             <div class="bg-teal-500 h-2 rounded-full"
                                                 style="width: {{ $mStudent->average_progress }}%"></div>
                                         </div>
-                                        <!-- Teks Nilai & Link Akses Halaman Detail Progres -->
                                         <div
                                             class="flex items-center gap-0.5 shrink-0 text-xs font-bold text-slate-700 min-w-[70px] justify-end">
                                             <span>{{ $mStudent->average_progress }}%</span>
@@ -500,6 +537,7 @@
                                 <option value="Kelas 7">Kelas 7</option>
                                 <option value="Kelas 8">Kelas 8</option>
                                 <option value="Kelas 9">Kelas 9</option>
+                                <option value="Umum">Umum (Alumni)</option>
                             </select>
                         </div>
                     </div>
@@ -601,6 +639,50 @@
                 </form>
             </div>
         </div>
+
+        <div id="bulkPromoteModal"
+            class="fixed inset-0 z-50 items-center justify-center bg-slate-900/50 backdrop-blur-sm hidden p-4">
+            <div
+                class="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-sm w-full overflow-hidden flex flex-col">
+                <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-sm tracking-tight">Naik Kelas</h3>
+                        <p class="text-[10px] text-slate-400">Pilih angkatan kelas yang akan dinaikkan serentak.</p>
+                    </div>
+                    <button type="button" onclick="closeBulkPromoteModal()"
+                        class="text-slate-400 hover:text-slate-600 text-sm font-bold focus:outline-none">✕</button>
+                </div>
+
+                <form action="{{ route('teacher.students.promote_bulk') }}" method="POST" class="p-5 space-y-4"
+                    onsubmit="return confirm('Apakah Anda yakin ingin menaikkan SELURUH siswa di kelas yang dipilih?')">
+                    @csrf
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Pilih Angkatan / Kelas
+                            Asal</label>
+                        <select name="from_class" required
+                            class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-xs bg-slate-50 text-slate-700 font-bold focus:outline-none focus:border-teal-500">
+                            <option value="" disabled selected>-- Pilih Kelas --</option>
+                            <option value="Kelas 7">Semua Siswa Kelas 7 &rarr; Naik ke Kelas 8</option>
+                            <option value="Kelas 8">Semua Siswa Kelas 8 &rarr; Naik ke Kelas 9</option>
+                            <option value="Kelas 9">Semua Siswa Kelas 9 &rarr; Lulus ke Alumni (Umum)</option>
+                        </select>
+                    </div>
+
+                    <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-[11px] text-amber-800 font-medium">
+                        Perhatian: Aksi ini akan mengubah tingkat kelas seluruh siswa pada angkatan yang dipilih secara
+                        serentak.
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+                        <button type="button" onclick="closeBulkPromoteModal()"
+                            class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-[11px] font-bold px-3 py-2 rounded-xl transition">Batal</button>
+                        <button type="submit"
+                            class="bg-teal-600 hover:bg-teal-700 text-white text-[11px] font-bold px-4 py-2 rounded-xl transition shadow-md">Proses
+                            Naik Kelas</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -631,6 +713,18 @@
 
         function closeExcelModal() {
             const modal = document.getElementById('importExcelModal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        function openBulkPromoteModal() {
+            const modal = document.getElementById('bulkPromoteModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeBulkPromoteModal() {
+            const modal = document.getElementById('bulkPromoteModal');
             modal.classList.remove('flex');
             modal.classList.add('hidden');
         }
