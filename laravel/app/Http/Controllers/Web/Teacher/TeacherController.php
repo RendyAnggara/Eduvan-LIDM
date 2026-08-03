@@ -249,12 +249,11 @@ class TeacherController extends Controller
     public function updateStudentByTeacher(Request $request, $id)
     {
         $student = User::where('role', 'student')->findOrFail($id);
-
         $request->validate([
             'nisn_or_nip' => ['required', 'string', 'max:50', 'unique:users,nisn_or_nip,' . $id],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $id],
-            'class' => ['required', 'string', 'in:Kelas 7,Kelas 8,Kelas 9'],
+            'class' => ['required', 'string', 'in:Kelas 7,Kelas 8,Kelas 9,Umum'],
             'password' => ['nullable', 'string', 'min:6'],
         ]);
 
@@ -328,6 +327,63 @@ class TeacherController extends Controller
         return redirect()->route('teacher.students.index')->with('success', 'Perubahan informasi siswa berhasil disimpan!');
     }
 
+    public function promoteStudent(Request $request, $id)
+    {
+        $student = User::where('role', 'student')
+            ->where('school_id', Auth::user()->school_id)
+            ->findOrFail($id);
+
+        $currentClass = $student->class;
+        $nextClass = $currentClass;
+
+        if ($currentClass === 'Kelas 7') {
+            $nextClass = 'Kelas 8';
+        } elseif ($currentClass === 'Kelas 8') {
+            $nextClass = 'Kelas 9';
+        } elseif ($currentClass === 'Kelas 9') {
+            $nextClass = 'Umum';
+        }
+
+        $student->update(['class' => $nextClass]);
+
+        $message = ($nextClass === 'Umum')
+            ? "Siswa {$student->name} telah LULUS dan beralih ke akun 'Umum' (Alumni)."
+            : "Siswa {$student->name} berhasil dinaikkan ke {$nextClass}.";
+
+        return redirect()->back()->with('success', $message);
+    }
+
+    public function promoteClassBulk(Request $request)
+    {
+        $request->validate([
+            'from_class' => 'required|in:Kelas 7,Kelas 8,Kelas 9',
+        ]);
+
+        $fromClass = $request->from_class;
+        $toClass = match($fromClass) {
+            'Kelas 7' => 'Kelas 8',
+            'Kelas 8' => 'Kelas 9',
+            'Kelas 9' => 'Umum',
+        };
+
+        $schoolId = Auth::user()->school_id;
+
+        $updatedCount = User::where('role', 'student')
+            ->where('school_id', $schoolId)
+            ->where('class', $fromClass)
+            ->update(['class' => $toClass]);
+
+        if ($updatedCount === 0) {
+            return redirect()->back()->with('error', "Tidak ada siswa di {$fromClass} yang dapat dinaikkan.");
+        }
+
+        $message = ($toClass === 'Umum')
+            ? "Sebanyak {$updatedCount} siswa {$fromClass} berhasil LULUS menjadi Alumni ('Umum')!"
+            : "Sebanyak {$updatedCount} siswa {$fromClass} berhasil dinaikkan secara masal ke {$toClass}!";
+
+        return redirect()->back()->with('success', $message);
+    }
+
     public function downloadExcelTemplate()
     {
         $headers = [
@@ -391,7 +447,9 @@ class TeacherController extends Controller
         });
 
         $totalBabSelesai = $student->quizResults->count();
+
         $rataRataKelulusan = $student->quizResults->avg('score') ?? 0;
+
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('teacher.students.rapor_pdf', compact(
             'student', 'schoolName', 'teacherName', 'raporData', 'totalBabSelesai', 'rataRataKelulusan'
         ))->setPaper('a4', 'portrait');
@@ -406,6 +464,8 @@ class TeacherController extends Controller
     {
         $student = \App\Models\User::where('role', 'student')->findOrFail($id);
         $gradeLevel = filter_var($student->class, FILTER_SANITIZE_NUMBER_INT);
+        $gradeLevel = $gradeLevel ?: 0;
+
         $courses = \App\Models\Course::where('course_type', 'school')
             ->where('grade_level', $gradeLevel)
             ->with(['chapters'])
@@ -426,8 +486,8 @@ class TeacherController extends Controller
     public function showStudentQuizzes($id)
     {
         $student = User::where('role', 'student')->findOrFail($id);
-
         $gradeLevel = filter_var($student->class, FILTER_SANITIZE_NUMBER_INT);
+        $gradeLevel = $gradeLevel ?: 0;
 
         $allQuizzes = \App\Models\Quiz::whereHas('course', function($q) use ($gradeLevel) {
                 $q->where('grade_level', $gradeLevel);
@@ -448,11 +508,25 @@ class TeacherController extends Controller
                     $score = $result->score;
                     $quizResultId = $result->id;
 
-                    if (isset($result->created_at) && isset($result->updated_at)) {
+                    $lastAnswer = \App\Models\StudentAnswer::where('quiz_result_id', $result->id)
+                        ->latest('created_at')
+                        ->first();
+
+                    $endTime = $lastAnswer ? $lastAnswer->created_at : $result->created_at;
+
+                    if (isset($result->created_at)) {
                         $start = \Carbon\Carbon::parse($result->created_at);
-                        $end = \Carbon\Carbon::parse($result->updated_at);
-                        $diff = $start->diffInMinutes($end);
-                        $workDuration = $diff > 0 ? $diff . ' Menit' : '1 Menit';
+                        $end = \Carbon\Carbon::parse($endTime);
+                        $calculatedDuration = round($start->diffInMinutes($end, true));
+                        $calculatedDuration = $calculatedDuration > 0 ? $calculatedDuration : 1;
+
+                        $timeLimit = (int) $quiz->time_limit;
+
+                        if ($timeLimit > 0 && $calculatedDuration > $timeLimit) {
+                            $workDuration = $timeLimit . ' Menit (Batas Maksimal)';
+                        } else {
+                            $workDuration = $calculatedDuration . ' Menit';
+                        }
                     }
                 } else {
                     if ($quiz->end_time && $now->greaterThan($quiz->end_time)) {
@@ -477,15 +551,6 @@ class TeacherController extends Controller
             });
 
         return view('teacher.students.show_quizzes', compact('student', 'allQuizzes'));
-    }
-
-    public function reviewStudentAnswers($student_id, $quiz_result_id)
-    {
-        $student = User::where('role', 'student')->findOrFail($student_id);
-        $quizResult = \App\Models\QuizResult::with(['course'])->findOrFail($quiz_result_id);
-        $studentAnswers = collect([]);
-
-        return view('teacher.students.review_quiz', compact('student', 'quizResult', 'studentAnswers'));
     }
 
     public function destroyStudent($id)

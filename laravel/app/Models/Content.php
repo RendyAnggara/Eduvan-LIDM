@@ -7,10 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Content extends Model
 {
-    // Nama tabel di database
     protected $table = 'contents';
-
-    // Kolom yang boleh diisi (Mass Assignment)
     protected $fillable = [
         'course_id',
         'title',
@@ -19,7 +16,6 @@ class Content extends Model
         'order'
     ];
 
-    // Relasi balik ke Course (Satu materi punya satu kursus)
     public function course()
     {
         return $this->belongsTo(Course::class);

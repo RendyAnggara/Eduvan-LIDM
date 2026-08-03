@@ -11,12 +11,13 @@ return new class extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('quiz_id')->constrained('quizzes')->onDelete('cascade');
+            $table->enum('type', ['multiple_choice', 'essay'])->default('multiple_choice');
             $table->text('question_text');
-            $table->string('option_a');
-            $table->string('option_b');
-            $table->string('option_c');
-            $table->string('option_d');
-            $table->char('correct_answer', 1);
+            $table->string('option_a')->nullable();
+            $table->string('option_b')->nullable();
+            $table->string('option_c')->nullable();
+            $table->string('option_d')->nullable();
+            $table->char('correct_answer', 1)->nullable();
             $table->timestamps();
         });
     }
