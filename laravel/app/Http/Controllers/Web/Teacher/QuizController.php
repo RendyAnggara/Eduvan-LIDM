@@ -14,16 +14,12 @@ class QuizController extends Controller
     public function index()
     {
         $schoolId = Auth::user()->school_id;
-
-        // Ambil kuis yang mapelnya terikat dengan guru satu instansi sekolah yang sama
         $quizzes = Quiz::whereHas('course.teachers', function ($query) use ($schoolId) {
                 $query->where('users.school_id', $schoolId);
             })
             ->with('course')
             ->withCount('questions')
             ->get();
-
-        // Ambil mapel yang dimiliki oleh sekolah yang sama lewat relasi guru
         $courses = Course::where('course_type', 'school')
             ->whereHas('teachers', function ($query) use ($schoolId) {
                 $query->where('users.school_id', $schoolId);
