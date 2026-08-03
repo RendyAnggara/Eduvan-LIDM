@@ -119,8 +119,8 @@ Route::middleware(['auth', 'role:teacher,admin'])->prefix('teacher')->group(func
     Route::get('/students/{id}/export-rapor', [TeacherController::class, 'exportRaporPdf'])->name('teacher.students.export_rapor');
     Route::get('/students/{id}/progress', [TeacherController::class, 'showStudentProgress'])->name('teacher.students.show_progress');
     Route::get('/students/{id}/quizzes', [TeacherController::class, 'showStudentQuizzes'])->name('teacher.students.show_quizzes');
-    Route::get('/teacher/students/{student_id}/quizzes/{quiz_result_id}/review', [TeacherController::class,'reviewStudentAnswers'])->name('teacher.students.review_quiz');
-
+    Route::get('/students/{student_id}/quizzes/{quiz_result_id}/review', [QuizController::class, 'reviewStudentAnswers'])->name('teacher.students.review_quiz');
+    Route::post('/students/{student_id}/quizzes/{quiz_result_id}/grade-essay', [QuizController::class, 'gradeEssay'])->name('teacher.students.grade_essay');
     Route::get('/students/download-template', [TeacherController::class, 'downloadExcelTemplate'])->name('teacher.students.download_template');
     Route::post('/students/import-excel', [TeacherController::class, 'importStudentsExcel'])->name('teacher.students.import_excel');
 

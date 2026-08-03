@@ -16,7 +16,15 @@ class QuizResult extends Model
         'status'
     ];
 
-    // Relasi biar gampang manggilnya nanti
-    public function user() { return $this->belongsTo(User::class); }
-    public function course() { return $this->belongsTo(Course::class); }
+    public function user() {
+        return $this->belongsTo(User::class);
+    }
+
+    public function course() {
+        return $this->belongsTo(Course::class);
+        }
+
+    public function answers() {
+        return $this->hasMany(StudentAnswer::class, 'quiz_result_id');
+    }
 }

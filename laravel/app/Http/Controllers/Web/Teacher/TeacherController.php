@@ -447,7 +447,9 @@ class TeacherController extends Controller
         });
 
         $totalBabSelesai = $student->quizResults->count();
+
         $rataRataKelulusan = $student->quizResults->avg('score') ?? 0;
+
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('teacher.students.rapor_pdf', compact(
             'student', 'schoolName', 'teacherName', 'raporData', 'totalBabSelesai', 'rataRataKelulusan'
         ))->setPaper('a4', 'portrait');
@@ -506,11 +508,25 @@ class TeacherController extends Controller
                     $score = $result->score;
                     $quizResultId = $result->id;
 
-                    if (isset($result->created_at) && isset($result->updated_at)) {
+                    $lastAnswer = \App\Models\StudentAnswer::where('quiz_result_id', $result->id)
+                        ->latest('created_at')
+                        ->first();
+
+                    $endTime = $lastAnswer ? $lastAnswer->created_at : $result->created_at;
+
+                    if (isset($result->created_at)) {
                         $start = \Carbon\Carbon::parse($result->created_at);
-                        $end = \Carbon\Carbon::parse($result->updated_at);
-                        $diff = $start->diffInMinutes($end);
-                        $workDuration = $diff > 0 ? $diff . ' Menit' : '1 Menit';
+                        $end = \Carbon\Carbon::parse($endTime);
+                        $calculatedDuration = round($start->diffInMinutes($end, true));
+                        $calculatedDuration = $calculatedDuration > 0 ? $calculatedDuration : 1;
+
+                        $timeLimit = (int) $quiz->time_limit;
+
+                        if ($timeLimit > 0 && $calculatedDuration > $timeLimit) {
+                            $workDuration = $timeLimit . ' Menit (Batas Maksimal)';
+                        } else {
+                            $workDuration = $calculatedDuration . ' Menit';
+                        }
                     }
                 } else {
                     if ($quiz->end_time && $now->greaterThan($quiz->end_time)) {
@@ -535,15 +551,6 @@ class TeacherController extends Controller
             });
 
         return view('teacher.students.show_quizzes', compact('student', 'allQuizzes'));
-    }
-
-    public function reviewStudentAnswers($student_id, $quiz_result_id)
-    {
-        $student = User::where('role', 'student')->findOrFail($student_id);
-        $quizResult = \App\Models\QuizResult::with(['course'])->findOrFail($quiz_result_id);
-        $studentAnswers = collect([]);
-
-        return view('teacher.students.review_quiz', compact('student', 'quizResult', 'studentAnswers'));
     }
 
     public function destroyStudent($id)
