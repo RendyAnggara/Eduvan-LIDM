@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class AuthController extends Controller
 {
@@ -51,13 +52,13 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        $enrollmentsCount = DB::table('enrollments')->where('user_id', $user->id)->count();
-        $certificatesCount = DB::table('certificates')->where('user_id', $user->id)->count();
+        $enrollmentsCount = Schema::hasTable('enrollments')
+            ? DB::table('enrollments')->where('user_id', $user->id)->count()
+            : 0;
 
         $userArray = $user->toArray();
         $userArray['enrollments_count'] = $enrollmentsCount;
-        $userArray['certificates_count'] = $certificatesCount;
-
+        $userArray['certificates_count'] = 0;
         return response()->json([
             'success'      => true,
             'access_token' => $token,
@@ -116,7 +117,7 @@ class AuthController extends Controller
             'password'          => Hash::make($generatedPassword),
             'role'              => 'student',
             'nisn_or_nip'       => $request->nisn_or_nip,
-            'school_id'         => $teacher->school_id,
+            'school_id'         => $teacher->school_id ?? null,
             'class'             => $request->class,
             'email_verified_at' => now(),
             'avatar'            => 'assets/icon/avatar-neutral.png',
@@ -141,12 +142,13 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $enrollmentsCount = DB::table('enrollments')->where('user_id', $user->id)->count();
-        $certificatesCount = DB::table('certificates')->where('user_id', $user->id)->count();
+        $enrollmentsCount = Schema::hasTable('enrollments')
+            ? DB::table('enrollments')->where('user_id', $user->id)->count()
+            : 0;
 
         $userArray = $user->toArray();
         $userArray['enrollments_count'] = $enrollmentsCount;
-        $userArray['certificates_count'] = $certificatesCount;
+        $userArray['certificates_count'] = 0;
 
         return response()->json($userArray, 200);
     }
@@ -183,7 +185,6 @@ class AuthController extends Controller
         if ($request->user())
         {
             $request->user()->update(['fcm_token' => null]);
-
             $request->user()->currentAccessToken()->delete();
         }
 
