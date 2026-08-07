@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
-    public function index()
+   public function index()
     {
         $student = Auth::user();
 
@@ -23,28 +23,26 @@ class CourseController extends Controller
             ], 401);
         }
 
-        $studentSchoolId = $student->school_id;
-        $rawClass = $student->class;
-
-        $studentClass = (string) filter_var($rawClass, FILTER_SANITIZE_NUMBER_INT);
+        $userClass = (string) $student->class;
+        $userClassNum = (string) filter_var($userClass, FILTER_SANITIZE_NUMBER_INT);
 
         $courses = Course::withCount(['chapters'])
-            ->leftJoin('course_user', 'courses.id', '=', 'course_user.course_id')
-            ->leftJoin('users as creators', 'course_user.user_id', '=', 'creators.id')
-            ->where(function ($query) use ($studentSchoolId, $studentClass) {
-
-                $query->where('courses.course_type', 'premium')
-
-                    ->orWhere(function ($subQuery) use ($studentSchoolId, $studentClass) {
-                        $subQuery->where('courses.course_type', 'school')
-                            ->where('courses.grade_level', $studentClass)
-                            ->where('creators.school_id', $studentSchoolId)
-                            ->where('creators.role', 'teacher');
-                    });
+            ->where(function ($query) use ($userClass, $userClassNum) {
+                $query->where('course_type', 'premium')
+                ->orWhere(function ($sub) use ($userClass, $userClassNum) {
+                    $sub->where(function($q) {
+                            $q->where('course_type', 'school')
+                              ->orWhereNull('course_type');
+                        })
+                        ->where(function ($qGrade) use ($userClass, $userClassNum) {
+                            $qGrade->where('grade_level', $userClass)
+                                   ->orWhere('grade_level', $userClassNum)
+                                   ->orWhereNull('grade_level')
+                                   ->orWhere('grade_level', '');
+                        });
+                });
             })
-            ->select('courses.*')
-            ->distinct()
-            ->latest('courses.created_at')
+            ->latest('created_at')
             ->get();
 
         return response()->json([
@@ -63,7 +61,7 @@ class CourseController extends Controller
         $enrollmentStatus = 'none';
 
         if ($student) {
-            $enrollment = \App\Models\Enrollment::where('user_id', $student->id)
+            $enrollment = Enrollment::where('user_id', $student->id)
                 ->where('course_id', $id)
                 ->first();
 
@@ -85,9 +83,10 @@ class CourseController extends Controller
 
     public function getContents($id)
     {
-        $lessons = \App\Models\Lesson::whereHas('chapter', function ($query) use ($id) {
+        $lessons = Lesson::whereHas('chapter', function ($query) use ($id) {
             $query->where('course_id', $id);
         })->get();
+
         $quizzes = \App\Models\Quiz::where('course_id', $id)
             ->withCount('questions')
             ->get();
@@ -118,6 +117,7 @@ class CourseController extends Controller
                 'data' => []
             ], 404);
         }
+
         return response()->json([
             'success' => true,
             'message' => 'Soal kuis berhasil dimuat',

@@ -21,7 +21,6 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/courses', [CourseController::class, 'index']);
 Route::get('/courses/{id}', [CourseController::class, 'show']);
 Route::get('/courses/{id}/contents', [CourseController::class, 'getContents']);
 
@@ -36,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::put('/user/update', [AuthController::class, 'updateProfile']);
+    Route::get('/courses', [CourseController::class, 'index']);
 
     Route::post('/user/fcm-token', [AuthController::class, 'updateFcmToken']);
     Route::get('/notifications', [NotificationApiController::class, 'getNotifUser']);
