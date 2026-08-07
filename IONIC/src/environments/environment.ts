@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://cement-drainpipe-dropbox.ngrok-free.dev/api',
+  apiUrl: 'https://edulearn.rehalivan.com/api', //https://cement-drainpipe-dropbox.ngrok-free.dev/api
 };
 // https://eduvan.rehalivan.com/api
 //

@@ -1,25 +1,40 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PaymentService {
-  private apiUrl = 'https://cement-drainpipe-dropbox.ngrok-free.dev/api';
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
-  private getAuthHeaders() {
+  private getAuthHeaders(): HttpHeaders {
     let tokenUser = localStorage.getItem('token');
+
+    if (!tokenUser) {
+      const userDataRaw =
+        localStorage.getItem('user_data') || localStorage.getItem('user');
+      if (userDataRaw) {
+        try {
+          const parsedData = JSON.parse(userDataRaw);
+          tokenUser = parsedData.token || parsedData.access_token || null;
+        } catch (e) {
+          tokenUser = userDataRaw;
+        }
+      }
+    }
+
     if (tokenUser) {
       tokenUser = String(tokenUser).replace(/"/g, '').trim();
     }
+
     return new HttpHeaders({
-      Authorization: `Bearer ${tokenUser}`,
+      Authorization: `Bearer ${tokenUser || ''}`,
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      'ngrok-skip-browser-warning': '69420',
     });
   }
 

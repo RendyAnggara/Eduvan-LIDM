@@ -1,38 +1,48 @@
 // src/app/services/course.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CourseService {
-  private apiUrl =
-    'https://cement-drainpipe-dropbox.ngrok-free.dev/api/courses';
-  private baseApiUrl = 'https://cement-drainpipe-dropbox.ngrok-free.dev/api';
-  // https://eduvan.rehalivan.com/api/courses
-  // https://eduvan.rehalivan.com/api
+  // Menggunakan environment.apiUrl yang mengarah ke https://edulearn.rehalivan.com/api
+  private baseApiUrl = environment.apiUrl;
+  private apiUrl = `${environment.apiUrl}/courses`;
 
   public wishlistChanged$ = new BehaviorSubject<boolean>(false);
   public progressChanged$ = new BehaviorSubject<boolean>(false);
   public notifChanged$ = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) {}
-  private dapatkanHeaderAutentikasi() {
-    // 🟢 PASTIKAN 'token' DISINI SAMA DENGAN NAMA KEY YANG DISIMPAN PAS LOGIN!
+
+  private dapatkanHeaderAutentikasi(): HttpHeaders {
     let tokenUser = localStorage.getItem('token');
+
+    if (!tokenUser) {
+      const userDataRaw =
+        localStorage.getItem('user_data') || localStorage.getItem('user');
+      if (userDataRaw) {
+        try {
+          const parsedData = JSON.parse(userDataRaw);
+          tokenUser = parsedData.token || parsedData.access_token || null;
+        } catch (e) {
+          tokenUser = userDataRaw;
+        }
+      }
+    }
 
     if (tokenUser) {
       tokenUser = String(tokenUser).replace(/"/g, '').trim();
     }
 
     return new HttpHeaders({
-      Authorization: `Bearer ${tokenUser}`,
+      Authorization: `Bearer ${tokenUser || ''}`,
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      'ngrok-skip-browser-warning': 'true', // 🟢 WAJIB ADA BIAR TIDAK CORS ERROR
     });
   }
 
@@ -41,10 +51,6 @@ export class CourseService {
       headers: this.dapatkanHeaderAutentikasi(),
     });
   }
-
-  // getCourseById(id: string): Observable<any> {
-  //   return this.http.get(`${this.apiUrl}/${id}`);
-  // }
 
   getCourseById(id: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/${id}`, {
@@ -91,12 +97,9 @@ export class CourseService {
   }
 
   ambilDaftarNotifikasi(): Observable<any> {
-    const token = localStorage.getItem('token');
-    const headers = {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json',
-    };
-    return this.http.get(`${this.baseApiUrl}/notifications`, { headers });
+    return this.http.get(`${this.baseApiUrl}/notifications`, {
+      headers: this.dapatkanHeaderAutentikasi(),
+    });
   }
 
   ambilDaftarWishlist(): Observable<any> {
@@ -158,10 +161,12 @@ export class CourseService {
       }
     );
   }
+
   buyCourseManual(formData: FormData): Observable<any> {
     let tokenUser = localStorage.getItem('token');
     if (!tokenUser) {
-      const userDataRaw = localStorage.getItem('userData');
+      const userDataRaw =
+        localStorage.getItem('user_data') || localStorage.getItem('user');
       if (userDataRaw) {
         try {
           const parsedData = JSON.parse(userDataRaw);
@@ -174,8 +179,9 @@ export class CourseService {
     if (tokenUser) {
       tokenUser = String(tokenUser).replace(/"/g, '').trim();
     }
+    // Tanpa Content-Type header agar browser otomatis set multipart/form-data boundary
     const headers = new HttpHeaders({
-      Authorization: `Bearer ${tokenUser}`,
+      Authorization: `Bearer ${tokenUser || ''}`,
       Accept: 'application/json',
     });
     return this.http.post(`${this.baseApiUrl}/enrollments`, formData, {
@@ -188,6 +194,7 @@ export class CourseService {
       headers: this.dapatkanHeaderAutentikasi(),
     });
   }
+
   tandaiNotifikasiTerbaca(idNotif: string): Observable<any> {
     return this.http
       .post(

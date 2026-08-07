@@ -37,13 +37,13 @@
         *ngIf="loginForm.get('email')?.value && !loginForm.get('email')?.errors?.['email']"
       ></ion-icon>
     </ion-item>
-    
+
     <div class="quick-tags-smp" *ngIf="loginForm.get('email')?.value && !loginForm.get('email')?.value.includes('@')">
       <span (click)="loginForm.get('email')?.setValue(loginForm.get('email')?.value + '@gmail.com')">+ @gmail.com</span>
     </div>
 
     <p class="error-text-santai" *ngIf="loginForm.get('email')?.value && loginForm.get('email')?.errors?.['email']">
-      Oops! Format email kamu belum benar nih, cek lagi ya ✍️
+      Oops! Format email kamu belum benar nih, cek lagi ya
     </p>
 
     <!-- Input Kata Sandi -->
@@ -64,8 +64,8 @@
     </ion-item>
 
     <!-- Pesan Validasi Password (Disederhanakan) -->
-    <p class="error-text-santai" *ngIf="loginForm.get('password')?.value && loginForm.get('password')?.value.length < 8">
-      Kata sandi minimal 8 karakter ya, yuk dilengkapin! 🔑
+    <p class="error-text-santai" *ngIf="loginForm.get('password')?.value && loginForm.get('password')?.value.length < 6">
+      Kata sandi minimal 8 karakter ya, yuk dilengkapin!
     </p>
 
     <!-- Opsi Remember Me dan Lupa Password -->
