@@ -32,7 +32,6 @@ export class HomePage implements OnInit {
   ngOnInit() {
     this.ambilNamaUserLive();
     this.muatDataBerandaTotal();
-    this.loadCourses();
 
     this.courseService.notifChanged$.subscribe((berubah: boolean) => {
       if (berubah) {
@@ -48,7 +47,10 @@ export class HomePage implements OnInit {
     } else {
       this.selectedCategory = kategori;
       this.kursusTersaring = this.courses.filter(
-        (k: any) => k.course_type === kategori
+        (k: any) =>
+          k.course_type === kategori ||
+          k.type === kategori ||
+          k.category === kategori
       );
     }
     this.cdr.detectChanges();
@@ -57,8 +59,14 @@ export class HomePage implements OnInit {
   loadCourses() {
     this.courseService.getCourses().subscribe({
       next: (res: any) => {
-        this.courses = res.data;
-        this.kursusTersaring = res.data;
+        const dataAsli = res?.data || res?.courses || res || [];
+        this.courses = Array.isArray(dataAsli) ? dataAsli : [];
+        this.kursusTersaring = this.courses;
+        this.pisahKategoriCourses(this.courses);
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Gagal memuat courses di loadCourses:', err);
       },
     });
   }
@@ -68,10 +76,10 @@ export class HomePage implements OnInit {
       localStorage.getItem('user_data') || localStorage.getItem('user');
     if (localUserData) {
       try {
-          const user = JSON.parse(localUserData);
-          const namaLengkap = user.name || user.nama || user.fullname || 'User';
-          this.namaUser = namaLengkap;
-          this.cdr.detectChanges();
+        const user = JSON.parse(localUserData);
+        const namaLengkap = user.name || user.nama || user.fullname || 'User';
+        this.namaUser = namaLengkap;
+        this.cdr.detectChanges();
       } catch (e) {
         console.error('Gagal parse user data di beranda:', e);
       }
@@ -88,18 +96,30 @@ export class HomePage implements OnInit {
 
     this.courseService.getCourses().subscribe({
       next: (res: any) => {
-        const dataAsli = res.data || [];
-        this.courses = dataAsli;
+        const dataAsli = res?.data || res?.courses || res || [];
+        const arrayCourses = Array.isArray(dataAsli) ? dataAsli : [];
+
+        this.courses = arrayCourses;
+        this.pisahKategoriCourses(arrayCourses);
+
         if (this.selectedCategory) {
-          this.kursusTersaring = dataAsli.filter(
-            (k: any) => k.course_type === this.selectedCategory
+          this.kursusTersaring = arrayCourses.filter(
+            (k: any) =>
+              k.course_type === this.selectedCategory ||
+              k.type === this.selectedCategory ||
+              k.category === this.selectedCategory
           );
         } else {
-          this.kursusTersaring = dataAsli;
+          this.kursusTersaring = arrayCourses;
         }
       },
       error: (err) => {
-        console.error('Gagal memuat dari Ngrok:', err);
+        console.error('Gagal memuat data beranda dari server:', err);
+        this.isLoading = false;
+        if (refresherEvent) {
+          (refresherEvent.target as any).complete();
+        }
+        this.cdr.detectChanges();
       },
       complete: () => {
         this.isLoading = false;
@@ -111,16 +131,26 @@ export class HomePage implements OnInit {
     });
   }
 
+  private pisahKategoriCourses(allCourses: any[]) {
+    this.coursesWajib = allCourses.filter(
+      (c: any) =>
+        c.type === 'Wajib' ||
+        c.course_type === 'Mata Pelajaran Wajib' ||
+        c.course_type === 'school' ||
+        c.is_wajib === 1
+    );
+
+    this.coursesPilihan = allCourses.filter(
+      (c: any) =>
+        c.type === 'Pilihan' ||
+        c.course_type === 'Mata Pelajaran Pilihan' ||
+        c.course_type === 'premium' ||
+        c.is_wajib === 0
+    );
+  }
+
   handleRefresh(event: CustomEvent) {
-    console.log('User melakukan refresh halaman...');
-
-    this.ngOnInit();
-
-    setTimeout(() => {
-      if (event && event.target) {
-        (event.target as any).complete();
-      }
-    }, 800);
+    this.muatDataBerandaTotal(event);
   }
 
   muatJumlahNotifikasi() {
@@ -137,17 +167,17 @@ export class HomePage implements OnInit {
     });
   }
 
-ambilNamaUserLive() {
-  this.authService.currentUser$.subscribe((user: any) => {
-    if (user) {
-      const namaLengkap = user.name || user.nama || user.fullname || 'User';
-      this.namaUser = namaLengkap;
-      this.cdr.detectChanges();
-    } else {
-      this.namaUser = 'User';
-    }
-  });
-}
+  ambilNamaUserLive() {
+    this.authService.currentUser$.subscribe((user: any) => {
+      if (user) {
+        const namaLengkap = user.name || user.nama || user.fullname || 'User';
+        this.namaUser = namaLengkap;
+        this.cdr.detectChanges();
+      } else {
+        this.namaUser = 'User';
+      }
+    });
+  }
 
   goToDetail(id?: any) {
     if (id) {
@@ -200,7 +230,7 @@ ambilNamaUserLive() {
   }
 
   bukaChatCS() {
-    const pesan = 'Halo Admin EduVan, saya ingin bertanya mengenai kursus...';
+    const pesan = 'Halo Admin EduLearn, saya ingin bertanya mengenai kursus...';
     const nomorWA = '628978665982';
     window.open(
       `https://wa.me/${nomorWA}?text=${encodeURIComponent(pesan)}`,

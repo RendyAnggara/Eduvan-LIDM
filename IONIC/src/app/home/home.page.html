@@ -4,7 +4,7 @@
       pullingIcon="arrow-down-circle"
       pullingText="Tarik sedikit lagi..."
       refreshingSpinner="crescent"
-      refreshingText="Menyelaraskan data EduVan..."
+      refreshingText="Menyelaraskan data EduLearn..."
     ></ion-refresher-content>
   </ion-refresher>
 
@@ -23,7 +23,7 @@
             position: absolute;
             top: -1px;
             right: -1px;
-            font-size: 9px; /* Diperkecil tipis biar makin padat minimalis */
+            font-size: 9px;
             min-width: 15px;
             height: 15px;
             border-radius: 50%;
@@ -48,11 +48,12 @@
       </div>
     </div>
 
+    <!-- Tombol Filter Kategori (Disesuaikan value parameter-nya) -->
     <div class="category-list">
       <div
         class="category-item"
         (click)="selectCategory('school')"
-        [class.active]="selectedCategory === 'Mata Pelajaran Wajib'"
+        [class.active]="selectedCategory === 'school'"
       >
         <div class="cat-icon blue">
           <ion-icon name="book"></ion-icon>
@@ -62,7 +63,7 @@
       <div
         class="category-item"
         (click)="selectCategory('premium')"
-        [class.active]="selectedCategory === 'Mata Pelajaran Pilihan'"
+        [class.active]="selectedCategory === 'premium'"
       >
         <div class="cat-icon green">
           <ion-icon name="medal"></ion-icon>
@@ -78,35 +79,42 @@
           Menghubungkan ke server EduLearn...
         </p>
       </div>
-      <div *ngIf="!selectedCategory || selectedCategory === 'school'">
+
+      <!-- Section Mata Pelajaran Wajib -->
+      <div
+        *ngIf="!isLoading && (!selectedCategory || selectedCategory === 'school')"
+      >
         <div class="section-title-box">
           <h4>Mata Pelajaran Wajib</h4>
         </div>
         <div class="course-grid-wrapper">
-          <ng-container *ngFor="let kursus of kursusTersaring">
+          <ng-container
+            *ngFor="let kursus of (coursesWajib.length ? coursesWajib : kursusTersaring)"
+          >
             <div
               class="premium-course-card-horizontal"
-              *ngIf="kursus.course_type === 'school'"
+              *ngIf="!kursus.course_type || kursus.course_type === 'school' || kursus.course_type === 'Wajib'"
               (click)="goToDetail(kursus.id)"
               style="cursor: pointer"
             >
               <div class="course-thumb-box">
                 <img
                   [src]="kursus.image ? kursus.image : getDefaultImage(kursus.category)"
+                  (error)="handleImageError($event, kursus.category)"
                   alt="Course Image"
                 />
-                <div class="tag-best">{{ kursus.category }}</div>
+                <div class="tag-best">{{ kursus.category || 'Umum' }}</div>
               </div>
               <div class="course-info-box">
                 <h5>{{ kursus.title }}</h5>
-                <p class="instructor">Instructor EduVan</p>
+                <p class="instructor">Instructor EduLearn</p>
                 <div class="course-meta">
                   <ion-icon name="star"></ion-icon>
                   <span class="rating-val">{{ kursus.rating || '5.0' }}</span>
                 </div>
                 <div class="course-price">
-                  {{ kursus.price == 0 ? 'Gratis' : 'Rp ' + (kursus.price |
-                  number:'1.0-0') }}
+                  {{ !kursus.price || kursus.price == 0 ? 'Gratis' : 'Rp ' +
+                  (kursus.price | number:'1.0-0') }}
                 </div>
               </div>
             </div>
@@ -114,38 +122,42 @@
         </div>
       </div>
 
+      <!-- Section Mata Pelajaran Pilihan -->
       <div
-        *ngIf="!selectedCategory || selectedCategory === 'premium'"
+        *ngIf="!isLoading && (!selectedCategory || selectedCategory === 'premium')"
         style="margin-top: 24px"
       >
         <div class="section-title-box">
           <h4>Mata Pelajaran Pilihan</h4>
         </div>
         <div class="course-grid-wrapper">
-          <ng-container *ngFor="let kursus of kursusTersaring">
+          <ng-container
+            *ngFor="let kursus of (coursesPilihan.length ? coursesPilihan : kursusTersaring)"
+          >
             <div
               class="premium-course-card-horizontal"
-              *ngIf="kursus.course_type === 'premium'"
+              *ngIf="kursus.course_type === 'premium' || kursus.course_type === 'Pilihan'"
               (click)="goToDetail(kursus.id)"
               style="cursor: pointer"
             >
               <div class="course-thumb-box">
                 <img
                   [src]="kursus.image ? kursus.image : getDefaultImage(kursus.category)"
+                  (error)="handleImageError($event, kursus.category)"
                   alt="Course Image"
                 />
-                <div class="tag-best">{{ kursus.category }}</div>
+                <div class="tag-best">{{ kursus.category || 'Premium' }}</div>
               </div>
               <div class="course-info-box">
                 <h5>{{ kursus.title }}</h5>
-                <p class="instructor">Instructor EduVan</p>
+                <p class="instructor">Instructor EduLearn</p>
                 <div class="course-meta">
                   <ion-icon name="star"></ion-icon>
                   <span class="rating-val">{{ kursus.rating || '5.0' }}</span>
                 </div>
                 <div class="course-price">
-                  {{ kursus.price == 0 ? 'Gratis' : 'Rp ' + (kursus.price |
-                  number:'1.0-0') }}
+                  {{ !kursus.price || kursus.price == 0 ? 'Gratis' : 'Rp ' +
+                  (kursus.price | number:'1.0-0') }}
                 </div>
               </div>
             </div>
@@ -154,14 +166,15 @@
       </div>
     </div>
   </div>
+
   <div class="insight-section">
     <div class="insight-card-baru">
-      <div class="insight-badge">Tips Hari Ini ✨</div>
+      <div class="insight-badge">Tips Hari Ini </div>
       <h3>Yuk, Tetap Semangat!</h3>
       <p>
         "Setiap ahli dulunya juga seorang pemula yang gak berhenti mencoba.
         Jadi, kalau hari ini rasanya sulit, tenang aja, kamu lagi berproses jadi
-        lebih pintar kok! Selangkah lebih dekat menuju cita-citamu! ✨"
+        lebih pintar kok! Selangkah lebih dekat menuju cita-citamu! "
       </p>
     </div>
   </div>

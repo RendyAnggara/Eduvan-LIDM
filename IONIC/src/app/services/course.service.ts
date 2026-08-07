@@ -9,7 +9,6 @@ import { environment } from '../../environments/environment';
   providedIn: 'root',
 })
 export class CourseService {
-  // Menggunakan environment.apiUrl yang mengarah ke https://edulearn.rehalivan.com/api
   private baseApiUrl = environment.apiUrl;
   private apiUrl = `${environment.apiUrl}/courses`;
 
@@ -20,27 +19,41 @@ export class CourseService {
   constructor(private http: HttpClient) {}
 
   private dapatkanHeaderAutentikasi(): HttpHeaders {
-    let tokenUser = localStorage.getItem('token');
+    // 1. Cek semua kemungkinan key token yang disimpan di LocalStorage
+    let tokenUser =
+      localStorage.getItem('access_token') ||
+      localStorage.getItem('token') ||
+      localStorage.getItem('auth_token');
 
+    // 2. Jika tidak ditemukan langsung, cari di dalam objek JSON (user_data / user / response)
     if (!tokenUser) {
       const userDataRaw =
-        localStorage.getItem('user_data') || localStorage.getItem('user');
+        localStorage.getItem('user_data') ||
+        localStorage.getItem('user') ||
+        localStorage.getItem('auth_response');
+
       if (userDataRaw) {
         try {
           const parsedData = JSON.parse(userDataRaw);
-          tokenUser = parsedData.token || parsedData.access_token || null;
+          tokenUser =
+            parsedData.access_token ||
+            parsedData.token ||
+            parsedData.auth_token ||
+            (parsedData.data && parsedData.data.access_token) ||
+            null;
         } catch (e) {
           tokenUser = userDataRaw;
         }
       }
     }
 
+    // 3. Bersihkan petik ganda atau spasi terikut
     if (tokenUser) {
       tokenUser = String(tokenUser).replace(/"/g, '').trim();
     }
 
     return new HttpHeaders({
-      Authorization: `Bearer ${tokenUser || ''}`,
+      Authorization: tokenUser ? `Bearer ${tokenUser}` : '',
       'Content-Type': 'application/json',
       Accept: 'application/json',
     });
@@ -163,25 +176,10 @@ export class CourseService {
   }
 
   buyCourseManual(formData: FormData): Observable<any> {
-    let tokenUser = localStorage.getItem('token');
-    if (!tokenUser) {
-      const userDataRaw =
-        localStorage.getItem('user_data') || localStorage.getItem('user');
-      if (userDataRaw) {
-        try {
-          const parsedData = JSON.parse(userDataRaw);
-          tokenUser = parsedData.token || parsedData.access_token || null;
-        } catch (e) {
-          tokenUser = userDataRaw;
-        }
-      }
-    }
-    if (tokenUser) {
-      tokenUser = String(tokenUser).replace(/"/g, '').trim();
-    }
-    // Tanpa Content-Type header agar browser otomatis set multipart/form-data boundary
+    const authHeader = this.dapatkanHeaderAutentikasi();
+    // Khusus multipart/form-data: Hapus Content-Type agar browser otomatis generate boundary
     const headers = new HttpHeaders({
-      Authorization: `Bearer ${tokenUser || ''}`,
+      Authorization: authHeader.get('Authorization') || '',
       Accept: 'application/json',
     });
     return this.http.post(`${this.baseApiUrl}/enrollments`, formData, {
