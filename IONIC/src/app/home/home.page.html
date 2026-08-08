@@ -48,7 +48,6 @@
       </div>
     </div>
 
-    <!-- Tombol Filter Kategori (Disesuaikan value parameter-nya) -->
     <div class="category-list">
       <div
         class="category-item"
@@ -97,17 +96,25 @@
               (click)="goToDetail(kursus.id)"
               style="cursor: pointer"
             >
-              <div class="course-thumb-box">
-                <img
-                  [src]="kursus.image ? kursus.image : getDefaultImage(kursus.category)"
-                  (error)="handleImageError($event, kursus.category)"
-                  alt="Course Image"
-                />
-                <div class="tag-best">{{ kursus.category || 'Umum' }}</div>
+              <div
+                class="course-thumb-box icon-badge-mode"
+                [style.background-color]="getSubjectColor(kursus.title)"
+              >
+                <ion-icon
+                  [name]="getSubjectIcon(kursus.title)"
+                  class="subject-dynamic-icon"
+                ></ion-icon>
+                <div class="tag-best">Sekolah</div>
               </div>
+
               <div class="course-info-box">
                 <h5>{{ kursus.title }}</h5>
-                <p class="instructor">Instructor EduLearn</p>
+
+                <p class="instructor">
+                  {{ kursus.instructor_name || kursus.creator_name || 'Guru
+                  Sekolah' }}
+                </p>
+
                 <div class="course-meta">
                   <ion-icon name="star"></ion-icon>
                   <span class="rating-val">{{ kursus.rating || '5.0' }}</span>
@@ -150,7 +157,12 @@
               </div>
               <div class="course-info-box">
                 <h5>{{ kursus.title }}</h5>
-                <p class="instructor">Instructor EduLearn</p>
+
+                <!-- Nama Instruktur Dinamis untuk Mapel Pilihan -->
+                <p class="instructor">
+                  {{ kursus.instructor_name || 'Instructor EduLearn' }}
+                </p>
+
                 <div class="course-meta">
                   <ion-icon name="star"></ion-icon>
                   <span class="rating-val">{{ kursus.rating || '5.0' }}</span>
@@ -169,12 +181,12 @@
 
   <div class="insight-section">
     <div class="insight-card-baru">
-      <div class="insight-badge">Tips Hari Ini </div>
+      <div class="insight-badge">Tips Hari Ini</div>
       <h3>Yuk, Tetap Semangat!</h3>
       <p>
-        "Setiap ahli dulunya juga seorang pemula yang gak berhenti mencoba.
-        Jadi, kalau hari ini rasanya sulit, tenang aja, kamu lagi berproses jadi
-        lebih pintar kok! Selangkah lebih dekat menuju cita-citamu! "
+        Setiap ahli dulunya juga seorang pemula yang gak berhenti mencoba. Jadi,
+        kalau hari ini rasanya sulit, tenang aja, kamu lagi berproses jadi lebih
+        pintar kok! Selangkah lebih dekat menuju cita-citamu!
       </p>
     </div>
   </div>

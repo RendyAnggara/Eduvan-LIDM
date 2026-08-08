@@ -206,6 +206,55 @@ export class HomePage implements OnInit {
     this.router.navigateByUrl('/tabs/course');
   }
 
+  getSubjectIcon(title: string): string {
+    if (!title) return 'book-outline';
+    const t = title.toLowerCase();
+
+    if (t.includes('mtk') || t.includes('matematika'))
+      return 'calculator-outline';
+    if (
+      t.includes('pkn') ||
+      t.includes('pancasila') ||
+      t.includes('kewarganegaraan')
+    )
+      return 'flag-outline';
+
+    if (t.includes('sunda') || t.includes('daerah') || t.includes('jawa'))
+      return 'library-outline';
+    if (t.includes('indonesia')) return 'journal-outline';
+    if (t.includes('inggris') || t.includes('english')) return 'globe-outline';
+
+    if (
+      t.includes('ipa') ||
+      t.includes('sains') ||
+      t.includes('biologi') ||
+      t.includes('fisika')
+    )
+      return 'flask-outline';
+    if (t.includes('ips') || t.includes('sejarah') || t.includes('geografi'))
+      return 'earth-outline';
+    if (t.includes('agama') || t.includes('pai')) return 'ribbon-outline';
+    if (t.includes('pjok') || t.includes('olahraga')) return 'fitness-outline';
+    if (t.includes('seni') || t.includes('prakarya')) return 'palette-outline';
+
+    return 'book-outline';
+  }
+
+  getSubjectColor(title: string): string {
+    if (!title) return '#e0f2fe';
+    const t = title.toLowerCase();
+
+    if (t.includes('mtk') || t.includes('matematika')) return '#fee2e2';
+    if (t.includes('pkn') || t.includes('pancasila')) return '#fef3c7';
+    if (t.includes('sunda') || t.includes('indonesia') || t.includes('bahasa'))
+      return '#dcfce7';
+    if (t.includes('ipa') || t.includes('sains')) return '#f3e8ff';
+    if (t.includes('ips') || t.includes('sejarah')) return '#ffedd5';
+    if (t.includes('inggris') || t.includes('english')) return '#e0e7ff';
+
+    return '#e0f2fe';
+  }
+
   getDefaultImage(category: string): string {
     if (!category) return 'assets/icon/computer-science.jpeg';
     const kat = category.toLowerCase();
@@ -226,6 +275,7 @@ export class HomePage implements OnInit {
   }
 
   handleImageError(event: any, category: string) {
+    event.target.onerror = null;
     event.target.src = this.getDefaultImage(category);
   }
 
